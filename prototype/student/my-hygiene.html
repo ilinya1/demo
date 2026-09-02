@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的卫生检查 — 学生宿舍管理系统</title>
+    <link rel="stylesheet" href="../css/common.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="icon">宿</span>
+                <span class="text">宿舍管理系统</span>
+            </div>
+            <nav class="menu">
+                <div class="menu-title">我的宿舍</div>
+                <a class="menu-item" href="my-room.html"><span class="menu-icon">🏠</span><span class="menu-text">我的入住信息</span></a>
+                <a class="menu-item" href="my-hygiene.html"><span class="menu-icon">🧹</span><span class="menu-text">我的卫生检查</span></a>
+                <div class="menu-title">报修服务</div>
+                <a class="menu-item" href="repair-add.html"><span class="menu-icon">🔧</span><span class="menu-text">提交报修</span></a>
+                <a class="menu-item" href="my-repair.html"><span class="menu-icon">📋</span><span class="menu-text">报修进度</span></a>
+            </nav>
+        </aside>
+        <div class="main">
+            <header class="header">
+                <div class="page-title">我的卫生检查</div>
+                <div class="user-info">
+                    <span class="role-tag">学生</span>
+                    <span class="username">王小明</span>
+                    <span class="avatar">王</span>
+                    <a href="password.html" class="btn btn-sm">修改密码</a>
+                    <a href="login.html" class="btn btn-sm">退出</a>
+                </div>
+            </header>
+            <div class="content">
+                <div class="card">
+                    <div class="card-title">本宿舍卫生检查记录（1号楼 102室）</div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>检查日期</th>
+                                    <th>评分</th>
+                                    <th>结果</th>
+                                    <th>检查人</th>
+                                    <th>评语</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2026-09-01</td>
+                                    <td>82</td>
+                                    <td><span class="tag tag-success">合格</span></td>
+                                    <td>张宿管</td>
+                                    <td>整体良好，桌面稍乱</td>
+                                </tr>
+                                <tr>
+                                    <td>2026-08-25</td>
+                                    <td>90</td>
+                                    <td><span class="tag tag-success">优秀</span></td>
+                                    <td>张宿管</td>
+                                    <td>卫生状况良好</td>
+                                </tr>
+                                <tr>
+                                    <td>2026-08-18</td>
+                                    <td>75</td>
+                                    <td><span class="tag tag-success">合格</span></td>
+                                    <td>张宿管</td>
+                                    <td>地面有少量垃圾</td>
+                                </tr>
+                                <tr>
+                                    <td>2026-08-11</td>
+                                    <td>88</td>
+                                    <td><span class="tag tag-success">合格</span></td>
+                                    <td>张宿管</td>
+                                    <td>整体良好</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/common.js"></script>
+</body>
+</html>

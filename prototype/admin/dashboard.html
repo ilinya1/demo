@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仪表盘 — 学生宿舍管理系统</title>
+    <link rel="stylesheet" href="../css/common.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="icon">宿</span>
+                <span class="text">宿舍管理系统</span>
+            </div>
+            <nav class="menu">
+                <div class="menu-title">概览</div>
+                <a class="menu-item" href="dashboard.html"><span class="menu-icon">📊</span><span class="menu-text">仪表盘</span></a>
+                <div class="menu-title">基础数据</div>
+                <a class="menu-item" href="student-list.html"><span class="menu-icon">👨‍🎓</span><span class="menu-text">学生管理</span></a>
+                <a class="menu-item" href="building-list.html"><span class="menu-icon">🏢</span><span class="menu-text">楼栋管理</span></a>
+                <a class="menu-item" href="room-list.html"><span class="menu-icon">🚪</span><span class="menu-text">房间管理</span></a>
+                <div class="menu-title">住宿业务</div>
+                <a class="menu-item" href="checkin.html"><span class="menu-icon">📝</span><span class="menu-text">入住登记</span></a>
+                <a class="menu-item" href="checkout.html"><span class="menu-icon">📤</span><span class="menu-text">退宿登记</span></a>
+                <a class="menu-item" href="checkin-record.html"><span class="menu-icon">📋</span><span class="menu-text">入住记录</span></a>
+                <div class="menu-title">日常管理</div>
+                <a class="menu-item" href="hygiene-list.html"><span class="menu-icon">🧹</span><span class="menu-text">卫生检查</span></a>
+                <a class="menu-item" href="repair-list.html"><span class="menu-icon">🔧</span><span class="menu-text">报修管理</span></a>
+                <div class="menu-title">统计报表</div>
+                <a class="menu-item" href="stat-occupancy.html"><span class="menu-icon">📈</span><span class="menu-text">入住统计</span></a>
+                <a class="menu-item" href="stat-hygiene.html"><span class="menu-icon">📊</span><span class="menu-text">卫生统计</span></a>
+                <a class="menu-item" href="stat-repair.html"><span class="menu-icon">📉</span><span class="menu-text">报修统计</span></a>
+            </nav>
+        </aside>
+        <div class="main">
+            <header class="header">
+                <div class="page-title">仪表盘</div>
+                <div class="user-info">
+                    <span class="role-tag">管理员</span>
+                    <span class="username">张宿管</span>
+                    <span class="avatar">张</span>
+                    <a href="password.html" class="btn btn-sm">修改密码</a>
+                    <a href="login.html" class="btn btn-sm">退出</a>
+                </div>
+            </header>
+            <div class="content">
+                <div class="stat-cards">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">👨‍🎓</div>
+                        <div class="stat-info">
+                            <div class="stat-num">1,286</div>
+                            <div class="stat-label">在校学生总数</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">🏢</div>
+                        <div class="stat-info">
+                            <div class="stat-num">6</div>
+                            <div class="stat-label">宿舍楼栋数</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">🚪</div>
+                        <div class="stat-info">
+                            <div class="stat-num">1,240</div>
+                            <div class="stat-label">房间总数</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon red">🛏️</div>
+                        <div class="stat-info">
+                            <div class="stat-num">86.5%</div>
+                            <div class="stat-label">整体入住率</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">各楼栋入住率</div>
+                    <div class="chart-placeholder">📊 柱状图占位 — 各楼栋入住率</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">最近卫生检查情况</div>
+                    <div class="chart-placeholder">📈 折线图占位 — 近 4 周卫生平均分</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/common.js"></script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生登录 — 学生宿舍管理系统</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <style>
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #2e8b57 0%, #67c23a 50%, #95d475 100%);
+        }
+        .login-box {
+            width: 400px;
+            background: #fff;
+            border-radius: 8px;
+            padding: 40px 36px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+        .login-box .logo {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .login-box .logo .icon {
+            width: 56px;
+            height: 56px;
+            background: #67c23a;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .login-box h1 {
+            text-align: center;
+            font-size: 20px;
+            color: #303133;
+            margin: 12px 0 4px;
+        }
+        .login-box .subtitle {
+            text-align: center;
+            color: #909399;
+            font-size: 13px;
+            margin-bottom: 28px;
+        }
+        .role-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #f0f9eb;
+            border: 1px solid #e1f3d8;
+            color: #67c23a;
+            border-radius: 5px;
+            padding: 8px 0;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+        .tips {
+            font-size: 12px;
+            color: #909399;
+            margin-top: -12px;
+            margin-bottom: 20px;
+        }
+        .back-link {
+            text-align: center;
+            margin-top: 16px;
+        }
+        .back-link a {
+            font-size: 13px;
+            color: #909399;
+        }
+        .back-link a:hover {
+            color: #67c23a;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-box">
+            <div class="logo">
+                <div class="icon">宿</div>
+            </div>
+            <h1>学生宿舍管理系统</h1>
+            <p class="subtitle">学生登录</p>
+            <div class="role-badge">🎓 学生身份登录</div>
+            <div id="errorMsg" style="display:none; background:#fef0f0; border:1px solid #fde2e2; color:#f56c6c; border-radius:5px; padding:10px 12px; font-size:13px; margin-bottom:16px; align-items:center; gap:6px;">
+                ⚠️ <span id="errorText"></span>
+            </div>
+            <form onsubmit="return false;">
+                <div class="form-item">
+                    <label><span class="required">*</span>学号</label>
+                    <input type="text" id="username" placeholder="请输入学号" value="2023010101">
+                </div>
+                <div class="form-item">
+                    <label><span class="required">*</span>密码</label>
+                    <input type="password" id="password" placeholder="请输入密码" value="123456">
+                </div>
+                <div class="form-item">
+                    <button class="btn btn-success btn-block" onclick="doLogin()">登 录</button>
+                </div>
+            </form>
+            <div class="tips">
+                初始密码由宿舍管理中心统一发放，登录后请及时修改。
+            </div>
+            <div class="back-link">
+                <a href="../index.html">← 返回入口选择</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function doLogin() {
+            var u = document.getElementById('username').value.trim();
+            var p = document.getElementById('password').value.trim();
+            var errBox = document.getElementById('errorMsg');
+            var errText = document.getElementById('errorText');
+            if (!u || !p) {
+                errText.textContent = '请输入学号和密码';
+                errBox.style.display = 'flex';
+                return;
+            }
+            if (u !== '2023010101' || p !== '123456') {
+                errText.textContent = '学号或密码错误，请重新输入';
+                errBox.style.display = 'flex';
+                return;
+            }
+            window.location.href = 'my-room.html';
+        }
+    </script>
+</body>
+</html>

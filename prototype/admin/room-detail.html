@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>房间详情 — 学生宿舍管理系统</title>
+    <link rel="stylesheet" href="../css/common.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="icon">宿</span>
+                <span class="text">宿舍管理系统</span>
+            </div>
+            <nav class="menu">
+                <div class="menu-title">概览</div>
+                <a class="menu-item" href="dashboard.html"><span class="menu-icon">📊</span><span class="menu-text">仪表盘</span></a>
+                <div class="menu-title">基础数据</div>
+                <a class="menu-item" href="student-list.html"><span class="menu-icon">👨‍🎓</span><span class="menu-text">学生管理</span></a>
+                <a class="menu-item" href="building-list.html"><span class="menu-icon">🏢</span><span class="menu-text">楼栋管理</span></a>
+                <a class="menu-item" href="room-list.html"><span class="menu-icon">🚪</span><span class="menu-text">房间管理</span></a>
+                <div class="menu-title">住宿业务</div>
+                <a class="menu-item" href="checkin.html"><span class="menu-icon">📝</span><span class="menu-text">入住登记</span></a>
+                <a class="menu-item" href="checkout.html"><span class="menu-icon">📤</span><span class="menu-text">退宿登记</span></a>
+                <a class="menu-item" href="checkin-record.html"><span class="menu-icon">📋</span><span class="menu-text">入住记录</span></a>
+                <div class="menu-title">日常管理</div>
+                <a class="menu-item" href="hygiene-list.html"><span class="menu-icon">🧹</span><span class="menu-text">卫生检查</span></a>
+                <a class="menu-item" href="repair-list.html"><span class="menu-icon">🔧</span><span class="menu-text">报修管理</span></a>
+                <div class="menu-title">统计报表</div>
+                <a class="menu-item" href="stat-occupancy.html"><span class="menu-icon">📈</span><span class="menu-text">入住统计</span></a>
+                <a class="menu-item" href="stat-hygiene.html"><span class="menu-icon">📊</span><span class="menu-text">卫生统计</span></a>
+                <a class="menu-item" href="stat-repair.html"><span class="menu-icon">📉</span><span class="menu-text">报修统计</span></a>
+            </nav>
+        </aside>
+        <div class="main">
+            <header class="header">
+                <div class="page-title">房间详情</div>
+                <div class="user-info">
+                    <span class="role-tag">管理员</span>
+                    <span class="username">张宿管</span>
+                    <span class="avatar">张</span>
+                    <a href="password.html" class="btn btn-sm">修改密码</a>
+                    <a href="login.html" class="btn btn-sm">退出</a>
+                </div>
+            </header>
+            <div class="content">
+                <div class="card">
+                    <div class="card-title">房间信息</div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="label">房间号</span>
+                            <span class="value">102</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">所属楼栋</span>
+                            <span class="value">1号楼</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">楼层</span>
+                            <span class="value">1层</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">房间类型</span>
+                            <span class="value">四人间</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">床位容量</span>
+                            <span class="value">4</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">已住人数</span>
+                            <span class="value">3</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">剩余床位</span>
+                            <span class="value">1</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">房间状态</span>
+                            <span class="value"><span class="tag tag-warning">部分入住</span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">床位分布</div>
+                    <div class="bed-grid">
+                        <div class="bed-item occupied">
+                            <div class="bed-no">1号床</div>
+                            <div class="bed-status">王小明<br>软工2301</div>
+                        </div>
+                        <div class="bed-item occupied">
+                            <div class="bed-no">2号床</div>
+                            <div class="bed-status">李小红<br>计科2301</div>
+                        </div>
+                        <div class="bed-item occupied">
+                            <div class="bed-no">3号床</div>
+                            <div class="bed-status">陈强<br>软工2301</div>
+                        </div>
+                        <div class="bed-item empty">
+                            <div class="bed-no">4号床</div>
+                            <div class="bed-status">空床位</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">入住学生列表</div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>床位号</th>
+                                    <th>学号</th>
+                                    <th>姓名</th>
+                                    <th>学院</th>
+                                    <th>班级</th>
+                                    <th>入住时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1号床</td>
+                                    <td>2023010101</td>
+                                    <td>王小明</td>
+                                    <td>计算机学院</td>
+                                    <td>软工2301</td>
+                                    <td>2023-09-01</td>
+                                    <td><a class="link" href="checkout.html">退宿</a></td>
+                                </tr>
+                                <tr>
+                                    <td>2号床</td>
+                                    <td>2023010102</td>
+                                    <td>李小红</td>
+                                    <td>计算机学院</td>
+                                    <td>计科2301</td>
+                                    <td>2023-09-01</td>
+                                    <td><a class="link" href="checkout.html">退宿</a></td>
+                                </tr>
+                                <tr>
+                                    <td>3号床</td>
+                                    <td>2023010103</td>
+                                    <td>陈强</td>
+                                    <td>计算机学院</td>
+                                    <td>软工2301</td>
+                                    <td>2023-09-02</td>
+                                    <td><a class="link" href="checkout.html">退宿</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/common.js"></script>
+</body>
+</html>

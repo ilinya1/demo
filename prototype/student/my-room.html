@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的入住信息 — 学生宿舍管理系统</title>
+    <link rel="stylesheet" href="../css/common.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="icon">宿</span>
+                <span class="text">宿舍管理系统</span>
+            </div>
+            <nav class="menu">
+                <div class="menu-title">我的宿舍</div>
+                <a class="menu-item" href="my-room.html"><span class="menu-icon">🏠</span><span class="menu-text">我的入住信息</span></a>
+                <a class="menu-item" href="my-hygiene.html"><span class="menu-icon">🧹</span><span class="menu-text">我的卫生检查</span></a>
+                <div class="menu-title">报修服务</div>
+                <a class="menu-item" href="repair-add.html"><span class="menu-icon">🔧</span><span class="menu-text">提交报修</span></a>
+                <a class="menu-item" href="my-repair.html"><span class="menu-icon">📋</span><span class="menu-text">报修进度</span></a>
+            </nav>
+        </aside>
+        <div class="main">
+            <header class="header">
+                <div class="page-title">我的入住信息</div>
+                <div class="user-info">
+                    <span class="role-tag">学生</span>
+                    <span class="username">王小明</span>
+                    <span class="avatar">王</span>
+                    <a href="password.html" class="btn btn-sm">修改密码</a>
+                    <a href="login.html" class="btn btn-sm">退出</a>
+                </div>
+            </header>
+            <div class="content">
+                <div class="student-cards">
+                    <div class="info-card">
+                        <div class="card-title">🏠 我的宿舍</div>
+                        <div class="detail-grid" style="grid-template-columns: 1fr;">
+                            <div class="detail-item">
+                                <span class="label">楼栋</span>
+                                <span class="value">1号楼</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">房间号</span>
+                                <span class="value">102室</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">床位号</span>
+                                <span class="value">1号床</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">入住时间</span>
+                                <span class="value">2023-09-01</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">住宿状态</span>
+                                <span class="value"><span class="tag tag-success">在住</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-title">👨‍🎓 我的信息</div>
+                        <div class="detail-grid" style="grid-template-columns: 1fr;">
+                            <div class="detail-item">
+                                <span class="label">学号</span>
+                                <span class="value">2023010101</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">姓名</span>
+                                <span class="value">王小明</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">学院</span>
+                                <span class="value">计算机学院</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">班级</span>
+                                <span class="value">软工2301</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">联系方式</span>
+                                <span class="value">138****1234</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">同宿舍室友</div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>床位号</th>
+                                    <th>姓名</th>
+                                    <th>学号</th>
+                                    <th>学院</th>
+                                    <th>班级</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2号床</td>
+                                    <td>李小红</td>
+                                    <td>2023010102</td>
+                                    <td>计算机学院</td>
+                                    <td>计科2301</td>
+                                </tr>
+                                <tr>
+                                    <td>3号床</td>
+                                    <td>陈强</td>
+                                    <td>2023010103</td>
+                                    <td>计算机学院</td>
+                                    <td>软工2301</td>
+                                </tr>
+                                <tr>
+                                    <td>4号床</td>
+                                    <td>—</td>
+                                    <td>—</td>
+                                    <td>—</td>
+                                    <td>—</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/common.js"></script>
+</body>
+</html>

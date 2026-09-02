@@ -1,0 +1,315 @@
+ <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>房间管理 — 学生宿舍管理系统</title>
+    <link rel="stylesheet" href="../css/common.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="icon">宿</span>
+                <span class="text">宿舍管理系统</span>
+            </div>
+            <nav class="menu">
+                <div class="menu-title">概览</div>
+                <a class="menu-item" href="dashboard.html"><span class="menu-icon">📊</span><span class="menu-text">仪表盘</span></a>
+                <div class="menu-title">基础数据</div>
+                <a class="menu-item" href="student-list.html"><span class="menu-icon">👨‍🎓</span><span class="menu-text">学生管理</span></a>
+                <a class="menu-item" href="building-list.html"><span class="menu-icon">🏢</span><span class="menu-text">楼栋管理</span></a>
+                <a class="menu-item" href="room-list.html"><span class="menu-icon">🚪</span><span class="menu-text">房间管理</span></a>
+                <div class="menu-title">住宿业务</div>
+                <a class="menu-item" href="checkin.html"><span class="menu-icon">📝</span><span class="menu-text">入住登记</span></a>
+                <a class="menu-item" href="checkout.html"><span class="menu-icon">📤</span><span class="menu-text">退宿登记</span></a>
+                <a class="menu-item" href="checkin-record.html"><span class="menu-icon">📋</span><span class="menu-text">入住记录</span></a>
+                <div class="menu-title">日常管理</div>
+                <a class="menu-item" href="hygiene-list.html"><span class="menu-icon">🧹</span><span class="menu-text">卫生检查</span></a>
+                <a class="menu-item" href="repair-list.html"><span class="menu-icon">🔧</span><span class="menu-text">报修管理</span></a>
+                <div class="menu-title">统计报表</div>
+                <a class="menu-item" href="stat-occupancy.html"><span class="menu-icon">📈</span><span class="menu-text">入住统计</span></a>
+                <a class="menu-item" href="stat-hygiene.html"><span class="menu-icon">📊</span><span class="menu-text">卫生统计</span></a>
+                <a class="menu-item" href="stat-repair.html"><span class="menu-icon">📉</span><span class="menu-text">报修统计</span></a>
+            </nav>
+        </aside>
+        <div class="main">
+            <header class="header">
+                <div class="page-title">房间管理</div>
+                <div class="user-info">
+                    <span class="role-tag">管理员</span>
+                    <span class="username">张宿管</span>
+                    <span class="avatar">张</span>
+                    <a href="password.html" class="btn btn-sm">修改密码</a>
+                    <a href="login.html" class="btn btn-sm">退出</a>
+                </div>
+            </header>
+            <div class="content">
+                <div class="card">
+                    <div class="search-bar">
+                        <div class="search-item">
+                            <label>楼栋</label>
+                            <select>
+                                <option value="">全部</option>
+                                <option selected>1号楼</option>
+                                <option>2号楼</option>
+                                <option>3号楼</option>
+                            </select>
+                        </div>
+                        <div class="search-item">
+                            <label>楼层</label>
+                            <select>
+                                <option value="">全部</option>
+                                <option>1层</option>
+                                <option>2层</option>
+                                <option>3层</option>
+                            </select>
+                        </div>
+                        <div class="search-item">
+                            <label>房间状态</label>
+                            <select>
+                                <option value="">全部</option>
+                                <option>空闲</option>
+                                <option>部分入住</option>
+                                <option>已满</option>
+                                <option>维修中</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary btn-sm">查询</button>
+                        <button class="btn btn-sm">重置</button>
+                    </div>
+                    <div class="toolbar">
+                        <div class="left">
+                            <button class="btn btn-primary btn-sm" onclick="openModal('addModal')">＋ 新增房间</button>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>房间号</th>
+                                    <th>楼栋</th>
+                                    <th>楼层</th>
+                                    <th>房间类型</th>
+                                    <th>床位容量</th>
+                                    <th>已住人数</th>
+                                    <th>剩余床位</th>
+                                    <th>房间状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>101</td>
+                                    <td>1号楼</td>
+                                    <td>1层</td>
+                                    <td>四人间</td>
+                                    <td>4</td>
+                                    <td>4</td>
+                                    <td>0</td>
+                                    <td><span class="tag tag-danger">已满</span></td>
+                                    <td>
+                                        <a class="link" href="room-detail.html">详情</a>
+                                        <a class="link" onclick="openModal('editModal')">编辑</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>102</td>
+                                    <td>1号楼</td>
+                                    <td>1层</td>
+                                    <td>四人间</td>
+                                    <td>4</td>
+                                    <td>3</td>
+                                    <td>1</td>
+                                    <td><span class="tag tag-warning">部分入住</span></td>
+                                    <td>
+                                        <a class="link" href="room-detail.html">详情</a>
+                                        <a class="link" onclick="openModal('editModal')">编辑</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>103</td>
+                                    <td>1号楼</td>
+                                    <td>1层</td>
+                                    <td>四人间</td>
+                                    <td>4</td>
+                                    <td>0</td>
+                                    <td>4</td>
+                                    <td><span class="tag tag-info">空闲</span></td>
+                                    <td>
+                                        <a class="link" href="room-detail.html">详情</a>
+                                        <a class="link" onclick="openModal('editModal')">编辑</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>104</td>
+                                    <td>1号楼</td>
+                                    <td>1层</td>
+                                    <td>四人间</td>
+                                    <td>4</td>
+                                    <td>2</td>
+                                    <td>2</td>
+                                    <td><span class="tag tag-warning">部分入住</span></td>
+                                    <td>
+                                        <a class="link" href="room-detail.html">详情</a>
+                                        <a class="link" onclick="openModal('editModal')">编辑</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>105</td>
+                                    <td>1号楼</td>
+                                    <td>1层</td>
+                                    <td>四人间</td>
+                                    <td>4</td>
+                                    <td>0</td>
+                                    <td>4</td>
+                                    <td><span class="tag tag-danger">维修中</span></td>
+                                    <td>
+                                        <a class="link" href="room-detail.html">详情</a>
+                                        <a class="link" onclick="openModal('editModal')">编辑</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <span>共 120 条</span>
+                        <span class="page-btn disabled">上一页</span>
+                        <span class="page-btn active">1</span>
+                        <span class="page-btn">2</span>
+                        <span class="page-btn">3</span>
+                        <span class="page-btn">...</span>
+                        <span class="page-btn">下一页</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增房间弹窗 -->
+    <div class="modal-mask" id="addModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">新增房间</span>
+                <button class="close" onclick="closeModal('addModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-item">
+                        <label><span class="required">*</span>所属楼栋</label>
+                        <select>
+                            <option>1号楼</option>
+                            <option>2号楼</option>
+                            <option>3号楼</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label><span class="required">*</span>楼层</label>
+                        <select>
+                            <option>1层</option>
+                            <option>2层</option>
+                            <option>3层</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label><span class="required">*</span>房间号</label>
+                        <input type="text" placeholder="请输入房间号">
+                    </div>
+                    <div class="form-item">
+                        <label><span class="required">*</span>房间类型</label>
+                        <select>
+                            <option>四人间</option>
+                            <option>六人间</option>
+                            <option>八人间</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label><span class="required">*</span>床位容量</label>
+                        <input type="number" placeholder="请输入床位容量">
+                    </div>
+                    <div class="form-item">
+                        <label>维修中</label>
+                        <div style="display: flex; align-items: center; height: 38px;">
+                            <label style="display: flex; align-items: center; gap: 4px;">
+                                <input type="checkbox"> 标记为维修中
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('addModal')">取消</button>
+                <button class="btn btn-primary" onclick="closeModal('addModal'); showMsg('保存成功（原型））')">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑房间弹窗 -->
+    <div class="modal-mask" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">编辑房间</span>
+                <button class="close" onclick="closeModal('editModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-item">
+                        <label><span class="required">*</span>所属楼栋</label>
+                        <select>
+                            <option selected>1号楼</option>
+                            <option>2号楼</option>
+                            <option>3号楼</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label><span class="required">*</span>楼层</label>
+                        <select>
+                            <option selected>1层</option>
+                            <option>2层</option>
+                            <option>3层</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label><span class="required">*</span>房间号</label>
+                        <input type="text" value="101">
+                    </div>
+                    <div class="form-item">
+                        <label><span class="required">*</span>房间类型</label>
+                        <select>
+                            <option selected>四人间</option>
+                            <option>六人间</option>
+                            <option>八人间</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label><span class="required">*</span>床位容量</label>
+                        <input type="number" value="4">
+                    </div>
+                    <div class="form-item">
+                        <label>维修中</label>
+                        <div style="display: flex; align-items: center; height: 38px;">
+                            <label style="display: flex; align-items: center; gap: 4px;">
+                                <input type="checkbox"> 标记为维修中
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('editModal')">取消</button>
+                <button class="btn btn-primary" onclick="closeModal('editModal'); showMsg('保存成功（原型））')">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/common.js"></script>
+</body>
+</html>

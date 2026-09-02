@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>入住登记 — 学生宿舍管理系统</title>
+    <link rel="stylesheet" href="../css/common.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="icon">宿</span>
+                <span class="text">宿舍管理系统</span>
+            </div>
+            <nav class="menu">
+                <div class="menu-title">概览</div>
+                <a class="menu-item" href="dashboard.html"><span class="menu-icon">📊</span><span class="menu-text">仪表盘</span></a>
+                <div class="menu-title">基础数据</div>
+                <a class="menu-item" href="student-list.html"><span class="menu-icon">👨‍🎓</span><span class="menu-text">学生管理</span></a>
+                <a class="menu-item" href="building-list.html"><span class="menu-icon">🏢</span><span class="menu-text">楼栋管理</span></a>
+                <a class="menu-item" href="room-list.html"><span class="menu-icon">🚪</span><span class="menu-text">房间管理</span></a>
+                <div class="menu-title">住宿业务</div>
+                <a class="menu-item" href="checkin.html"><span class="menu-icon">📝</span><span class="menu-text">入住登记</span></a>
+                <a class="menu-item" href="checkout.html"><span class="menu-icon">📤</span><span class="menu-text">退宿登记</span></a>
+                <a class="menu-item" href="checkin-record.html"><span class="menu-icon">📋</span><span class="menu-text">入住记录</span></a>
+                <div class="menu-title">日常管理</div>
+                <a class="menu-item" href="hygiene-list.html"><span class="menu-icon">🧹</span><span class="menu-text">卫生检查</span></a>
+                <a class="menu-item" href="repair-list.html"><span class="menu-icon">🔧</span><span class="menu-text">报修管理</span></a>
+                <div class="menu-title">统计报表</div>
+                <a class="menu-item" href="stat-occupancy.html"><span class="menu-icon">📈</span><span class="menu-text">入住统计</span></a>
+                <a class="menu-item" href="stat-hygiene.html"><span class="menu-icon">📊</span><span class="menu-text">卫生统计</span></a>
+                <a class="menu-item" href="stat-repair.html"><span class="menu-icon">📉</span><span class="menu-text">报修统计</span></a>
+            </nav>
+        </aside>
+        <div class="main">
+            <header class="header">
+                <div class="page-title">入住登记</div>
+                <div class="user-info">
+                    <span class="role-tag">管理员</span>
+                    <span class="username">张宿管</span>
+                    <span class="avatar">张</span>
+                    <a href="password.html" class="btn btn-sm">修改密码</a>
+                    <a href="login.html" class="btn btn-sm">退出</a>
+                </div>
+            </header>
+            <div class="content">
+                <div class="card">
+                    <div class="card-title">入住登记</div>
+                    <div class="steps">
+                        <div class="step active">
+                            <span class="step-num">1</span>
+                            <span>选择学生</span>
+                        </div>
+                        <div class="step-line"></div>
+                        <div class="step active">
+                            <span class="step-num">2</span>
+                            <span>选择房间</span>
+                        </div>
+                        <div class="step-line"></div>
+                        <div class="step active">
+                            <span class="step-num">3</span>
+                            <span>选择床位</span>
+                        </div>
+                        <div class="step-line"></div>
+                        <div class="step">
+                            <span class="step-num">4</span>
+                            <span>确认入住</span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-item">
+                            <label><span class="required">*</span>学生学号</label>
+                            <input type="text" placeholder="请输入学号查询学生" value="2023010104">
+                        </div>
+                        <div class="form-item">
+                            <label>学生姓名</label>
+                            <input type="text" value="刘洋" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-item">
+                            <label>学院</label>
+                            <input type="text" value="计算机学院" readonly>
+                        </div>
+                        <div class="form-item">
+                            <label>班级</label>
+                            <input type="text" value="软工2301" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-item">
+                            <label><span class="required">*</span>所属楼栋</label>
+                            <select>
+                                <option selected>1号楼</option>
+                                <option>2号楼</option>
+                                <option>3号楼</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <label><span class="required">*</span>楼层</label>
+                            <select>
+                                <option selected>1层</option>
+                                <option>2层</option>
+                                <option>3层</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-item">
+                            <label><span class="required">*</span>房间号</label>
+                            <select>
+                                <option selected>102（剩余1床）</option>
+                                <option>103（剩余4床）</option>
+                                <option>104（剩余2床）</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <label><span class="required">*</span>床位号</label>
+                            <select>
+                                <option selected>4号床</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-item">
+                            <label><span class="required">*</span>入住日期</label>
+                            <input type="date" value="2026-09-02">
+                        </div>
+                        <div class="form-item">
+                            <label>备注</label>
+                            <input type="text" placeholder="选填">
+                        </div>
+                    </div>
+                    <div style="text-align: right; margin-top: 20px;">
+                        <button class="btn btn-primary" onclick="showMsg('入住登记成功（原型））')">确认入住</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/common.js"></script>
+</body>
+</html>

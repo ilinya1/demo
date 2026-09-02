@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>入住记录 — 学生宿舍管理系统</title>
+    <link rel="stylesheet" href="../css/common.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="icon">宿</span>
+                <span class="text">宿舍管理系统</span>
+            </div>
+            <nav class="menu">
+                <div class="menu-title">概览</div>
+                <a class="menu-item" href="dashboard.html"><span class="menu-icon">📊</span><span class="menu-text">仪表盘</span></a>
+                <div class="menu-title">基础数据</div>
+                <a class="menu-item" href="student-list.html"><span class="menu-icon">👨‍🎓</span><span class="menu-text">学生管理</span></a>
+                <a class="menu-item" href="building-list.html"><span class="menu-icon">🏢</span><span class="menu-text">楼栋管理</span></a>
+                <a class="menu-item" href="room-list.html"><span class="menu-icon">🚪</span><span class="menu-text">房间管理</span></a>
+                <div class="menu-title">住宿业务</div>
+                <a class="menu-item" href="checkin.html"><span class="menu-icon">📝</span><span class="menu-text">入住登记</span></a>
+                <a class="menu-item" href="checkout.html"><span class="menu-icon">📤</span><span class="menu-text">退宿登记</span></a>
+                <a class="menu-item" href="checkin-record.html"><span class="menu-icon">📋</span><span class="menu-text">入住记录</span></a>
+                <div class="menu-title">日常管理</div>
+                <a class="menu-item" href="hygiene-list.html"><span class="menu-icon">🧹</span><span class="menu-text">卫生检查</span></a>
+                <a class="menu-item" href="repair-list.html"><span class="menu-icon">🔧</span><span class="menu-text">报修管理</span></a>
+                <div class="menu-title">统计报表</div>
+                <a class="menu-item" href="stat-occupancy.html"><span class="menu-icon">📈</span><span class="menu-text">入住统计</span></a>
+                <a class="menu-item" href="stat-hygiene.html"><span class="menu-icon">📊</span><span class="menu-text">卫生统计</span></a>
+                <a class="menu-item" href="stat-repair.html"><span class="menu-icon">📉</span><span class="menu-text">报修统计</span></a>
+            </nav>
+        </aside>
+        <div class="main">
+            <header class="header">
+                <div class="page-title">入住记录</div>
+                <div class="user-info">
+                    <span class="role-tag">管理员</span>
+                    <span class="username">张宿管</span>
+                    <span class="avatar">张</span>
+                    <a href="password.html" class="btn btn-sm">修改密码</a>
+                    <a href="login.html" class="btn btn-sm">退出</a>
+                </div>
+            </header>
+            <div class="content">
+                <div class="card">
+                    <div class="search-bar">
+                        <div class="search-item">
+                            <label>学号</label>
+                            <input type="text" placeholder="请输入学号">
+                        </div>
+                        <div class="search-item">
+                            <label>姓名</label>
+                            <input type="text" placeholder="请输入姓名">
+                        </div>
+                        <div class="search-item">
+                            <label>楼栋</label>
+                            <select>
+                                <option value="">全部</option>
+                                <option>1号楼</option>
+                                <option>2号楼</option>
+                                <option>3号楼</option>
+                            </select>
+                        </div>
+                        <div class="search-item">
+                            <label>状态</label>
+                            <select>
+                                <option value="">全部</option>
+                                <option>在住</option>
+                                <option>已退宿</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary btn-sm">查询</button>
+                        <button class="btn btn-sm">重置</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>学号</th>
+                                    <th>姓名</th>
+                                    <th>楼栋</th>
+                                    <th>房间</th>
+                                    <th>床位</th>
+                                    <th>入住时间</th>
+                                    <th>退宿时间</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2023010101</td>
+                                    <td>王小明</td>
+                                    <td>1号楼</td>
+                                    <td>102</td>
+                                    <td>1号床</td>
+                                    <td>2023-09-01</td>
+                                    <td>—</td>
+                                    <td><span class="tag tag-success">在住</span></td>
+                                    <td><a class="link" href="checkout.html">退宿</a></td>
+                                </tr>
+                                <tr>
+                                    <td>2023010102</td>
+                                    <td>李小红</td>
+                                    <td>1号楼</td>
+                                    <td>102</td>
+                                    <td>2号床</td>
+                                    <td>2023-09-01</td>
+                                    <td>—</td>
+                                    <td><span class="tag tag-success">在住</span></td>
+                                    <td><a class="link" href="checkout.html">退宿</a></td>
+                                </tr>
+                                <tr>
+                                    <td>2022010101</td>
+                                    <td>赵敏</td>
+                                    <td>3号楼</td>
+                                    <td>301</td>
+                                    <td>1号床</td>
+                                    <td>2022-09-01</td>
+                                    <td>2026-06-30</td>
+                                    <td><span class="tag tag-info">已退宿</span></td>
+                                    <td>—</td>
+                                </tr>
+                                <tr>
+                                    <td>2022010102</td>
+                                    <td>孙丽</td>
+                                    <td>3号楼</td>
+                                    <td>302</td>
+                                    <td>2号床</td>
+                                    <td>2022-09-01</td>
+                                    <td>2026-06-30</td>
+                                    <td><span class="tag tag-info">已退宿</span></td>
+                                    <td>—</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <span>共 1,286 条</span>
+                        <span class="page-btn disabled">上一页</span>
+                        <span class="page-btn active">1</span>
+                        <span class="page-btn">2</span>
+                        <span class="page-btn">3</span>
+                        <span class="page-btn">...</span>
+                        <span class="page-btn">下一页</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/common.js"></script>
+</body>
+</html>

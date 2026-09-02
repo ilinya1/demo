@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>提交报修 — 学生宿舍管理系统</title>
+    <link rel="stylesheet" href="../css/common.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="icon">宿</span>
+                <span class="text">宿舍管理系统</span>
+            </div>
+            <nav class="menu">
+                <div class="menu-title">我的宿舍</div>
+                <a class="menu-item" href="my-room.html"><span class="menu-icon">🏠</span><span class="menu-text">我的入住信息</span></a>
+                <a class="menu-item" href="my-hygiene.html"><span class="menu-icon">🧹</span><span class="menu-text">我的卫生检查</span></a>
+                <div class="menu-title">报修服务</div>
+                <a class="menu-item" href="repair-add.html"><span class="menu-icon">🔧</span><span class="menu-text">提交报修</span></a>
+                <a class="menu-item" href="my-repair.html"><span class="menu-icon">📋</span><span class="menu-text">报修进度</span></a>
+            </nav>
+        </aside>
+        <div class="main">
+            <header class="header">
+                <div class="page-title">提交报修</div>
+                <div class="user-info">
+                    <span class="role-tag">学生</span>
+                    <span class="username">王小明</span>
+                    <span class="avatar">王</span>
+                    <a href="password.html" class="btn btn-sm">修改密码</a>
+                    <a href="login.html" class="btn btn-sm">退出</a>
+                </div>
+            </header>
+            <div class="content">
+                <div class="card">
+                    <div class="card-title">提交报修</div>
+                    <div class="form-row">
+                        <div class="form-item">
+                            <label>报修人</label>
+                            <input type="text" value="王小明" readonly>
+                        </div>
+                        <div class="form-item">
+                            <label>联系电话</label>
+                            <input type="text" value="138****1234">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-item">
+                            <label>报修位置</label>
+                            <input type="text" value="1号楼 102室" readonly>
+                        </div>
+                        <div class="form-item">
+                            <label><span class="required">*</span>报修物品</label>
+                            <select>
+                                <option value="">请选择报修物品</option>
+                                <option>灯管</option>
+                                <option>水龙头</option>
+                                <option>空调</option>
+                                <option>门锁</option>
+                                <option>床铺</option>
+                                <option>桌椅</option>
+                                <option>其他</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label><span class="required">*</span>问题描述</label>
+                        <textarea rows="4" placeholder="请详细描述问题情况"></textarea>
+                    </div>
+                    <div class="form-item">
+                        <label>上传图片</label>
+                        <div style="border: 1px dashed #dcdfe6; border-radius: 4px; padding: 20px; text-align: center; color: #909399; cursor: pointer;">
+                            📷 点击上传图片（支持 jpg/png，最多 3 张）
+                        </div>
+                    </div>
+                    <div style="text-align: right; margin-top: 20px;">
+                        <button class="btn" onclick="location.href='my-room.html'">取消</button>
+                        <button class="btn btn-primary" onclick="showMsg('报修提交成功（原型））')">提交报修</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/common.js"></script>
+</body>
+</html>

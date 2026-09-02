@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生宿舍管理系统 — 入口选择</title>
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        .entry-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1f6feb 0%, #409eff 50%, #79bbff 100%);
+            padding: 20px;
+        }
+        .entry-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        .entry-header .icon {
+            width: 64px;
+            height: 64px;
+            background: #fff;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #409eff;
+            font-size: 32px;
+            font-weight: bold;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+        .entry-header h1 {
+            color: #fff;
+            font-size: 26px;
+            margin: 16px 0 6px;
+        }
+        .entry-header p {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
+        }
+        .entry-cards {
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .entry-card {
+            width: 300px;
+            background: #fff;
+            border-radius: 10px;
+            padding: 40px 32px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.25s, box-shadow 0.25s;
+            cursor: pointer;
+            display: block;
+            color: inherit;
+        }
+        .entry-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
+        }
+        .entry-card .card-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            margin-bottom: 20px;
+        }
+        .entry-card.admin .card-icon {
+            background: #ecf5ff;
+            color: #409eff;
+        }
+        .entry-card.student .card-icon {
+            background: #f0f9eb;
+            color: #67c23a;
+        }
+        .entry-card h2 {
+            font-size: 19px;
+            color: #303133;
+            margin-bottom: 8px;
+        }
+        .entry-card p {
+            font-size: 13px;
+            color: #909399;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .entry-card .enter-btn {
+            display: inline-block;
+            width: 100%;
+            height: 40px;
+            line-height: 40px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .entry-card.admin .enter-btn {
+            background: #409eff;
+            color: #fff;
+        }
+        .entry-card.student .enter-btn {
+            background: #67c23a;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="entry-page">
+        <div class="entry-header">
+            <div class="icon">宿</div>
+            <h1>学生宿舍管理系统</h1>
+            <p>Student Dormitory Management System — 请选择登录入口</p>
+        </div>
+        <div class="entry-cards">
+            <a class="entry-card admin" href="admin/login.html">
+                <div class="card-icon">🛠️</div>
+                <h2>管理员（宿管）入口</h2>
+                <p>宿舍与房间管理、入住退宿办理、<br>卫生检查、报修处理、统计报表</p>
+                <span class="enter-btn">进入管理端</span>
+            </a>
+            <a class="entry-card student" href="student/login.html">
+                <div class="card-icon">🎓</div>
+                <h2>学生入口</h2>
+                <p>查看我的入住信息、卫生检查结果、<br>提交报修、查询报修进度</p>
+                <span class="enter-btn">进入学生端</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

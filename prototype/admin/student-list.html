@@ -80,8 +80,9 @@
                     <div class="toolbar">
                         <div class="left">
                             <button class="btn btn-primary btn-sm" onclick="openModal('addModal')">＋ 新增学生</button>
+                            <a class="btn btn-sm" href="../templates/学生信息导入模板.csv" download title="下载导入模板（CSV，表头与导入字段一致）">⬇ 下载模板</a>
                             <button class="btn btn-success btn-sm" onclick="showMsg('导入功能（原型））')">📥 批量导入</button>
-                            <button class="btn btn-warning btn-sm" onclick="showMsg('导出功能（原型））')">📤 批量导出</button>
+                            <button class="btn btn-warning btn-sm" onclick="exportTableCSV('.data-table','学生列表.csv',true)">📤 批量导出</button>
                         </div>
                     </div>
                     <div class="table-wrap">
@@ -155,7 +156,7 @@
                                     <td>英语2201</td>
                                     <td>136****3456</td>
                                     <td><span class="tag tag-info">毕业</span></td>
-                                    <td><span class="tag tag-info">已退</span></td>
+                                    <td><span class="tag tag-info">已退宿</span></td>
                                     <td>
                                         <a class="link" onclick="openModal('editModal')">编辑</a>
                                         <a class="link" onclick="showMsg('查看详情（原型））')">详情</a>

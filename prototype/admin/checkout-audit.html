@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>退宿处理 — 学生宿舍管理系统</title>
+    <link rel="stylesheet" href="../css/common.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="icon">宿</span>
+                <span class="text">宿舍管理系统</span>
+            </div>
+            <nav class="menu">
+                <div class="menu-title">概览</div>
+                <a class="menu-item" href="dashboard.html"><span class="menu-icon">📊</span><span class="menu-text">仪表盘</span></a>
+                <div class="menu-title">基础数据</div>
+                <a class="menu-item" href="student-list.html"><span class="menu-icon">👨‍🎓</span><span class="menu-text">学生管理</span></a>
+                <a class="menu-item" href="class-list.html"><span class="menu-icon">🏫</span><span class="menu-text">班级管理</span></a>
+                <a class="menu-item" href="building-list.html"><span class="menu-icon">🏢</span><span class="menu-text">楼栋管理</span></a>
+                <a class="menu-item" href="room-list.html"><span class="menu-icon">🚪</span><span class="menu-text">房间管理</span></a>
+                <div class="menu-title">住宿业务</div>
+                <a class="menu-item" href="checkin.html"><span class="menu-icon">📝</span><span class="menu-text">入住登记</span></a>
+                <a class="menu-item" href="checkout-audit.html"><span class="menu-icon">⚖️</span><span class="menu-text">退宿处理</span></a>
+                <a class="menu-item" href="checkin-record.html"><span class="menu-icon">📋</span><span class="menu-text">入住记录</span></a>
+                <div class="menu-title">日常管理</div>
+                <a class="menu-item" href="hygiene-list.html"><span class="menu-icon">🧹</span><span class="menu-text">卫生检查</span></a>
+                <a class="menu-item" href="repair-list.html"><span class="menu-icon">🔧</span><span class="menu-text">报修管理</span></a>
+                <div class="menu-title">统计报表</div>
+                <a class="menu-item" href="stat-occupancy.html"><span class="menu-icon">📈</span><span class="menu-text">入住统计</span></a>
+                <a class="menu-item" href="stat-hygiene.html"><span class="menu-icon">📊</span><span class="menu-text">卫生统计</span></a>
+                <a class="menu-item" href="stat-repair.html"><span class="menu-icon">📉</span><span class="menu-text">报修统计</span></a>
+            </nav>
+        </aside>
+        <div class="main">
+            <header class="header">
+                <div class="page-title">退宿处理</div>
+                <div class="user-info">
+                    <span class="role-tag">管理员</span>
+                    <span class="username">张宿管</span>
+                    <span class="avatar">张</span>
+                    <a href="password.html" class="btn btn-sm">修改密码</a>
+                    <a href="login.html" class="btn btn-sm">退出</a>
+                </div>
+            </header>
+            <div class="content">
+                <div class="card">
+                    <div class="search-bar">
+                        <div class="search-item">
+                            <label>申请编号</label>
+                            <input type="text" placeholder="请输入申请编号">
+                        </div>
+                        <div class="search-item">
+                            <label>学号</label>
+                            <input type="text" placeholder="请输入学号">
+                        </div>
+                        <div class="search-item">
+                            <label>状态</label>
+                            <select>
+                                <option value="">全部</option>
+                                <option>待审核</option>
+                                <option>已通过</option>
+                                <option>已驳回</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary btn-sm">查询</button>
+                        <button class="btn btn-sm">重置</button>
+                    </div>
+                    <div class="toolbar">
+                        <div class="left">
+                            <span class="tips">收到学生退宿申请，请及时处理</span>
+                            <button class="btn btn-primary btn-sm" style="margin-left:12px;" onclick="openModal('directModal')">＋ 直接退宿</button>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>申请编号</th>
+                                    <th>学号</th>
+                                    <th>姓名</th>
+                                    <th>学院</th>
+                                    <th>当前宿舍</th>
+                                    <th>退宿原因</th>
+                                    <th>计划退宿日期</th>
+                                    <th>申请时间</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>TS20260902001</td>
+                                    <td>2023010101</td>
+                                    <td>王小明</td>
+                                    <td>计算机学院</td>
+                                    <td>1号楼 102室 1号床</td>
+                                    <td>毕业离校</td>
+                                    <td>2026-09-10</td>
+                                    <td>2026-09-02 14:20</td>
+                                    <td><span class="tag tag-warning">待审核</span></td>
+                                    <td>
+                                        <a class="link" onclick="openModal('auditModal')">审核</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>TS20260902002</td>
+                                    <td>2023020101</td>
+                                    <td>张伟</td>
+                                    <td>机械工程学院</td>
+                                    <td>3号楼 205室 2号床</td>
+                                    <td>休学</td>
+                                    <td>2026-09-12</td>
+                                    <td>2026-09-02 09:05</td>
+                                    <td><span class="tag tag-warning">待审核</span></td>
+                                    <td>
+                                        <a class="link" onclick="openModal('auditModal')">审核</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>TS20260820001</td>
+                                    <td>2023010102</td>
+                                    <td>李小红</td>
+                                    <td>计算机学院</td>
+                                    <td>1号楼 102室 2号床</td>
+                                    <td>调宿</td>
+                                    <td>2026-08-22</td>
+                                    <td>2026-08-20 09:10</td>
+                                    <td><span class="tag tag-success">已通过</span></td>
+                                    <td>
+                                        <a class="link" onclick="showMsg('查看审核详情（原型））')">查看</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <span>共 8 条</span>
+                        <span class="page-btn disabled">上一页</span>
+                        <span class="page-btn active">1</span>
+                        <span class="page-btn">下一页</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 退宿申请审核弹窗 -->
+    <div class="modal-mask" id="auditModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">退宿申请审核</span>
+                <button class="close" onclick="closeModal('auditModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>申请编号</label>
+                        <input type="text" value="TS20260902001" readonly>
+                    </div>
+                    <div class="form-item">
+                        <label>申请人</label>
+                        <input type="text" value="王小明（2023010101）" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>学院</label>
+                        <input type="text" value="计算机学院" readonly>
+                    </div>
+                    <div class="form-item">
+                        <label>当前宿舍</label>
+                        <input type="text" value="1号楼 102室 1号床" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>退宿原因</label>
+                        <input type="text" value="毕业离校" readonly>
+                    </div>
+                    <div class="form-item">
+                        <label>计划退宿日期</label>
+                        <input type="text" value="2026-09-10" readonly>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label>申请说明</label>
+                    <textarea rows="2" readonly>即将毕业离校，计划9月10日办理退宿并交接物品。</textarea>
+                </div>
+                <div class="form-item">
+                    <label>审核意见（驳回时必填）</label>
+                    <textarea rows="2" placeholder="通过请留空，驳回请填写原因，便于学生查看"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('auditModal')">取消</button>
+                <button class="btn btn-danger" onclick="closeModal('auditModal'); showMsg('已驳回申请（原型））')">驳回</button>
+                <button class="btn btn-success" onclick="closeModal('auditModal'); showMsg('已通过，退宿生效（原型））')">通过</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 直接退宿弹窗（管理员主动办理，跳过学生申请） -->
+    <div class="modal-mask" id="directModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">直接退宿</span>
+                <button class="close" onclick="closeModal('directModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-item">
+                        <label><span class="required">*</span>学号</label>
+                        <input type="text" placeholder="输入学号，回车自动带出学生信息">
+                    </div>
+                    <div class="form-item">
+                        <label>学生姓名</label>
+                        <input type="text" value="王小明" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>当前宿舍</label>
+                        <input type="text" value="1号楼 102室 1号床" readonly>
+                    </div>
+                    <div class="form-item">
+                        <label><span class="required">*</span>退宿日期</label>
+                        <input type="date" value="2026-09-05">
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label><span class="required">*</span>退宿原因</label>
+                    <select>
+                        <option>毕业离校</option>
+                        <option>休学</option>
+                        <option>退学</option>
+                        <option>调宿</option>
+                        <option>其他</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>备注</label>
+                    <textarea rows="2" placeholder="选填"></textarea>
+                </div>
+                <p style="color:#f56c6c;font-size:12px;margin-top:4px;">直接退宿将跳过学生申请，立即登记退宿并空出床铺。</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('directModal')">取消</button>
+                <button class="btn btn-primary" onclick="closeModal('directModal'); showMsg('退宿已直接办理，床铺已空出（原型））')">确认退宿</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/common.js"></script>
+</body>
+</html>

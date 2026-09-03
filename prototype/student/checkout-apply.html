@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>退宿申请 — 学生宿舍管理系统</title>
+    <link rel="stylesheet" href="../css/common.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="icon">宿</span>
+                <span class="text">宿舍管理系统</span>
+            </div>
+            <nav class="menu">
+                <div class="menu-title">我的宿舍</div>
+                <a class="menu-item" href="my-room.html"><span class="menu-icon">🏠</span><span class="menu-text">我的入住信息</span></a>
+                <a class="menu-item" href="my-hygiene.html"><span class="menu-icon">🧹</span><span class="menu-text">我的卫生检查</span></a>
+                <a class="menu-item" href="checkout-apply.html"><span class="menu-icon">📤</span><span class="menu-text">退宿申请</span></a>
+                <div class="menu-title">报修服务</div>
+                <a class="menu-item" href="repair-add.html"><span class="menu-icon">🔧</span><span class="menu-text">提交报修</span></a>
+                <a class="menu-item" href="my-repair.html"><span class="menu-icon">📋</span><span class="menu-text">报修进度</span></a>
+            </nav>
+        </aside>
+        <div class="main">
+            <header class="header">
+                <div class="page-title">退宿申请</div>
+                <div class="user-info">
+                    <span class="role-tag">学生</span>
+                    <span class="username">王小明</span>
+                    <span class="avatar">王</span>
+                    <a href="password.html" class="btn btn-sm">修改密码</a>
+                    <a href="login.html" class="btn btn-sm">退出</a>
+                </div>
+            </header>
+            <div class="content">
+                <div class="card">
+                    <div class="card-title">提交退宿申请</div>
+                    <div class="form-row">
+                        <div class="form-item">
+                            <label>申请人</label>
+                            <input type="text" value="王小明" readonly>
+                        </div>
+                        <div class="form-item">
+                            <label>学号</label>
+                            <input type="text" value="2023010101" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-item">
+                            <label>当前宿舍</label>
+                            <input type="text" value="1号楼 102室 1号床" readonly>
+                        </div>
+                        <div class="form-item">
+                            <label>入住时间</label>
+                            <input type="text" value="2023-09-01" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-item">
+                            <label><span class="required">*</span>退宿原因</label>
+                            <select>
+                                <option value="">请选择退宿原因</option>
+                                <option>毕业离校</option>
+                                <option>休学</option>
+                                <option>退学</option>
+                                <option>调宿</option>
+                                <option>其他</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <label><span class="required">*</span>计划退宿日期</label>
+                            <input type="date" value="2026-09-10">
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label>申请说明</label>
+                        <textarea rows="3" placeholder="选填，请说明退宿原因及物品交接安排"></textarea>
+                    </div>
+                    <div style="text-align: right; margin-top: 20px;">
+                        <button class="btn" onclick="location.href='my-room.html'">取消</button>
+                        <button class="btn btn-primary" onclick="showMsg('退宿申请提交成功，请等待管理员审核（原型））')">提交申请</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">我的退宿申请记录</div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>申请编号</th>
+                                    <th>退宿原因</th>
+                                    <th>计划退宿日期</th>
+                                    <th>申请时间</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>TS20260902001</td>
+                                    <td>毕业离校</td>
+                                    <td>2026-09-10</td>
+                                    <td>2026-09-02 14:20</td>
+                                    <td><span class="tag tag-warning">待审核</span></td>
+                                    <td>
+                                        <a class="link" onclick="showMsg('撤销申请（原型））')">撤销</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>TS20260820001</td>
+                                    <td>调宿</td>
+                                    <td>2026-08-22</td>
+                                    <td>2026-08-20 09:10</td>
+                                    <td><span class="tag tag-success">已通过</span></td>
+                                    <td>
+                                        <a class="link" onclick="showMsg('申请详情：2026-08-22 已通过（原型））')">查看</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>TS20260701001</td>
+                                    <td>休学</td>
+                                    <td>2026-07-05</td>
+                                    <td>2026-07-01 11:40</td>
+                                    <td><span class="tag tag-danger">已驳回</span></td>
+                                    <td>
+                                        <a class="link" onclick="showMsg('驳回原因：请补充办理材料后重新提交（原型））')">查看</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/common.js"></script>
+</body>
+</html>

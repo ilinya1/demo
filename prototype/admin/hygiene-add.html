@@ -18,11 +18,12 @@
                 <a class="menu-item" href="dashboard.html"><span class="menu-icon">📊</span><span class="menu-text">仪表盘</span></a>
                 <div class="menu-title">基础数据</div>
                 <a class="menu-item" href="student-list.html"><span class="menu-icon">👨‍🎓</span><span class="menu-text">学生管理</span></a>
+                <a class="menu-item" href="class-list.html"><span class="menu-icon">🏫</span><span class="menu-text">班级管理</span></a>
                 <a class="menu-item" href="building-list.html"><span class="menu-icon">🏢</span><span class="menu-text">楼栋管理</span></a>
                 <a class="menu-item" href="room-list.html"><span class="menu-icon">🚪</span><span class="menu-text">房间管理</span></a>
                 <div class="menu-title">住宿业务</div>
                 <a class="menu-item" href="checkin.html"><span class="menu-icon">📝</span><span class="menu-text">入住登记</span></a>
-                <a class="menu-item" href="checkout.html"><span class="menu-icon">📤</span><span class="menu-text">退宿登记</span></a>
+                <a class="menu-item" href="checkout-audit.html"><span class="menu-icon">⚖️</span><span class="menu-text">退宿处理</span></a>
                 <a class="menu-item" href="checkin-record.html"><span class="menu-icon">📋</span><span class="menu-text">入住记录</span></a>
                 <div class="menu-title">日常管理</div>
                 <a class="menu-item" href="hygiene-list.html"><span class="menu-icon">🧹</span><span class="menu-text">卫生检查</span></a>
@@ -78,36 +79,44 @@
                     <div class="form-row">
                         <div class="form-item">
                             <label><span class="required">*</span>评分（0-100）</label>
-                            <input type="number" min="0" max="100" value="85">
+                            <input type="number" min="0" max="100" value="100" id="score">
+                            <p style="margin-top:4px;color:#909399;font-size:12px;">勾选下方扣分项自动计分，也可手动微调</p>
                         </div>
                         <div class="form-item">
                             <label><span class="required">*</span>检查结果</label>
-                            <select>
+                            <select id="result">
                                 <option>优秀</option>
                                 <option selected>合格</option>
                                 <option>不合格</option>
                             </select>
+                            <p style="margin-top:4px;color:#909399;font-size:12px;">按分数自动判定：≥90 优秀 / 60-89 合格 / &lt;60 不合格</p>
                         </div>
                     </div>
                     <div class="form-item">
-                        <label>扣分项</label>
+                        <label>扣分项（勾选自动扣分，违规电器15分、其余按标准）</label>
                         <div style="display: flex; flex-wrap: wrap; gap: 12px;">
                             <label style="display: flex; align-items: center; gap: 4px;">
-                                <input type="checkbox"> 地面不干净
+                                <input type="checkbox" class="deduct-item" data-deduct="5"> 地面不干净（-5）
                             </label>
                             <label style="display: flex; align-items: center; gap: 4px;">
-                                <input type="checkbox"> 桌面杂乱
+                                <input type="checkbox" class="deduct-item" data-deduct="3"> 桌面杂乱（-3）
                             </label>
                             <label style="display: flex; align-items: center; gap: 4px;">
-                                <input type="checkbox"> 垃圾未倒
+                                <input type="checkbox" class="deduct-item" data-deduct="5"> 垃圾未倒（-5）
                             </label>
                             <label style="display: flex; align-items: center; gap: 4px;">
-                                <input type="checkbox"> 被子未叠
+                                <input type="checkbox" class="deduct-item" data-deduct="3"> 被子未叠（-3）
                             </label>
                             <label style="display: flex; align-items: center; gap: 4px;">
-                                <input type="checkbox"> 违规电器
+                                <input type="checkbox" class="deduct-item" data-deduct="15" id="chk-para"> 违规电器（-15）
                             </label>
                         </div>
+                    </div>
+                    <div class="form-item">
+                        <label>现场照片（评分依据）</label>
+                        <input type="file" id="photoInput" accept="image/*" multiple onchange="previewPhotos(this)">
+                        <div id="photoPreview" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;"></div>
+                        <p style="margin-top:8px;color:#909399;font-size:12px;">可多张上传；当评分低于60或勾选“违规电器”时，必须上传照片作为评分凭据。</p>
                     </div>
                     <div class="form-item">
                         <label>评语</label>
@@ -115,13 +124,50 @@
                     </div>
                     <div style="text-align: right; margin-top: 20px;">
                         <button class="btn" onclick="location.href='hygiene-list.html'">取消</button>
-                        <button class="btn btn-primary" onclick="showMsg('检查记录保存成功（原型））')">保存</button>
-                        <button class="btn btn-success" onclick="showMsg('检查记录已保存并发布（原型））')">保存并发布</button>
+                        <button class="btn btn-primary" onclick="saveHygiene(false)">保存</button>
+                        <button class="btn btn-success" onclick="saveHygiene(true)">保存并发布</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <script src="../js/common.js"></script>
+    <script>
+        function calcScore() {
+            let sum = 0;
+            document.querySelectorAll('.deduct-item').forEach(function (c) {
+                if (c.checked) sum += Number(c.dataset.deduct);
+            });
+            let score = Math.max(0, 100 - sum);
+            document.getElementById('score').value = score;
+            document.getElementById('result').value = score >= 90 ? '优秀' : (score >= 60 ? '合格' : '不合格');
+        }
+        document.querySelectorAll('.deduct-item').forEach(function (c) { c.addEventListener('change', calcScore); });
+        document.getElementById('score').addEventListener('input', function () {
+            let s = Number(this.value) || 0;
+            document.getElementById('result').value = s >= 90 ? '优秀' : (s >= 60 ? '合格' : '不合格');
+        });
+        function previewPhotos(input) {
+            var box = document.getElementById('photoPreview');
+            box.innerHTML = '';
+            Array.prototype.forEach.call(input.files, function (f) {
+                var img = document.createElement('img');
+                img.src = URL.createObjectURL(f);
+                img.className = 'photo-thumb';
+                img.onclick = function () { showMsg('现场照片（原型，可插入大图查看）'); };
+                box.appendChild(img);
+            });
+        }
+        function saveHygiene(publish) {
+            var score = Number(document.getElementById('score').value) || 0;
+            var para = document.getElementById('chk-para').checked;
+            var hasPhoto = document.getElementById('photoInput').files.length > 0;
+            if ((score < 60 || para) && !hasPhoto) {
+                showMsg('评分低于60或存在违规，请先上传现场照片作为评分依据（原型）');
+                return;
+            }
+            showMsg(publish ? '检查记录已保存并发布（原型）' : '检查记录保存成功（原型）');
+        }
+    </script>
 </body>
 </html>

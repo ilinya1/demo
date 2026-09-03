@@ -18,11 +18,12 @@
                 <a class="menu-item" href="dashboard.html"><span class="menu-icon">📊</span><span class="menu-text">仪表盘</span></a>
                 <div class="menu-title">基础数据</div>
                 <a class="menu-item" href="student-list.html"><span class="menu-icon">👨‍🎓</span><span class="menu-text">学生管理</span></a>
+                <a class="menu-item" href="class-list.html"><span class="menu-icon">🏫</span><span class="menu-text">班级管理</span></a>
                 <a class="menu-item" href="building-list.html"><span class="menu-icon">🏢</span><span class="menu-text">楼栋管理</span></a>
                 <a class="menu-item" href="room-list.html"><span class="menu-icon">🚪</span><span class="menu-text">房间管理</span></a>
                 <div class="menu-title">住宿业务</div>
                 <a class="menu-item" href="checkin.html"><span class="menu-icon">📝</span><span class="menu-text">入住登记</span></a>
-                <a class="menu-item" href="checkout.html"><span class="menu-icon">📤</span><span class="menu-text">退宿登记</span></a>
+                <a class="menu-item" href="checkout-audit.html"><span class="menu-icon">⚖️</span><span class="menu-text">退宿处理</span></a>
                 <a class="menu-item" href="checkin-record.html"><span class="menu-icon">📋</span><span class="menu-text">入住记录</span></a>
                 <div class="menu-title">日常管理</div>
                 <a class="menu-item" href="hygiene-list.html"><span class="menu-icon">🧹</span><span class="menu-text">卫生检查</span></a>
@@ -90,6 +91,7 @@
                                     <th>房间号</th>
                                     <th>评分</th>
                                     <th>结果</th>
+                                    <th>照片</th>
                                     <th>检查人</th>
                                     <th>评语</th>
                                     <th>状态</th>
@@ -103,6 +105,12 @@
                                     <td>101</td>
                                     <td>95</td>
                                     <td><span class="tag tag-success">优秀</span></td>
+                                    <td>
+                                        <div class="photo-stack">
+                                            <img class="photo-thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=clean%20tidy%20student%20dormitory%20room%20with%20neatly%20made%20bed%20and%20clean%20desk&amp;image_size=square" onclick="viewPhoto(this.src)">
+                                            <img class="photo-thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=orderly%20dormitory%20interior%20with%20tidy%20shelf%20and%20clean%20floor&amp;image_size=square" onclick="viewPhoto(this.src)">
+                                        </div>
+                                    </td>
                                     <td>张宿管</td>
                                     <td>地面干净，物品摆放整齐</td>
                                     <td><span class="tag tag-primary">已发布</span></td>
@@ -114,6 +122,12 @@
                                     <td>102</td>
                                     <td>82</td>
                                     <td><span class="tag tag-success">合格</span></td>
+                                    <td>
+                                        <div class="photo-stack">
+                                            <img class="photo-thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=ordinary%20dormitory%20room%20with%20some%20items%20on%20desk%20and%20made%20bed&amp;image_size=square" onclick="viewPhoto(this.src)">
+                                            <img class="photo-thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=normal%20dormitory%20bed%20made%20but%20floor%20a%20bit%20dusty&amp;image_size=square" onclick="viewPhoto(this.src)">
+                                        </div>
+                                    </td>
                                     <td>张宿管</td>
                                     <td>整体良好，桌面稍乱</td>
                                     <td><span class="tag tag-primary">已发布</span></td>
@@ -125,6 +139,12 @@
                                     <td>103</td>
                                     <td>68</td>
                                     <td><span class="tag tag-danger">不合格</span></td>
+                                    <td>
+                                        <div class="photo-stack">
+                                            <img class="photo-thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=messy%20dormitory%20room%20with%20trash%20bag%20and%20clothes%20on%20floor&amp;image_size=square" onclick="viewPhoto(this.src)">
+                                            <img class="photo-thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=untidy%20dormitory%20with%20rubbish%20scattered%20and%20bed%20unmade&amp;image_size=square" onclick="viewPhoto(this.src)">
+                                        </div>
+                                    </td>
                                     <td>张宿管</td>
                                     <td>地面脏乱，垃圾未倒</td>
                                     <td><span class="tag tag-primary">已发布</span></td>
@@ -136,6 +156,12 @@
                                     <td>201</td>
                                     <td>90</td>
                                     <td><span class="tag tag-success">优秀</span></td>
+                                    <td>
+                                        <div class="photo-stack">
+                                            <img class="photo-thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=clean%20tidy%20student%20dormitory%20room%20with%20neatly%20made%20bed%20and%20clean%20desk&amp;image_size=square" onclick="viewPhoto(this.src)">
+                                            <img class="photo-thumb" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=bright%20neat%20dormitory%20with%20tidy%20curtains%20and%20rack&amp;image_size=square" onclick="viewPhoto(this.src)">
+                                        </div>
+                                    </td>
                                     <td>李宿管</td>
                                     <td>卫生状况良好</td>
                                     <td><span class="tag tag-primary">已发布</span></td>
@@ -157,6 +183,25 @@
             </div>
         </div>
     </div>
+
+    <!-- 现场照片大图查看 -->
+    <div class="modal-mask" id="photoModal">
+        <div class="modal" style="max-width: 640px;">
+            <div class="modal-header">
+                <span class="modal-title">现场照片</span>
+                <button class="close" onclick="closeModal('photoModal')">×</button>
+            </div>
+            <div class="modal-body" style="text-align:center;">
+                <img id="photoLarge" src="" style="max-width:100%;max-height:70vh;border-radius:8px;">
+            </div>
+        </div>
+    </div>
     <script src="../js/common.js"></script>
+    <script>
+        function viewPhoto(src) {
+            document.getElementById('photoLarge').src = src;
+            openModal('photoModal');
+        }
+    </script>
 </body>
 </html>

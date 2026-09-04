@@ -195,7 +195,21 @@ CREATE TABLE `hygiene_record` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='卫生检查';
 
 -- ---------------------------------------------------------------------
--- 10. 报修 repair_order
+-- 10. 报修类型字典 repair_type
+--    报修"报修物品/类型"独立成表，便于下拉从字典读取与按类别统计。
+-- ---------------------------------------------------------------------
+DROP TABLE IF EXISTS `repair_type`;
+CREATE TABLE `repair_type` (
+    `id`         BIGINT      NOT NULL AUTO_INCREMENT COMMENT '报修类型ID',
+    `name`       VARCHAR(50) NOT NULL COMMENT '报修物品/类型名称，如 灯管',
+    `sort`       INT         NOT NULL DEFAULT 0 COMMENT '排序，越小越靠前',
+    `created_at` DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_rt_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='报修类型';
+
+-- ---------------------------------------------------------------------
+-- 11. 报修 repair_order
 -- ---------------------------------------------------------------------
 DROP TABLE IF EXISTS `repair_order`;
 CREATE TABLE `repair_order` (
@@ -204,7 +218,7 @@ CREATE TABLE `repair_order` (
     `student_id`    VARCHAR(20)  NOT NULL COMMENT '逻辑外键 -> student.student_id',
     `building_id`   BIGINT       NOT NULL COMMENT '逻辑外键 -> dorm_building.id',
     `room_id`       BIGINT       NOT NULL COMMENT '逻辑外键 -> dorm_room.id',
-    `item`          VARCHAR(100)          COMMENT '报修物品',
+    `type_id`       BIGINT                COMMENT '逻辑外键 -> repair_type.id；报修物品/类型',
     `description`   VARCHAR(500)          COMMENT '问题描述',
     `contact_phone` VARCHAR(20)           COMMENT '联系电话（提交时留的电话）',
     `images`        TEXT                  COMMENT '图片路径列表（JSON 数组）',
@@ -218,12 +232,23 @@ CREATE TABLE `repair_order` (
     UNIQUE KEY `uk_order_no` (`order_no`),
     KEY `idx_ro_student` (`student_id`),
     KEY `idx_ro_status` (`status`),
-    KEY `idx_ro_room` (`room_id`)
+    KEY `idx_ro_room` (`room_id`),
+    KEY `idx_ro_type` (`type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='报修';
 
 -- =====================================================================
 -- 示例数据（演示账号 / 基础数据，便于一键演示）
 -- =====================================================================
+
+-- 报修类型字典（对应原型 repair-add 下拉：灯管/水龙头/空调/门锁/床铺/桌椅/其他）
+INSERT INTO `repair_type` (`id`, `name`, `sort`) VALUES
+(1, '灯管', 1),
+(2, '水龙头', 2),
+(3, '空调', 3),
+(4, '门锁', 4),
+(5, '床铺', 5),
+(6, '桌椅', 6),
+(7, '其他', 99);
 
 -- 班级
 INSERT INTO `class` (`id`, `class_name`, `college`, `major`, `grade`, `head_teacher`) VALUES
@@ -280,7 +305,7 @@ INSERT INTO `check_in`
 --    check_in.{student_id, building_id, room_id, bed_id}
 --    checkout_apply.student_id -> student.student_id
 --    hygiene_record.{building_id, room_id}
---    repair_order.{student_id, building_id, room_id}
+--    repair_order.{student_id, building_id, room_id, type_id -> repair_type.id}
 -- 2. 状态枚举统一：
 --    学籍：在校/毕业/退学/休学；住宿：在住/已退宿/未住
 --    房间：空闲/部分入住/已满/维修中；床位：空闲/占用/维修

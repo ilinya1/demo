@@ -328,11 +328,326 @@
 - **2026-09-03（操作日志 #12，交接文档 v4）** 按用户要求将《项目交接文档.md》由 v3 升级为 **v4** 完整版，整合全部阶段并细化后续开发指引。
 
   **本次修改**：
-  - 新增「五、v4 —— 数据库设计落地与终核」章节：7 条设计决策（逻辑外键/快照/冗余/床位独立表/账号体系/多图/二期预留）+ 10 张表全貌 + 四轮复核 A~F 类修复汇总。
+
+  - 新增「五、v4 —— 数据库设计落地与终核」章节：7 条设计决策（逻辑外键/快照/冗余/床位独立表/账号体系/多图/二期预留）+ 10 张表全貌 + 四轮复核 A\~F 类修复汇总。
+
   - 更新「当前技术状态」：数据库设计已定稿（init.sql + 数据库设计说明.md，需同步维护，尚未建库运行）；后端仍为骨架；前端仍为静态原型。
+
   - 重写「后续开发待办」：以 v4 为基线，拆分为 后端接口实现 / 前端联调 / 工程化与功能完善 / 交付与部署 四部分，逐步到各模块接口清单。
+
   - 版本修订记录追加 v4。
 
   **涉及文件**：`docs/项目交接文档.md`。
   **结果**：交接文档与仓库最新状态一致，可直接作为接手人员的完整开发指引。
 
+- **2026-09-03（操作日志 #13，确定前后端开发方案并产出开发设计文档 v1）** 与用户讨论确定下一阶段（数据库设计之后的开发）的方向并落地首份开发设计文档。
+
+  **方案决策（经多轮讨论，用户已确认）**：
+
+  - 开发文档定位：技术方案 + 接口契约结合的单文档，作为前后端开发/联调/验收的共同依据。
+
+  - 开发顺序：先出文档 → 后端骨架+建库验证 ∥ 前端 Vue 工程 → 前端 mock 先行 → 后端实现 → 联调替换 → 工程化部署。
+
+  - 前端形态：Vue3 + Vite 重构，新工程于 `frontend/`，保留 `prototype/` 静态原型作参考。
+
+  - 后端：包重构为 `com.gzlg.dorm`，MyBatis-Plus + MySQL。
+
+  - 鉴权：JWT（mock 阶段先假登录）。
+
+  **涉及文件**：新增 `docs/开发设计文档.md`（v1：技术选型、后端/前端工程结构、统一返回/异常/分页约定、10 表→实体映射、接口契约总览 5.1\~5.7、枚举字典、待展开清单）。
+  **结果**：开发设计文档 v1 骨架定稿；接口逐字段契约待 v2 展开。
+
+- **2026-09-03（操作日志 #14，开发环境检查与 JDK 版本修复）** 检查开发文档与开发环境，并解决 JDK 版本不匹配问题。
+
+  **环境检查结论**：
+
+  - 默认 `JAVA_HOME` 指向 `D:\JAVA\jdk1.8.0_111`（JDK8），不满足 Spring Boot 4.1.1 的 Java 17+；Maven（3.9.16）当时跑在 JDK8 上，`mvn compile` 会失败。
+
+  - 本机已装 `D:\JAVA\jdk-21.0.7`（JDK21，兼容 Java 17 目标）。实测以 JDK21 执行 `mvn -q compile` 通过 → 验证 pom 的 Spring Boot 4.1.1 + spring-boot-starter-webmvc 可正常构建。
+
+  - Node v24.16 / npm 11.17 可用（PowerShell 中 `npm.ps1` 被 ExecutionPolicy 拦截，需用 `npm.cmd`）；pnpm/yarn 未装。
+
+  - MySQL 8.0.34 已装、服务 MySQL80 运行中；但 root 无密码连接被拒（Access denied），建库验证需正确凭据。
+
+  **JDK 修复（本步主题）**：
+
+  - 用户级 `JAVA_HOME` 已持久化为 `D:\JAVA\jdk-21.0.7`（`[Environment]::SetEnvironmentVariable(...,"User")`）；当前会话 `mvn -version` 显示 Java 21.0.7。
+
+  - 系统级（Machine）`JAVA_HOME` 仍为 1.8，因无管理员权限未能由工具修改，已给用户提供管理员改法与回退命令；同时指引在 IDEA 中设 Project SDK = JDK21（日常运行后端的最可靠方式）。
+
+  **待用户跟进**：管理员改系统级 JAVA\_HOME；IDEA 设 Project SDK 21；提供 MySQL root 密码用于建库验证。
+
+- **2026-09-03（操作日志 #15，开发文档版本兼容性复核）** 联网核对所选框架在当前（2026-09）是否为推荐版本并验证兼容性，修订开发设计文档。
+
+  **核实结论**：
+
+  - Spring Boot 4.1.1 = 当前最新稳定版（2026-08-20 发布），4.1.x 支持 Java 17+、OSS 支持至 2027-06 → 选型正确。
+
+  - ⚠️ MyBatis-Plus 对 Spring Boot 4 有专用 starter `mybatis-plus-spring-boot4-starter`（最新 3.5.17），并非 Boot3 的 `mybatis-plus-boot-starter`；用错 starter 会启动失败。
+
+  - 前端锁定：Vue ^3.5（3.6 待稳定）、Vite ^8（Node24 兼容；可用 ^7）、Element Plus ^2.14（最新 2.14.5）、Pinia ^3（4.0 ESM-only）、Vue Router ^4、Axios ^1。
+
+  **涉及文件**：`docs/开发设计文档.md`（v1 → v1.1：更新 2.1/2.2 技术选型锁版本，补 MyBatis-Plus 正确 starter 名，版本记录追加 v1.1）。
+  **结果**：技术选型版本与兼容性一次性核定，消除 MyBatis-Plus × Spring Boot 4 的 starter 选型风险。
+
+- **2026-09-03（操作日志 #16，执行 init.sql 建库验证）** 使用 MySQL root（本机 MySQL 8.0.34，服务 MySQL80）执行 `docs/sql/init.sql`，首次在真实实例建库并核验。
+
+  **执行结果**：
+
+  - 库 `dorm_manager` 创建成功，脚本一次执行 exit=0 无报错。
+
+  - 10 张表全部建出：class/student/sys\_user/dorm\_building/dorm\_room/dorm\_bed/check\_in/checkout\_apply/hygiene\_record/repair\_order。
+
+  - 示例数据行数：class 5、student 3、sys\_user 4、building 2、room 3、bed 12、check\_in 3；申请/卫生/报修各 0 —— 与设计要求一致。
+
+  - `check_in` 5 快照字段（student\_name/class\_name/building\_name/room\_no/bed\_no）正确写入，3 人均在住；`(status, check_out_time)` 索引存在；sys\_user 角色与学号关联正确。
+
+  - 102 室床位联动：1\~3 床占用（王小明/李小红/陈强）、4 床空闲 —— 与原型 room-detail 一致。
+
+  **结论**：建库脚本在真实 MySQL 8.0.34 上可一次性成功执行，字段/索引/示例数据与数据库设计文档完全对齐。
+  **涉及文件**：仅执行数据库脚本（无文件改动）。
+
+- **2026-09-03（操作日志 #17，前端工程骨架搭建）** 按开发设计文档"前端 mock 先行、调好后开发后端"的新节奏，开始前端 `frontend/` Vue3+Vite 工程开发。
+
+  **本次产出**（`frontend/` 下）：
+
+  - 工程配置：`package.json`（Vue ^3.5 / Vite ^6（plugin-vue\@5 兼容需配 Vite6）/ Element Plus ^2.14 / Pinia ^3 / Vue Router ^4 / Axios ^1 / @element-plus/icons-vue）、`vite.config.js`（@ 别名、/api 代理 8080、端口 3000）、`index.html`。
+
+  - 核心骨架：`src/main.js`（注册 Element Plus 中文、图标、pinia、router）、`src/App.vue`、`src/router/index.js`（双端路由 + 登录/角色守卫）、`src/store/user.js`（pinia：token/用户信息/登录/退出）、`src/api/request.js`（mock 短路 + axios 拦截器，Result 统一解包、401 处理）、`src/api/auth.js`、`src/api/dashboard.js`。
+
+  - mock 机制：`src/mock/index.js`（登录/仪表盘 mock，`VITE_USE_MOCK=false` 切真实接口）。
+
+  - 页面：`src/views/Login.vue`、`src/layouts/AdminLayout.vue`（13 菜单）/`StudentLayout.vue`（5 菜单，对齐原型）、`src/views/admin/Dashboard.vue`、`src/views/student/MyRoom.vue`。
+
+  **工程落坑与处理**：① npm 沙箱限制 → 禁用沙箱 + npm 用项目内 `--cache`；② `@vitejs/plugin-vue@5` 与 Vite7 peer 冲突 → 降 Vite ^6（稳定组合）；③ Element Plus 需补充 `@element-plus/icons-vue` 依赖。
+
+  **验证**：`npm install`（96 包）成功；`vite build` 一次通过（1693 模块）；`npm run dev` 于 :3000 返回 200，登录页骨架可访问。
+  **待办（下轮）**：基础数据模块（学生/班级/楼栋/房间）等页面与各自 mock/契约。
+
+- **2026-09-03（操作日志 #18，补全仪表盘统计 mock）** 依据原型 `prototype/admin/dashboard.html` 补全前端仪表盘统计。
+
+  **改动**：
+
+  - `src/mock/index.js`：`/dashboard/stats` 数值对齐原型（studentCount 1286 / buildingCount 6 / roomCount 1240 / occupancyRate 86.5%）；新增 `/dashboard/building-occupancy`（6 栋楼入住率）与 `/dashboard/hygiene-trend`（近 4 周卫生平均分 82/85/88/87）。
+
+  - `src/api/dashboard.js`：新增 `getBuildingOccupancy()`、`getHygieneTrend()`。
+
+  - `src/views/admin/Dashboard.vue`：渲染 4 张统计卡片 + 各楼栋入住率（横向进度条）+ 最近卫生检查（CSS 柱状图，未引图表库）。
+
+  **验证**：`vite build` 通过；浏览器登录 admin 后仪表盘正确显示 1286/6/1240/86.5% 与两图表区域，全部核验 PASS。
+
+- **2026-09-03（操作日志 #19，UI 重构 → 方案 B 现代专业深色）** 用户认为整体 UI 不好看，需换风格。先产出三套方案预览页（`src/views/PreviewDemo.vue`，路由 `/preview`：A 清新学院风 / B 现代专业深色 / C 极简编辑风 并排 mock），浏览器对照后选定 **B 方案（深蓝灰玻璃侧边栏 + 靛蓝强调 + 细腻阴影）**。
+
+  **改造内容**：
+
+  - 新增 `src/styles/theme.css`：全局设计令牌 CSS 变量（`--d-primary` 靛蓝 #4f6ef7、`--d-sb-*` 侧边栏、`--d-*` 内容区、`--d-radius`、`--d-shadow`）+ Element Plus 主色覆盖（`--el-color-primary` 及 light-3\~9 / dark-2）→ 所有 el 组件自动变靛蓝。
+
+  - `AdminLayout.vue`/`StudentLayout.vue`：侧边栏改深色玻璃（`.d-sidebar` + el-menu 色彩变量覆盖、logo 靛蓝标记），选中项靛蓝高亮；头栏/内容区走令牌。
+
+  - `Login.vue`：深蓝灰背景 + 靛蓝光晕 + 白卡片 + 靛蓝方形 logo。
+
+  - `Dashboard.vue`：统计卡图标统一淡靛蓝底、楼栋入住率进度条与卫生柱状图改靛蓝（渐变）。
+
+  - `main.js` 引入 theme.css；`router/index.js` 放行 `/preview`。
+
+  **验证**：`vite build` 通过；浏览器核验登录页与仪表盘均应用深色侧边栏 + 靛蓝强调色、无样式错乱，8 项检查全部 PASS。
+  **待办（下轮）**：基础数据模块（学生/班级/楼栋/房间）页面按 B 方案风格实现 + 各自 mock/契约。
+
+- **2026-09-03（操作日志 #20，主题细节微调）** 沿用 B 方案基础上微调 4 处：靛蓝主色、深色玻璃侧边栏、12px 圆角保持不变；其余两点调整如下。
+
+  **调整内容**：
+
+  - 舒适密度 + **标题加粗**：无误，`AdminLayout.vue`/`StudentLayout.vue` 顶部页面标题字重 700 → 800。
+
+  - **统一线性图标**：`Dashboard.vue` 4 张统计卡图标由 emoji（👨🎓🏢🚪🛏️）改为 Element Plus 线性 SVG 图标（`User`/`OfficeBuilding`/`House`/`TrendCharts`），浅靛蓝底 + 靛蓝描边色。
+
+  **验证**：`vite build` 通过；浏览器核验统计卡为靛蓝线性 SVG（12 个 PNG 内 12 个 SVG 图标、色值 rgb(79,110,247)）、标题字重 800、侧边栏仍深色玻璃 + 靛蓝高亮、无样式错乱。期间 dev server 曾停止（重启后台 job-94d0... 后恢复 :3000）。
+
+- **2026-09-04（操作日志 #21，仪表盘图表 ECharts 美化）** 用户反馈"各楼栋入住率"与"最近卫生检查"两大可视化模块展示不好看，由纯 CSS 进度条/柱状图升级为 **ECharts** 专业图表（匹配 B 方案现代专业质感）。
+
+  **改造内容**：
+
+  - `frontend` 安装 `echarts`（按需引入 echarts/core + BarChart/LineChart + Grid/Tooltip 组件 + CanvasRenderer）。
+
+  - `Dashboard.vue`：
+
+    - **各楼栋入住率** → 横向渐变条形图：6 栋靛蓝渐变圆角柱、柱端百分比标签、x 轴隐藏、虚线分隔线、shadow tooltip（"xx号楼 xx% 入住"）。
+
+    - **最近卫生检查** → 平滑折线面积图：近 4 周、靛蓝 3px 线条 + 圆点（白描边）+ 顶部向下的靛蓝透明面积渐变、hover tooltip（"平均分 xx 分"）。
+
+    - 配色从 `--d-primary` CSS 变量实时读取，自适应主题；卡片升级 header（标题+说明）+ 边框/阴影；新增 resize 自适应与 `onBeforeUnmount` dispose 释放。
+
+  **验证**：`vite build` 通过；浏览器确认两 canvas 均为 ECharts 实例、条形图与折线图正常渲染、tooltip 可用、靛蓝配色协调、无空白报错（仅两处非阻塞 warn/info）。
+
+- **2026-09-04（操作日志 #22，基础数据模块四页面上线）** 按 B 方案风格实现管理员端基础数据模块（学生 / 班级 / 楼栋 / 房间）。
+
+  **新增文件**：
+
+  - `src/mock/util.js`（ok/fail）；`src/mock/baseData.js`：集中存放班级/学生/楼栋/房间/床位 mock 数据与 CRUD（含学号唯一、班级名/楼栋名/房间号唯一校验、room 与 typing 联动、1号楼101-102床位示例）。
+
+  - `src/mock/index.js` 扩展基础数据路由分发（students/classes/buildings/rooms 增删改查 + `/rooms/options` + `/rooms/{id}/beds`）。
+
+  - `src/api` 新增 `student.js`/`class.js`/`building.js`/`room.js`。
+
+  - `src/views/admin` 新增 `StudentList.vue`（搜索学号/姓名/学院/状态 + 表格 + 分页 + 新增/编辑弹窗含班级联动带出学院专业 + 删除确认 + 学籍/住宿状态标签）、`ClassList.vue`（年级/学院/班级名搜索 + 新增/编辑）、`BuildingList.vue`（楼栋名/管理员搜索 + 新增/编辑）、`RoomList.vue`（楼栋/房号/房型/状态搜索 + 新增/编辑 + **床位分布弹窗**：显示占用/空闲床位与学生）。
+
+  - `src/router/index.js`：补全 4 个子路由到 admin children。
+
+  **验证**：`vite build` 通过；浏览器逐个核验：学生 10 条、班级 5 条、楼栋 6 条、房间 9 条均正常渲染，新增弹窗、分页、床位弹窗可用，无空白/报错（仅非致命 warn）。
+  **待办（下轮）**：住宿业务（入住登记/退宿处理/入住记录）与日常管理（卫生/报修）等页面 + mock。
+
+- **2026-09-04（操作日志 #23，仪表盘与统计报表合并）** 用户要求将仪表盘与统计报表合并，采用"A 仪表盘作为一级含 4 子项"方案。
+
+  **改动**：
+
+  - `AdminLayout.vue`：删除独立"统计报表"分组；一级"仪表盘"改为子菜单，含 仪表盘总览(/admin/dashboard) / 入住统计(/admin/stat-occupancy) / 卫生统计(/admin/stat-hygiene) / 报修统计(/admin/stat-repair)。管理员端一级菜单收敛为 4 组。
+
+  - 新增 3 个统计页面（沿用 B 方案 ECharts 风格）：
+
+    - `StatOccupancy.vue` 入住统计：3 统计卡 + 各楼栋入住率条形图 + 近 6 月入住/退宿双折线。
+
+    - `StatHygiene.vue` 卫生统计：4 统计卡 + 近 4 周平均分折线面积图 + 优秀/合格/不合格环形图。
+
+    - `StatRepair.vue` 报修统计：3 统计卡 + 各类型报修柱状图 + 近 6 月提交/完成双折线。
+
+  - `src/mock/stats.js`（三组统计数据）、`src/mock/index.js` 分发 `/stats/occupancy|hygiene|repair`、`src/api/stat.js`、`src/router/index.js` 注册 3 子路由。
+
+  **验证**：`vite build` 通过；浏览器确认侧边栏仅剩 4 组一级菜单、"统计报表"分组已移除、仪表盘子菜单含 4 子项、3 个统计页图表（条形/折线/环形/面积/柱状）全部正常渲染、各页 title 正确、无空白报错。
+
+- **2026-09-04（操作日志 #24，住宿业务模块上线）** 按原型 `prototype/admin` 实现管理员端住宿业务三页（入住登记 / 退宿处理 / 入住记录）。
+
+  **新增文件**：
+
+  - `src/mock/checkin.js`：住宿业务 mock。含 入住记录(`checkInRecords`)、退宿申请(`checkoutApplications`) 初始数据；接口 `getStudent`(学号带出学生)、`checkinRooms`(楼栋剩余床位房间)、`checkinFreeBeds`(房间空闲床位号)、`submitCheckin`(入住，占用床位+改学生在住)、`listCheckinRecords`(记录+状态/学号/姓名/楼栋筛选)、`listCheckoutApps`、`auditCheckoutApp`(申请通过则退宿生效/驳回留意见)、`directCheckout`(管理员直接退宿跳过申请)、`buildingOptions`。与 `baseData` 的 `occupyBed/freeBed/updateStudentHousing` 联动，保证各页住宿状态一致（已退宿后拒绝重复退宿）。
+
+  - `src/api/checkin.js`：9 个住宿业务接口封装。
+
+  - `src/views/admin` 新增 `Checkin.vue`（4 步引导：查学号带出学生 → 选楼栋 → 选房间剩床 → 床位；已在住者拦截重复入住；校验通过方可确认入住）、`CheckoutAudit.vue`（退宿申请列表+筛选+审核弹窗(通过/驳回留原因) + 「直接退宿」弹窗学号带出当前宿舍）、`CheckinRecord.vue`（入住记录列表+状态/学号/姓名/楼栋筛选+来源列+在住可直接退宿）。
+
+  - `src/router/index.js`：注册 3 个 admin 子路由（checkin / checkout-audit / checkin-record）；`AdminLayout.vue` 侧边栏「住宿业务」子菜单三步。
+
+  **验证**：`vite build` 通过（三包 chunk 正常产出）。函数级 mock 全链路验证通过：学生 2023020101 查询带出刘少军；buildings/options 6 楼栋；checkin/rooms?buildingId=1→101/102/104(剩床)；free-beds→\[4]；POST /checkin 成功且学生转在住、记录新增；在住 7 条/已退宿 2 条筛选正确；退宿申请 3 条、审核通过后学生转已退宿、重复退宿被拒（业务正确）。先前浏览器端「选楼栋不响应」经硬刷新与排查为浏览器旧缓存/自动化未触发 el-select change 所致，非代码缺陷。
+
+- **2026-09-04（操作日志 #25，报修类型字典表落地 / 方案 B）** 用户确认数据库补"报修类型"，选方案 B（独立字典表 + `repair_order.type_id` 逻辑外键）。同步修改 `docs/sql/init.sql` 与 `docs/数据库设计说明.md`：
+
+  **库结构**：
+
+  - 新增表 `repair_type`（编号 10，置于 `repair_order` 前）：`id PK/AI`、`name VARCHAR(50) NOT NULL UNIQUE`（报修物品/类型名称）、`sort INT 默认0`（排序）、`created_at`。
+
+  - `repair_order`（编号 10→11）：删除 `item VARCHAR(100)`；改为 `type_id BIGINT 逻辑FK→repair_type.id`；新增索引 `idx_ro_type(type_id)`。
+
+  - 示例数据：`repair_type` 7 条（灯管/水龙头/空调/门锁/床铺/桌椅/其他），对齐原型 `repair-add` 下拉。
+
+  **文档同步**：ER 关系补 `repair_type ──1:N──> repair_order(type_id)`；字段字典改"11 张表"并新增 `3.10 repair_type`、原 `3.10 repair_order`→`3.11`；逻辑外键表补 `repair_order.type_id → repair_type.id`；枚举字典补"报修类型（字典表）"。
+
+  **验证**：两份文档 `type_id`/`repair_type` 完全对齐，无残留报修 `item` 字段（仅剩卫生表 `deduct_items` 语义不同、合法）。SQL 尚未在本机 MySQL 实测执行（涉及 DROP 重建、会清空演示库，未获授权前不执行）。
+
+- **2026-09-04（操作日志 #26，init.sql 本机实测建库）** 用户提供 MySQL root 密码后，在本机 MySQL 8.0.34（MySQL80 服务）执行 `docs/sql/init.sql`（`mysql --execute="source ..."`，规避 PowerShell 不支持 `<` 重定向），重建 `dorm_manager` 库。
+
+  **结果**：执行无语法错误，`SHOW TABLES` 共 **11 张表**（class / student / sys_user / dorm_building / dorm_room / dorm_bed / check_in / checkout_apply / hygiene_record / repair_type / repair_order）。抽查确认：`repair_type` 7 条字典数据（灯管/水龙头/空调/门锁/床铺/桌椅/其他）成功入库；`repair_order` 已无 `item` 列、新增 `type_id bigint`（索引 MUL），与双文档一致。建库基线稳定。
+
+- **2026-09-04（操作日志 #27，学生端住宿业务：我的宿舍 + 退宿申请）** 补齐学生端住宿业务，与管理员端"退宿处理"闭环。
+
+  **新增/修改**：
+
+  - `src/mock/checkin.js`：新增 `currentRoom`（我的宿舍：当前在住信息+室友，未入住返回 dorm=null）、`submitCheckoutApply`（提交退宿申请：非在住拒绝、校验原因/日期、有未审核申请时拦截、生成 applyNo TS+yyyyMMdd+序号）、`cancelCheckoutApp`（撤销待审核申请=删除，非本人/非待审核拒绝）。
+
+  - `src/mock/index.js`：注册 `GET /student/current-room`、`POST /checkout-applications`（生成）、`POST /checkout-applications/:id/cancel`。
+
+  - `src/api/checkin.js`：新增 `getCurrentRoom` / `submitCheckoutApply` / `cancelCheckoutApp`。
+
+  - `src/views/student/MyRoom.vue`：由硬编码改为接 `currentRoom` 真实数据（在住信息 + 室友表格），未入住显示空态；修复模板引用 `dorm` 未定义导致误判"未入住"的问题（用 computed 暴露 `info.dorm`）。
+
+  - `src/views/student/CheckoutApply.vue`（新增）：提交退宿申请表单（仅读申请人/学号/当前宿舍/入住时间；退宿原因下拉、计划日期、说明）+ 「我的退宿申请记录」表格（编号/原因/计划日期/申请时间/状态 tag；待审核→撤销，已通过/已驳回→查看详情/驳回原因）。
+
+  - `src/router/index.js`：注册 `/student/checkout-apply`（菜单已存在）。
+
+  **验证**：`vite build` 通过（MyRoom/CheckoutApply chunk 正常）。Node 层 mock 逻辑全过：王小明在住(102·1床·室友3人)、赵敏已退宿 dorm=null；李小红提交生成 TS20260904004 待审核；重复申请拦截"您有未审核的退宿申请"；撤销成功并清空；撤销他人申请"无权操作"；王小明历史 TS20260902001。浏览器验证：李小红我的宿舍正确展示入住信息与室友；退宿申请表单只读带出正确，不填日期提交被"请选择计划退宿日期"校验拦截；王小明提交已有未审核申请时按钮 disabled 拦截、不产生新记录。console 仅 Element Plus 库内 blur 告警，与业务无关。
+
+- **2026-09-04（操作日志 #28，管理员端日常管理：卫生检查 + 报修管理）** 开发管理员端日常管理模块，与数据库 `hygiene_record` / `repair_order` / `repair_type` 对齐。
+
+  **新增/修改**：
+
+  - `src/mock/daily.js`（新增）：卫生检查（`listHygiene` 筛选 checkDate/buildingId/result + 分页、`addHygiene` 扣分计分判定优秀/合格/不合格 + 照片强制规则）、报修（`getRepairTypes` 字典、`listRepair` 筛选 orderNo/buildingId/status、`getRepair`、`handleRepair` 处理派单校验处理人/电话、完成需说明）、内置报修类型字典与卫生/报修初始演示数据。
+
+  - `src/mock/index.js`：注册 `GET/POST /daily/hygiene`、`GET /daily/repair-types`、`GET /daily/repairs`、`GET /daily/repair/:id`、`PUT /daily/repair/:id`。
+
+  - `src/api/daily.js`（新增）：getHygieneList / addHygiene / getRepairTypes / getRepairList / getRepairDetail / handleRepair。
+
+  - `src/views/admin/HygieneList.vue`（新增）：筛选（楼栋/检查日期/结果）+ 列表（照片缩略图 + 大图预览）+ 查看详情弹窗 +「＋ 新增检查」跳转。
+
+  - `src/views/admin/HygieneAdd.vue`（新增）：楼栋→房间联动、7 项扣分自动计分（100 起扣，实时得分+自动判定结果）、现场照片上传（base64 预览）、评分<60 或违规电器强制照片、评语。
+
+  - `src/views/admin/RepairList.vue`（新增）：筛选（单号/楼栋/状态）+ 列表（含处理人/联系电话列 + 状态 tag）+ 处理/详情弹窗（处理人、电话、状态处理中/已完成、处理说明）。
+
+  - `src/router/index.js`：注册 `/admin/hygiene-list`、`/admin/hygiene-add`、`/admin/repair-list`（菜单已存在）。
+
+  **验证**：`vite build` 通过（HygieneList/HygieneAdd/RepairList chunk 均产出）。Node 层 mock 逻辑全过：报修类型字典 7 条；卫生列表/结果过滤、不合格或违规电器无照片时强制拦截、带照片新增成功；报修列表及状态过滤、处理更新成功。浏览器验证：卫生列表渲染与详情弹窗、新增页楼栋→房间联动、扣分计分（地面-5→95、违规电器-15→80/合格）、报修列表与状态筛选、处理弹窗字段齐全均正常。
+
+  **修复**：浏览器自动化暴露两处体验问题并已加固——① 新增卫生保存时，若基础必填校验未过，`validate()` 抛异常会遮蔽后续"违规电器必须上传照片"守卫；改为 `validate` 失败即 return，照片守卫在必填通过后必然执行。② 报修保存/卫生保存补全 submit/save 的请求失败兜底（catch 显示后台 msg + finally 复位按钮），避免失败时 unhandled error 与按钮卡死。其中照片文件上传与保存点击属浏览器自动化受限项，已在逻辑层加固，建议管理员登录后在页面上实际操作一遍复核。
+
+- **2026-09-04（操作日志 #29，学生端日常管理：我的卫生检查 + 提交报修 + 报修进度）** 开发学生端日常管理，与管理员端卫生检查/报修管理构成闭环。
+
+  **新增/修改**：
+
+  - `src/mock/daily.js`：`listHygiene` 增加 `roomId` 过滤（学生按所在房间查）；`listRepair` 增加 `studentId` 过滤；新增 `createRepair`（提交报修：校验报修物品/问题描述，返回单号 BX+yyyymmdd+序号，关联学生当前房间 buildingId/roomId，状态待处理）；初始报修数据为王小明补一条已完成记录（含处理人/电话），便于演示"处理人（联系电话）"回显。
+
+  - `src/mock/index.js`：注册 `POST /daily/repairs`（提交报修）。
+
+  - `src/api/daily.js`：新增 `addRepair`。
+
+  - `src/views/student/MyHygiene.vue`（新增）：标题带"本宿舍（楼栋 房间号）"，调 getCurrentRoom 取房间 → getHygieneList({roomId}) 展示卫生记录（检查日期/评分/结果 tag/检查人/扣分项/评语），未入住显示空态。
+
+  - `src/views/student/RepairAdd.vue`（新增）：报修人/报修位置只读带出、联系电话、报修物品下拉（repair_type 字典）、问题描述、图片上传（最多 3 张 base64）；提交 addRepair 后跳转报修进度。
+
+  - `src/views/student/MyRepair.vue`（新增）：getRepairList({studentId}) 展示我的报修（单号/物品/描述/时间/处理人（联系电话）/状态 tag/处理说明）。
+
+  - `src/router/index.js`：注册 `/student/my-hygiene`、`/student/repair-add`、`/student/my-repair`（菜单已存在）。
+
+  **验证**：`vite build` 通过。Node 层全过：我的卫生（roomId=2 返回 2 条）、我的报修（王小明 2 条含已完成处理人回显）、提交报修生成新单号待处理（备案电话兜底）、缺物品/缺描述/学生不存在三项校验拦截。浏览器验证（王小明登录）：我的卫生展示 1号楼102室 2 条记录；提交报修表单字段齐全、不填拦截"请选择报修物品/请描述问题情况"、提交后成功跳转且进度页新增一条床铺报修；报修进度显示 3 条（待处理/已完成，王师傅（13800000003）与处理说明正确回显，状态 tag 颜色正确）；console 无 error（仅 2 条非错误的 vue/ECharts 提示）。
+
+<br />
+
+- **2026-09-04（操作日志 #30，全局设置 + 个人中心）** 开发管理员端「全局设置」与「个人中心」，及学生端「个人中心」，并让退宿申请原因对接字典。
+
+  **新增/修改**：
+
+  - `src/mock/settings.js`（新增）：系统参数（systemName/welcomeMessage/contactPhone/contactEmail get/update）；退宿原因字典 CRUD（初始 毕业离校/休学/退学/调宿/其他）；个人资料 get/update（管理员取登录账号，学生从 students 取并允许改联系电话/紧急联系人）；修改密码 changePassword（校验原密码/6-20 位，直接改 `users` 账号密码）。借 `getLoginUsers()` 运行时读账号，规避模块环引用取值过早。
+
+  - `src/mock/daily.js`：报修类型字典新增 createRepairType / updateRepairType / deleteRepairType（名称唯一校验；**被报修单引用的类型禁止删除**）。
+
+  - `src/mock/index.js`：注册 `POST /auth/change-password`、`GET/PUT /profile`、`GET/PUT /settings/params`、`GET/POST/PUT/DELETE /daily/checkout-reasons`、`POST/PUT/DELETE /daily/repair-types`；导出 `getLoginUsers`。
+
+  - `src/api/settings.js`（新增）：系统参数、退宿原因字典、个人资料、改密 的 API 封装；`src/api/daily.js` 补 createRepairType/updateRepairType/deleteRepairType。
+
+  - `src/views/admin/Settings.vue`（新增）：Tab「系统参数」（4 项参数表单保存）+ Tab「退宿原因字典」（CRUD，编辑弹窗名称/排序）。
+
+  - `src/views/admin/RepairType.vue`（新增）：报修类型字典 CRUD（同 BuildingList 风格），列表/编辑弹窗，删除被引用类型时后台拦截提示。
+
+  - `src/views/admin/Profile.vue`（新增）：个人资料（用户名/姓名/角色只读 + 联系电话/邮箱可编辑保存）+ 修改密码卡（原/新/确认，改密成功登出回登录页）。
+
+  - `src/views/student/Profile.vue`（新增）：个人资料（姓名/学号/性别/班级/学院/专业/在校住宿状态只读 + 联系电话/紧急联系人可改）+ 修改密码卡。
+
+  - `src/views/student/CheckoutApply.vue`：退宿原因下拉由硬编码改为 `getCheckoutReasons()` 字典加载。
+
+  - `src/router/index.js`：注册 `/admin/settings`、`/admin/repair-type`、`/admin/profile`、`/student/profile`；`src/layouts/AdminLayout.vue` 与 `StudentLayout.vue` 新增「系统设置/个人中心」左侧菜单与右上角下拉「个人中心」。
+
+  **验证**：`vite build` 通过（Settings/RepairType/Profile×2/CheckoutApply/settings/daily chunk 均产出）。浏览器验证（admin/123456 登录）：系统设置页 4 项系统参数显示、退宿原因 Tab CRUD（新增「参军」出现、删除恢复）；报修类型页 7 项列表、删除被引用「灯管」提示「该类型已被报修单引用，无法删除」且未删、新增「插座」成功；个人中心资料展示（admin/系统管理员/管理员）。学生（2023010101/123456）：个人资料全字段正常、修改密码卡存在、退宿申请原因下拉来自字典（毕业离校/休学/退学/调宿/其他）。
+
+  **修复**：浏览器自动化暴露学生个人资料字段全为 "-" 且 console 报 `Cannot read properties of undefined (reading 'find')`——`settings.js` 取 `getStudents(...).list` 误用，`getStudents` 返回是 `ok()` 包装体需 `.data.list`（与 `daily.js` 一致），已修正并复核通过（字段渲染正常、console 无该 error）。
+
+<br />
+
+- **2026-09-04（操作日志 #31，学生管理与班级管理合并 / 方案 B 两级联动）** 用户要求把「学生管理」与「班级管理」合并为一个页面，讨论后采用**方案 B：左班级 / 右学生两级联动**（master-detail）。
+
+  **改动**：
+
+  - `src/mock/baseData.js`：`getStudents` 新增 `className` 筛选（班内学生过滤）；`deleteClass` 增加**引用校验**——班内仍有学生则返回"该班级下仍有学生，无法删除"（与报修类型/退宿原因引用校验约定对齐）。
+  - `src/views/admin/StudentList.vue` 重写为两级联动页：左侧班级列表面板（搜索、选中高亮、编辑/删除按钮、学生数/住宿数统计、新增班级），右侧选中班级的学生（学号/姓名/状态筛选 + 表格 + 分页 + 学生增删改）；学生弹窗在班内新增时**预填当前班级并自动带出学院/专业**；班级列表保持选中、删当前班自动回落到第一个班。
+  - `src/layouts/AdminLayout.vue`：基础数据菜单由「学生管理 / 班级管理」两项收敛为「学生/班级管理」一项（指向 /admin/students）。
+  - `src/router/index.js`：`/admin/students` 标题改为「学生/班级管理」；移除 `/admin/classes` 路由。
+  - 删除 `src/views/admin/ClassList.vue`（功能并入 StudentList，页面不再独立）。
+
+  **验证**：`vite build` 通过（`✓ built`）。浏览器核验（admin/123456）：① 菜单仅剩「学生/班级/楼栋/房间」四项，/admin/classes 访问为 404（No match）；② 默认选中「软工2301」右侧为该班 3 人（无外班混入），切「计科2301」→陈雨萱、「英语2201」→赵敏/孙悦（住宿状态已退宿）；③ 班内新增学生自动预填班级/学院/专业，保存后立即出现、删除后消失；④ 删除有学生的「软工2301」被拦截提示"该班级下仍有学生，无法删除"，列表保留；⑤ 班级项悬停浮出编辑/删除按钮，console 无 Vue 报错（核心项 PASS，空班删除/分页/筛选为与已验证 CRUD 同模式的低风险项）。
+
+  **连带说明**：数据库 `class`/`student` 两表保持独立（合并仅 UI/导航层），`student.className` 快照与 `class.studentCount` 统计均由 Service/后端维护。

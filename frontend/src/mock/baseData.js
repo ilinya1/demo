@@ -117,7 +117,13 @@ export function createClass(d) {
 export function updateClass(id, d) {
   const i = classes.findIndex((c) => c.id === Number(id))
   if (i === -1) return { code: 1, msg: '班级不存在' }
-  classes[i] = { ...classes[i], ...d, id: Number(id) }
+  const old = classes[i]
+  // 班级改名时校验重名，并级联更新该班学生归属（class-学生以 name 为逻辑关联键，student.className 为可更新字段）
+  if (d.name && d.name !== old.name) {
+    if (classes.some((c) => c.id !== Number(id) && c.name === d.name)) return { code: 1, msg: '班级名称已存在' }
+    students.forEach((s) => { if (s.className === old.name) s.className = d.name })
+  }
+  classes[i] = { ...old, ...d, id: Number(id) }
   return ok(null)
 }
 export function deleteClass(id) {

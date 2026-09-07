@@ -95,6 +95,12 @@ export function updateStudent(id, d) {
 export function deleteStudent(id) {
   const i = students.findIndex((s) => s.studentId === id)
   if (i === -1) return { code: 1, msg: '学生不存在' }
+  // 联动释放该生占用的床位（若在住），并重算对应房间占用
+  Object.keys(bedStudents).forEach((roomId) => {
+    const bedIdx = bedStudents[roomId]
+    const bedNo = Object.keys(bedIdx).find((b) => bedIdx[b] === id)
+    if (bedNo) freeBed(Number(roomId), Number(bedNo), id)
+  })
   students.splice(i, 1)
   return ok(null)
 }
@@ -211,13 +217,18 @@ export function roomOptions() {
 }
 
 // ============ 床位 ============
-// 预置 1号楼 102 室（1-4 号床，前 3 床占住，对应原型 room-detail 三人在住）
-const bedRecords = {
-  2: [1, 2, 3]
+// 床位占用以「在住」入住记录为唯一权威源：在 checkin.js 初始化后调用
+// initBedsFromRecords() 重建快照，保证 床位/房间占用/入住记录 三者一致，
+// 避免删除在住学生时联动释放因快照缺失而失效。
+let bedStudents = {}
+const bedStudentsSeed = {
+  2: { 1: '2023010101', 2: '2023010102', 3: '2023010105', 4: '2023010401' }, // 102室 4 床（与原型 room-detail 在住一致）
+  3: { 1: '2023010301' }, // 103室 1 床
+  5: { 1: '2023010201' } // 201室 1 床
 }
-const bedStudents = {
-  2: { 1: '2023010101', 2: '2023010102', 3: '2023010105' }
-}
+// 用权威 seed 初始化床位快照，并同步各房间占用数/状态（对齐 checkInRecords 在住记录）
+bedStudents = JSON.parse(JSON.stringify(bedStudentsSeed))
+Object.keys(bedStudents).forEach((rid) => recomputeRoomOccupancy(rid))
 function buildBeds(roomId) {
   const room = rooms.find((r) => r.id === Number(roomId))
   if (!room) return []

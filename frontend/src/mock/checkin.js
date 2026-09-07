@@ -227,3 +227,16 @@ export function cancelCheckoutApp(studentId, id) {
   checkoutApplications.splice(idx, 1)
   return ok(null)
 }
+
+// ---- 删除学生联动清理（供 baseData.deleteStudent 编排调用）----
+// 移除该生全部入住记录与退宿申请，避免 mock 内存数据残留孤儿记录；
+// 床位/房间占用已在 baseData.deleteStudent 中先行释放。
+export function removeStudentRecords(studentId) {
+  for (let i = checkInRecords.length - 1; i >= 0; i--) {
+    if (checkInRecords[i].studentId === studentId) checkInRecords.splice(i, 1)
+  }
+  for (let i = checkoutApplications.length - 1; i >= 0; i--) {
+    if (checkoutApplications[i].studentId === studentId) checkoutApplications.splice(i, 1)
+  }
+  return ok(null)
+}

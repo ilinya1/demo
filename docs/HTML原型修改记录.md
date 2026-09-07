@@ -683,3 +683,14 @@
   - 实库执行：`ALTER TABLE dorm_manager.student ADD COLUMN emergency_phone VARCHAR(20) ... AFTER emergency_contact`，并按学号 UPDATE 填充 3 名学生电话；`SHOW COLUMNS` 与 `SELECT` 均确认字段存在、数据就位。
 
   涉及文件：docs/sql/init.sql、docs/数据库设计说明.md；数据库 dorm_manager.student 已同步变更。
+
+- **2026-09-07（操作日志 #37，mock 数据一致性加固：删除在住学生联动释放床位）** 检查「新增学生」功能时，用户要求修复「删除在住学生未联动释放床位」。诊断发现根因是 mock 内存中**床位快照（bedStudents）、房间占用（rooms[].occupiedCount/status）、入住记录（checkInRecords）三套数据各自硬编码、互不对齐**（床位快照仅初始化 102 室，而 `rooms` 却把 201/103 标为"已满"，`checkInRecords` 显示学生却住这些房间），导致删除在住学生时联动释放因快照缺失而失效。
+  - `src/mock/baseData.js` `deleteStudent`：删除前遍历床位快照，命中床位 `freeBed` 释放 + `recomputeRoomOccupancy` 重算房间占用；床位初始化由「仅 102 室」扩展为对齐所有在住记录的 `bedStudentsSeed`（102/103/201），加载时同步各房间占用/状态。
+  - `src/mock/checkin.js` 新增 `removeStudentRecords`：清理该生全部入住记录与退宿申请，避免 orphan 残留。
+  - `src/mock/index.js` DELETE `/students/{id}` 分支：学生删除**成功后**依次执行床位释放 → 记录清理。
+  - 验证：删除张小飞后 2号楼201 室 已住 1→0、状态 部分入住→空闲、其入住记录清除，均 PASS；`vite build` 通过。
+  - 另：**入住记录页移除「来源」列**（入驻记录仅管理员登记，唯一来源，无需列示；`source` 字段内部仍保留，属 UI 展示调整）。
+  - 涉及文件：src/mock/baseData.js、src/mock/checkin.js、src/mock/index.js、src/views/admin/CheckinRecord.vue。
+
+- **2026-09-07（操作日志 #38，交接文档升级 v6）** 将 v6 阶段改动（运营工作台、mock 数据一致性加固、UI 补全、`student.emergency_phone`）写入 `docs/项目交接文档.md`：新增「六之一、v6」章节，更新头部版本、当前技术状态（数据库样例一致性表述、emergency_phone 列）、版本修订记录新增 v6 行。
+  - 涉及文件：docs/项目交接文档.md。

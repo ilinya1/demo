@@ -31,7 +31,8 @@ import {
   buildingOptions,
   currentRoom,
   submitCheckoutApply,
-  cancelCheckoutApp
+  cancelCheckoutApp,
+  removeStudentRecords
 } from './checkin'
 
 // 认证逻辑/登录账号抽至独立 authData.js，避免模块环引用
@@ -105,7 +106,12 @@ export function mockHandle(method, url, params, data) {
   if (method === 'GET' && p === '/students') return getStudents(params)
   if (method === 'POST' && p === '/students') return createStudent(data)
   if (method === 'PUT' && /^\/students\/[\s\S]+$/.test(p)) return updateStudent(decodeURIComponent(p.replace('/students/', '')), data)
-  if (method === 'DELETE' && /^\/students\/[\s\S]+$/.test(p)) return deleteStudent(decodeURIComponent(p.replace('/students/', '')))
+  if (method === 'DELETE' && /^\/students\/[\s\S]+$/.test(p)) {
+    const sid = decodeURIComponent(p.replace('/students/', ''))
+    const r = deleteStudent(sid)
+    if (r.code === 0) removeStudentRecords(sid) // 成功后联动清理入住/退宿记录
+    return r
+  }
   // 学生单条（住宿业务带出学生信息）
   if (method === 'GET' && /^\/students\/[\s\S]+$/.test(p)) return getStudent(p.replace('/students/', ''))
 

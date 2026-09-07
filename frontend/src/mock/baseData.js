@@ -13,16 +13,16 @@ const classes = [
 
 // ---- 学生 ----
 const students = [
-  { studentId: '2023010101', name: '王小明', gender: '男', college: '计算机学院', major: '软件工程', className: '软工2301', contactPhone: '13800001234', emergencyContact: '王建国', academicStatus: '在校', housingStatus: '在住' },
-  { studentId: '2023010102', name: '李小红', gender: '女', college: '计算机学院', major: '软件工程', className: '软工2301', contactPhone: '13900005678', emergencyContact: '李国强', academicStatus: '在校', housingStatus: '在住' },
-  { studentId: '2023010201', name: '张小飞', gender: '男', college: '计算机学院', major: '软件工程', className: '软工2302', contactPhone: '13700009012', emergencyContact: '张贵', academicStatus: '在校', housingStatus: '在住' },
-  { studentId: '2023010301', name: '陈雨萱', gender: '女', college: '计算机学院', major: '计算机科学与技术', className: '计科2301', contactPhone: '13500007890', emergencyContact: '陈城', academicStatus: '在校', housingStatus: '在住' },
-  { studentId: '2023010105', name: '王凯', gender: '男', college: '计算机学院', major: '软件工程', className: '软工2301', contactPhone: '13300002223', emergencyContact: '王大山', academicStatus: '在校', housingStatus: '在住' },
-  { studentId: '2023020101', name: '刘少军', gender: '男', college: '机械工程学院', major: '机械设计制造及其自动化', className: '机设2301', contactPhone: '13600003456', emergencyContact: '刘军', academicStatus: '在校', housingStatus: '未住' },
-  { studentId: '2023020102', name: '李娜', gender: '女', college: '机械工程学院', major: '机械设计制造及其自动化', className: '机设2301', contactPhone: '13200003334', emergencyContact: '李平', academicStatus: '在校', housingStatus: '未住' },
-  { studentId: '2023010401', name: '周杰', gender: '男', college: '机械工程学院', major: '机械设计制造及其自动化', className: '机设2301', contactPhone: '13100004445', emergencyContact: '周涛', academicStatus: '在校', housingStatus: '在住' },
-  { studentId: '2022010101', name: '赵敏', gender: '女', college: '外国语学院', major: '英语', className: '英语2201', contactPhone: '13400001112', emergencyContact: '赵梦', academicStatus: '毕业', housingStatus: '已退宿' },
-  { studentId: '2022010203', name: '孙悦', gender: '女', college: '外国语学院', major: '英语', className: '英语2201', contactPhone: '13000005556', emergencyContact: '孙红', academicStatus: '毕业', housingStatus: '已退宿' }
+  { studentId: '2023010101', name: '王小明', gender: '男', college: '计算机学院', major: '软件工程', className: '软工2301', contactPhone: '13800001234', emergencyContact: '王建国', emergencyPhone: '13911110001', academicStatus: '在校', housingStatus: '在住' },
+  { studentId: '2023010102', name: '李小红', gender: '女', college: '计算机学院', major: '软件工程', className: '软工2301', contactPhone: '13900005678', emergencyContact: '李国强', emergencyPhone: '13911110002', academicStatus: '在校', housingStatus: '在住' },
+  { studentId: '2023010201', name: '张小飞', gender: '男', college: '计算机学院', major: '软件工程', className: '软工2302', contactPhone: '13700009012', emergencyContact: '张贵', emergencyPhone: '13911110003', academicStatus: '在校', housingStatus: '在住' },
+  { studentId: '2023010301', name: '陈雨萱', gender: '女', college: '计算机学院', major: '计算机科学与技术', className: '计科2301', contactPhone: '13500007890', emergencyContact: '陈城', emergencyPhone: '13911110004', academicStatus: '在校', housingStatus: '在住' },
+  { studentId: '2023010105', name: '王凯', gender: '男', college: '计算机学院', major: '软件工程', className: '软工2301', contactPhone: '13300002223', emergencyContact: '王大山', emergencyPhone: '13911110005', academicStatus: '在校', housingStatus: '在住' },
+  { studentId: '2023020101', name: '刘少军', gender: '男', college: '机械工程学院', major: '机械设计制造及其自动化', className: '机设2301', contactPhone: '13600003456', emergencyContact: '刘军', emergencyPhone: '13911110006', academicStatus: '在校', housingStatus: '未住' },
+  { studentId: '2023020102', name: '李娜', gender: '女', college: '机械工程学院', major: '机械设计制造及其自动化', className: '机设2301', contactPhone: '13200003334', emergencyContact: '李平', emergencyPhone: '13911110007', academicStatus: '在校', housingStatus: '未住' },
+  { studentId: '2023010401', name: '周杰', gender: '男', college: '机械工程学院', major: '机械设计制造及其自动化', className: '机设2301', contactPhone: '13100004445', emergencyContact: '周涛', emergencyPhone: '13911110008', academicStatus: '在校', housingStatus: '在住' },
+  { studentId: '2022010101', name: '赵敏', gender: '女', college: '外国语学院', major: '英语', className: '英语2201', contactPhone: '13400001112', emergencyContact: '赵梦', emergencyPhone: '13911110009', academicStatus: '毕业', housingStatus: '已退宿' },
+  { studentId: '2022010203', name: '孙悦', gender: '女', college: '外国语学院', major: '英语', className: '英语2201', contactPhone: '13000005556', emergencyContact: '孙红', emergencyPhone: '13911110010', academicStatus: '毕业', housingStatus: '已退宿' }
 ]
 
 // ---- 楼栋 ----

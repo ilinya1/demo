@@ -43,9 +43,6 @@
             <el-tag :type="row.status === '在住' ? 'success' : 'info'">{{ row.status }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="来源" width="100">
-          <template #default="{ row }">{{ row.source === 'direct' ? '直接退宿' : row.source === 'manual' ? '管理员登记' : '学生申请' }}</template>
-        </el-table-column>
         <el-table-column label="操作" width="110" fixed="right">
           <template #default="{ row }">
             <el-button v-if="row.status === '在住'" link type="danger" @click="onCheckout(row)">退宿</el-button>

@@ -12,6 +12,7 @@ import {
   getBeds, roomOptions
 } from './baseData'
 import { statOccupancy, statHygiene, statRepair } from './stats'
+import { workbench } from './workbench'
 import { getRepairTypes, createRepairType, updateRepairType, deleteRepairType, listHygiene, addHygiene, listRepair, getRepair, handleRepair, createRepair } from './daily'
 import {
   getSystemParams, updateSystemParams, resetSystemParams,
@@ -93,6 +94,7 @@ export function mockHandle(method, url, params, data) {
   if (method === 'GET' && p === '/dashboard/stats') return dashboardStats()
   if (method === 'GET' && p === '/dashboard/building-occupancy') return buildingOccupancy()
   if (method === 'GET' && p === '/dashboard/hygiene-trend') return hygieneTrend()
+  if (method === 'GET' && p === '/dashboard/workbench') return workbench()
 
   // 统计报表（并入仪表盘）
   if (method === 'GET' && p === '/stats/occupancy') return statOccupancy()

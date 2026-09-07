@@ -42,6 +42,7 @@ CREATE TABLE `student` (
     `class_id`       BIGINT               COMMENT '逻辑外键 -> class.id',
     `contact_phone`  VARCHAR(20)          COMMENT '联系方式',
     `emergency_contact` VARCHAR(50)       COMMENT '紧急联系人',
+    `emergency_phone` VARCHAR(20)         COMMENT '紧急联系人电话',
     `academic_status` VARCHAR(10) NOT NULL DEFAULT '在校' COMMENT '学籍状态：在校/毕业/退学/休学',
     `housing_status` VARCHAR(10)  NOT NULL DEFAULT '未住' COMMENT '住宿状态：在住/已退宿/未住（冗余，随 check_in 同步）',
     `created_at`     DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -259,10 +260,10 @@ INSERT INTO `class` (`id`, `class_name`, `college`, `major`, `grade`, `head_teac
 (5, '英语2201', '外国语学院', '英语', '2022', '孙老师');
 
 -- 学生（与原型演示一致：2023010101 / 123456；三人入住 1号楼 102 室）
-INSERT INTO `student` (`student_id`, `name`, `gender`, `college`, `major`, `class_id`, `contact_phone`, `emergency_contact`, `academic_status`, `housing_status`) VALUES
-('2023010101', '王小明', '男', '计算机学院', '软件工程', 1, '13800000001', '王父',    '在校', '在住'),
-('2023010102', '李小红', '女', '计算机学院', '计算机科学与技术', 3, '13800000002', '李父', '在校', '在住'),
-('2023010103', '陈强',   '男', '计算机学院', '软件工程', 1, '13800000003', '陈父',    '在校', '在住');
+INSERT INTO `student` (`student_id`, `name`, `gender`, `college`, `major`, `class_id`, `contact_phone`, `emergency_contact`, `emergency_phone`, `academic_status`, `housing_status`) VALUES
+('2023010101', '王小明', '男', '计算机学院', '软件工程', 1, '13800000001', '王父',    '13911110001', '在校', '在住'),
+('2023010102', '李小红', '女', '计算机学院', '计算机科学与技术', 3, '13800000002', '李父', '13911110002', '在校', '在住'),
+('2023010103', '陈强',   '男', '计算机学院', '软件工程', 1, '13800000003', '陈父',    '13911110003', '在校', '在住');
 
 -- 登录账号（演示密码均为 123456，用 {noop} 明文占位；生产请改 BCrypt 密文）
 INSERT INTO `sys_user` (`username`, `password`, `role`, `student_id`) VALUES

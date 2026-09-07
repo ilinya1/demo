@@ -15,4 +15,9 @@ export function getHygieneTrend() {
   return request({ url: '/dashboard/hygiene-trend' })
 }
 
-export default { getDashboardStats, getBuildingOccupancy, getHygieneTrend }
+/** 运营工作台聚合：GET /api/dashboard/workbench -> {todos,backlog,alerts,feeds} */
+export function getWorkbench() {
+  return request({ url: '/dashboard/workbench' })
+}
+
+export default { getDashboardStats, getBuildingOccupancy, getHygieneTrend, getWorkbench }

@@ -23,7 +23,7 @@
               <el-tag size="small" effect="plain">{{ c.grade }}</el-tag>
             </div>
             <div class="ci-sub">{{ c.college }} · {{ c.major }}</div>
-            <div class="ci-sub">学生 {{ c.studentCount }} · 住宿 {{ c.boardingCount }}</div>
+            <div class="ci-sub">班主任：{{ c.headTeacher || '—' }} | 学生 {{ c.studentCount }} · 住宿 {{ c.boardingCount }}</div>
             <div class="ci-ops" @click.stop>
               <el-button link type="primary" size="small" @click="openClassDialog(c)">编辑</el-button>
               <el-button link type="danger" size="small" @click="onDeleteClass(c)">删除</el-button>
@@ -80,6 +80,12 @@
           <el-table-column prop="housingStatus" label="住宿状态" width="100">
             <template #default="{ row }">
               <el-tag :type="housingTag(row.housingStatus)" effect="plain">{{ row.housingStatus }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="紧急联系人" width="170">
+            <template #default="{ row }">
+              <template v-if="row.emergencyContact">{{ row.emergencyContact }}<span class="e-contact">{{ row.emergencyPhone || '—' }}</span></template>
+              <span v-else>—</span>
             </template>
           </el-table-column>
           <el-table-column label="操作" width="140" fixed="right">
@@ -162,6 +168,9 @@
         </el-form-item>
         <el-form-item label="紧急联系人">
           <el-input v-model="form.emergencyContact" placeholder="请输入紧急联系人" />
+        </el-form-item>
+        <el-form-item label="紧急联系人电话">
+          <el-input v-model="form.emergencyPhone" placeholder="请输入紧急联系人电话" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -279,7 +288,7 @@ const dialogVisible = ref(false)
 const saving = ref(false)
 const formRef = ref(null)
 const editing = ref(null) // 编辑时记录原始学号
-const emptyForm = { studentId: '', name: '', gender: '男', className: '', college: '', major: '', contactPhone: '', emergencyContact: '', academicStatus: '在校', housingStatus: '未住' }
+const emptyForm = { studentId: '', name: '', gender: '男', className: '', college: '', major: '', contactPhone: '', emergencyContact: '', emergencyPhone: '', academicStatus: '在校', housingStatus: '未住' }
 const form = reactive({ ...emptyForm })
 
 const rules = {
@@ -401,4 +410,5 @@ onMounted(() => { loadClasses(); loadAllClasses() })
 .toolbar { display: flex; gap: 10px; margin-bottom: 14px; align-items: center; }
 .toolbar .tb-title { font-weight: 800; color: var(--d-ink); margin-right: auto; }
 .pager { margin-top: 14px; justify-content: flex-end; }
+.e-contact { margin-left: 6px; font-size: 12px; color: var(--d-muted); }
 </style>

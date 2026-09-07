@@ -663,3 +663,23 @@
   **连带说明**：本次复查未发现其他阻断性问题；容量/占用、住宿状态枚举、api↔mock 契约、路由/菜单/守卫、模块环引用（authData 唯一依赖方向）等均一致。
 
 - **2026-09-04（操作日志 #33，交接文档升级至 v5）** 按要求更新 docs/项目交接文档.md，把此前严重滞后（描述为"静态 HTML 原型 + 后端骨架 + DB 未建库"）的状态刷新为当前实况，记录"已做什么 + 后续做什么"。核实前端清单（package.json 与 views/api/mock 盘点）后确认关键事实：Vue ^3.5 / Vite ^6 / Element Plus ^2.14 / Pinia ^3 / Vue Router ^4.5 / Axios ^1.7 / ECharts ^6；MySQL80 已运行 dorm_manager（11 表）；admin 视图 16、student 视图 6。文档 v5 新增「六、v5 —— Vue3 前端开发落地与数据库修订」章节（前端升级、双端模块表、mock 架构、关键设计/修复、DB 10→11 表 epair_type/epair_order.type_id），并将「当前技术状态」「后续开发待办」（后端最高优先 + mybatis-plus-spring-boot4-starter 约束 + 前端联调/上传/统计真实化/部署）「版本修订记录」整体翻新，目录树与技术栈同步校正。涉及文件：docs/项目交接文档.md（v1→v5）。
+
+- **2026-09-07（操作日志 #34，管理端仪表盘升级为运营工作台）** 用户反映仪表盘功能偏少、较单调，经方案对比（A 功能增强 / B 运营工作台 / C 轻量交互）后选定**方案 B**。在保留原「4 张统计卡 + 楼栋入住率条形图 + 卫生均分折线图」基础上扩展：
+  - **新增**`src/mock/workbench.js`：`/dashboard/workbench` 聚合端点，复用 daily/checkin 的真实在存数据（listRepair/listHygiene/listCheckoutApps/listCheckinRecords 全量拉取）统计——待办（待审核退宿/待处理报修/在住/已退宿）、报修与退宿积压分布、运营告警（报修超 3 天未处理、卫生不合格、退宿待审核）、最新报修/退宿动态。
+  - `src/mock/index.js` 注册端点；`src/api/dashboard.js` 新增 `getWorkbench()`。
+  - 重写 `src/views/admin/Dashboard.vue`：统计卡 + **快捷入口**（入住登记/退宿处理/卫生检查/报修管理，router 跳转）+ 待办格 + 积压分段进度条 + 运营告警 + 最新报修/退宿动态列表 + 沿用两张 ECharts 图；快速入口路由与 /admin/checkin、/checkout-audit、/hygiene-list、/repair-list 对齐。
+
+  **验证**：`vite build` 通过（`✓ built`，exit 1 仅为沙箱不能写 esbuild 缓存日志，非代码问题；Dashboard chunk 已生成）。浏览器实测（admin/123456）：① 4 张统计卡数值正确；② 快捷入口 4 按钮渲染、点「退宿处理」正确跳至 /admin/checkout-audit；③ 待办四项计数与 mock 一致（待审核退宿 2、待处理报修 1、在住 6、已退宿 2）；④ 楼栋入住率条形图与卫生均分折线图正常渲染；⑤ 运营告警显示报修超时/卫生不合格/退宿待审核三类条目；⑥ 最新报修/退宿动态列表正常；⑦ console 无 404/undefined，仅存非阻塞性 Vue/ECharts 警告（全部 PASS）。涉及文件：src/mock/workbench.js（新增）、src/mock/index.js、src/api/dashboard.js、src/views/admin/Dashboard.vue。
+
+- **2026-09-07（操作日志 #35，学生/班级管理信息展示补全）** 用户要求在基础数据中的学生/班级管理页完善信息展示：① 左侧班级栏显示班主任；② 右侧学生栏显示紧急联系人及其联系方式。
+  - `src/views/admin/StudentList.vue`：左侧班级项信息区增加「班主任：xxx」；右侧学生表格新增「紧急联系人」列（姓名 + 联系方式并排，未填显示 —）；学生新增/编辑弹窗增加「紧急联系人电话」输入项并纳入表单提交对象（emptyForm 加 `emergencyPhone`）。
+  - `src/mock/baseData.js`：学生 mock 数据补 `emergencyPhone` 字段（10 名学生各配 13911110001~010）。
+
+  **验证**：`vite build` 通过（`✓ built`）。班主任、紧急联系人姓名/电话展示与录入、mock 数据字段更新均已实现，页面结构经代码审读确认。涉及文件：src/views/admin/StudentList.vue、src/mock/baseData.js。
+
+- **2026-09-07（操作日志 #36，student 表新增 emergency_phone 字段）** 承接 #35：前端新增的「紧急联系人电话」需数据库支撑，同步数据库设计并应用到已建库。
+  - `docs/sql/init.sql`：`student` 表 `emergency_contact` 后新增 `emergency_phone VARCHAR(20) COMMENT '紧急联系人电话'`；INSERT 语句属性列补 `emergency_phone`，3 名示例学生各填 13911110001~003。
+  - `docs/数据库设计说明.md`：3.2 student 字段表新增 `emergency_phone | VARCHAR(20) | — | 紧急联系人电话` 一行。
+  - 实库执行：`ALTER TABLE dorm_manager.student ADD COLUMN emergency_phone VARCHAR(20) ... AFTER emergency_contact`，并按学号 UPDATE 填充 3 名学生电话；`SHOW COLUMNS` 与 `SELECT` 均确认字段存在、数据就位。
+
+  涉及文件：docs/sql/init.sql、docs/数据库设计说明.md；数据库 dorm_manager.student 已同步变更。

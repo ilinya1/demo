@@ -882,3 +882,10 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   4. **项目收尾文档**：新增根 `README.md`（技术栈/环境/建库/启动/演示账号/mock切换/测试说明/目录结构）。
   - **涉及文件**：新增 `src/test/resources/application-test.yaml`、`docs/sql/refresh-test-db.cmd`、`README.md`、`uploads/hygiene/h1~h8.jpg`；修改 `common/jwt/WebMvcConfig.java`、`frontend/vite.config.js`、`docs/sql/init.sql`（sys_user 种子）、9 个测试类（`@ActiveProfiles`）。
 
+- **2026-09-08（操作日志 #63，一键启动脚本 + 固定前端端口）** 用户要求「生成一键启动前后端的文件」。
+  1. **新增 `start-dev.cmd`**（项目根，双击即用）：自动检查并启动 MySQL80 服务 → 本机存在 `D:\JAVA\jdk-21.0.7` 时优先设 JAVA_HOME（规避系统 1.8）→ 用 `start` 分别打开「后端 :8080/api」与「前端 :3001」两个工作窗口，关闭窗口即停止。
+  2. **固定前端端口**：`frontend/vite.config.js` 的 dev 端口由 3000 改为 **3001 并加 `strictPort: true`**（此前 3000 常被系统占用导致端口漂移、与 README/实装不一致）。
+  3. **验证**：脚本内含命令（`mvn spring-boot:run`、`npm.cmd run dev`）以托管方式原样运行均正常（后端 `/api/auth/login` 200、前端 :3001 200）；`.cmd` 已统一为 CRLF 无 BOM，引号配平。注：聊天内通过 Start-Process 无人值守弹窗验证受限（GUI 窗口 stdout 不可读），故以托管命验证命令链路确认脚本逻辑正确，最终以用户双击运行结果为准。
+  4. **README** 启动章补充「双击 start-dev.cmd 一键启动」说明。
+  - **涉及文件**：新增 `start-dev.cmd`；修改 `frontend/vite.config.js`、`README.md`。
+

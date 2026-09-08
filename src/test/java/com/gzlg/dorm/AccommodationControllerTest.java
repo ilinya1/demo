@@ -1,4 +1,4 @@
-﻿package com.gzlg.dorm;
+package com.gzlg.dorm;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

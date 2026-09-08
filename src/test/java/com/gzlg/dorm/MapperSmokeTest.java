@@ -1,4 +1,4 @@
-﻿package com.gzlg.dorm;
+package com.gzlg.dorm;
 
 import com.gzlg.dorm.mapper.ClazzMapper;
 import com.gzlg.dorm.mapper.RepairTypeMapper;

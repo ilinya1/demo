@@ -775,3 +775,21 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   - **验证**：`npm run build` 通过（`✓ built`）。
   - **涉及文件**：frontend/src/views/admin/StudentList.vue。
 
+- **2026-09-08（操作日志 #50，后端开发环境准备）** 进入后端开发阶段前的环境就绪，全部验证通过：
+  - **环境核对**：JDK 21.0.7、Maven 3.9.16、MySQL80（8.0.34）服务运行中；IDE 已配置 Project SDK=21（`project-jdk-name="21"` → `D:\JAVA\jdk-21.0.7`，`misc.xml`/`jdk.table.xml` 已就绪，无模块级覆盖）。
+  - **pom.xml**：新增 `mybatis-plus-spring-boot4-starter`(3.5.17，Spring Boot 4 专用)、`mysql-connector-j`(runtime)、`spring-boot-starter-validation`。
+  - **包结构重构**：`com.example.demo` → `com.gzlg.dorm`；新启动类 `DormApplication`（`@MapperScan("com.gzlg.dorm.mapper")`）；旧包文件删除、测试类迁移。
+  - **application.yaml**：数据源 `dorm_manager`（root，密码 `123456` 已填）+ MyBatis-Plus 驼峰映射/自增主键/不启用逻辑删除 + 端口 8080。
+  - **验证**：`mvn -q compile` 通过；启动 `spring-boot:run` 成功（`Started DormApplication`、Tomcat 8080、数据源连通无错误；仅"mapper 包暂空"的 WARN 属预期），验证后已停服务。
+  - **涉及文件**：pom.xml、src/main/java/com/gzlg/dorm/DormApplication.java（新增）、src/test/java/com/gzlg/dorm/DormApplicationTests.java、src/main/resources/application.yaml；删除 com/example/demo 旧包。
+
+- **2026-09-08（操作日志 #51，后端统一返回与异常处理地基）** 搭建后端基础返回与异常层（`com.gzlg.dorm.common.*`）：
+  - `common/result/Result<T>`：`{code, msg, data}`，静态 `ok()/fail()`。
+  - `common/result/ResultCode`：`0=成功`、400/401/403/404/500 对应 HTTP 语义。
+  - `common/result/PageResult<T>`：`{list, total}`（对齐前端分页读取）。
+  - `common/exception/BizException`：携带 code+msg 的业务异常。
+  - `common/exception/GlobalExceptionHandler`：`@RestControllerAdvice` 统一捕获 BizException、参数校验（MethodArgumentNotValid/Bind/ConstraintViolation/TypeMismatch/HttpMessageNotReadable）、404（NoResourceFound）、兜底 Exception；均返回 **HTTP 200 + {code,msg}**（前端以 code!==0 判定失败并弹 msg）。
+  - **契约对齐（关键）**：开发设计文档原写 `code:200=成功 / message / PageResult.records`，与实际前端 `request.js`（`code===0` 成功、读 `msg`、分页读 `list/total`）矛盾。已按**前端契约为准**实现，并同步更新《开发设计文档》第四章。
+  - **验证**：`mvn -q compile` 通过；`mvn -q test`（contextLoads）通过（仅 MyBatis mapper 包暂空 WARN、Mockito 动态 agent 提示，均非错误）。
+  - **涉及文件**：新增 src/main/java/com/gzlg/dorm/common/result/{Result,ResultCode,PageResult}.java、common/exception/{BizException,GlobalExceptionHandler}.java；修改 docs/开发设计文档.md（第四章）。
+

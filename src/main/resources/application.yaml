@@ -1,3 +1,20 @@
 spring:
   application:
-    name: demo
+    name: dorm-manager
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/dorm_manager?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+
+server:
+  port: 8080
+
+mybatis-plus:
+  configuration:
+    mapUnderscoreToCamelCase: true # 库下划线字段 ↔ 实体驼峰属性自动映射
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+  global-config:
+    db-config:
+      id-type: auto                 # 主键自增（物理主键均 AUTO_INCREMENT）
+      logic-delete-field: none      # 本项目未设计逻辑删除字段，不启用

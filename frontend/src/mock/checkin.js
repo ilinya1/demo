@@ -18,14 +18,14 @@ function roomById(id) {
 // ---- 入住记录 ----
 let seq = 100
 let checkInRecords = [
-  { id: 1, studentId: '2023010101', studentName: '王小明', className: '软工2301', buildingName: '1号楼', roomId: 2, roomNo: '102', bedNo: 1, checkInTime: '2023-09-01', checkOutTime: null, source: 'apply', status: '在住', remark: '' },
-  { id: 2, studentId: '2023010102', studentName: '李小红', className: '软工2301', buildingName: '1号楼', roomId: 2, roomNo: '102', bedNo: 2, checkInTime: '2023-09-01', checkOutTime: null, source: 'apply', status: '在住', remark: '' },
-  { id: 3, studentId: '2023010105', studentName: '王凯', className: '软工2301', buildingName: '1号楼', roomId: 2, roomNo: '102', bedNo: 3, checkInTime: '2023-09-01', checkOutTime: null, source: 'apply', status: '在住', remark: '' },
-  { id: 4, studentId: '2023010301', studentName: '陈雨萱', className: '计科2301', buildingName: '1号楼', roomId: 3, roomNo: '103', bedNo: 1, checkInTime: '2023-09-01', checkOutTime: null, source: 'apply', status: '在住', remark: '' },
-  { id: 5, studentId: '2023010401', studentName: '周杰', className: '机设2301', buildingName: '1号楼', roomId: 2, roomNo: '102', bedNo: 4, checkInTime: '2024-09-02', checkOutTime: null, source: 'manual', status: '在住', remark: '' },
-  { id: 6, studentId: '2023010201', studentName: '张小飞', className: '软工2302', buildingName: '2号楼', roomId: 5, roomNo: '201', bedNo: 1, checkInTime: '2023-09-01', checkOutTime: null, source: 'apply', status: '在住', remark: '' },
-  { id: 7, studentId: '2022010101', studentName: '赵敏', className: '英语2201', buildingName: '3号楼', roomId: 8, roomNo: '301', bedNo: 1, checkInTime: '2022-09-01', checkOutTime: '2026-06-30', source: 'apply', status: '已退宿', remark: '毕业离校' },
-  { id: 8, studentId: '2022010203', studentName: '孙悦', className: '英语2201', buildingName: '3号楼', roomId: 9, roomNo: '302', bedNo: 2, checkInTime: '2022-09-01', checkOutTime: '2026-06-30', source: 'apply', status: '已退宿', remark: '毕业离校' }
+  { id: 1, studentId: '2023010101', studentName: '王小明', className: '软工2301', buildingId: 1, buildingName: '1号楼', roomId: 2, bedId: '2-1', roomNo: '102', bedNo: 1, checkInTime: '2023-09-01', checkOutTime: null, source: '', status: '在住', remark: '' },
+  { id: 2, studentId: '2023010102', studentName: '李小红', className: '软工2301', buildingId: 1, buildingName: '1号楼', roomId: 2, bedId: '2-2', roomNo: '102', bedNo: 2, checkInTime: '2023-09-01', checkOutTime: null, source: '', status: '在住', remark: '' },
+  { id: 3, studentId: '2023010105', studentName: '王凯', className: '软工2301', buildingId: 1, buildingName: '1号楼', roomId: 2, bedId: '2-3', roomNo: '102', bedNo: 3, checkInTime: '2023-09-01', checkOutTime: null, source: '', status: '在住', remark: '' },
+  { id: 4, studentId: '2023010301', studentName: '陈雨萱', className: '计科2301', buildingId: 1, buildingName: '1号楼', roomId: 3, bedId: '3-1', roomNo: '103', bedNo: 1, checkInTime: '2023-09-01', checkOutTime: null, source: '', status: '在住', remark: '' },
+  { id: 5, studentId: '2023010401', studentName: '周杰', className: '机设2301', buildingId: 1, buildingName: '1号楼', roomId: 2, bedId: '2-4', roomNo: '102', bedNo: 4, checkInTime: '2024-09-02', checkOutTime: null, source: '', status: '在住', remark: '' },
+  { id: 6, studentId: '2023010201', studentName: '张小飞', className: '软工2302', buildingId: 2, buildingName: '2号楼', roomId: 5, bedId: '5-1', roomNo: '201', bedNo: 1, checkInTime: '2023-09-01', checkOutTime: null, source: '', status: '在住', remark: '' },
+  { id: 7, studentId: '2022010101', studentName: '赵敏', className: '英语2201', buildingId: 3, buildingName: '3号楼', roomId: 8, bedId: '8-1', roomNo: '301', bedNo: 1, checkInTime: '2022-09-01', checkOutTime: '2026-06-30', source: 'apply', status: '已退宿', remark: '毕业离校' },
+  { id: 8, studentId: '2022010203', studentName: '孙悦', className: '英语2201', buildingId: 3, buildingName: '3号楼', roomId: 9, bedId: '9-2', roomNo: '302', bedNo: 2, checkInTime: '2022-09-01', checkOutTime: '2026-06-30', source: 'apply', status: '已退宿', remark: '毕业离校' }
 ]
 
 // ---- 退宿申请 ----
@@ -75,13 +75,15 @@ export function submitCheckin(d) {
     studentId: stu.studentId,
     studentName: stu.name,
     className: stu.className,
+    buildingId: room.buildingId,
     buildingName: room.buildingName,
     roomId: room.id,
+    bedId: `${room.id}-${Number(d.bedNo)}`,
     roomNo: room.roomNo,
     bedNo: Number(d.bedNo),
     checkInTime: d.checkInDate || now().slice(0, 10),
     checkOutTime: null,
-    source: 'manual',
+    source: '', // 在住记录尚无退宿来源；退宿时由 audit/direct 写入 apply/direct
     status: '在住',
     remark: d.remark || ''
   })
@@ -176,7 +178,7 @@ export function currentRoom(studentId) {
     .map((r) => ({ studentId: r.studentId, name: r.studentName, bedNo: r.bedNo }))
   return ok({
     student: { studentId: stu.studentId, name: stu.name, gender: stu.gender, className: stu.className },
-    dorm: { buildingName: rec.buildingName, roomNo: rec.roomNo, bedNo: rec.bedNo, roomId: rec.roomId, checkInTime: rec.checkInTime },
+    dorm: { buildingId: rec.buildingId, buildingName: rec.buildingName, roomNo: rec.roomNo, bedNo: rec.bedNo, roomId: rec.roomId, checkInTime: rec.checkInTime },
     roommates
   })
 }

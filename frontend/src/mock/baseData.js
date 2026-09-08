@@ -19,17 +19,21 @@ const colleges = [
 ]
 
 // ---- 学生 ----
+function classIdOf(className) {
+  const c = classes.find((x) => x.name === className)
+  return c ? c.id : null
+}
 const students = [
-  { studentId: '2023010101', name: '王小明', gender: '男', college: '计算机学院', major: '软件工程', className: '软工2301', contactPhone: '13800001234', emergencyContact: '王建国', emergencyPhone: '13911110001', academicStatus: '在校', housingStatus: '在住' },
-  { studentId: '2023010102', name: '李小红', gender: '女', college: '计算机学院', major: '软件工程', className: '软工2301', contactPhone: '13900005678', emergencyContact: '李国强', emergencyPhone: '13911110002', academicStatus: '在校', housingStatus: '在住' },
-  { studentId: '2023010201', name: '张小飞', gender: '男', college: '计算机学院', major: '软件工程', className: '软工2302', contactPhone: '13700009012', emergencyContact: '张贵', emergencyPhone: '13911110003', academicStatus: '在校', housingStatus: '在住' },
-  { studentId: '2023010301', name: '陈雨萱', gender: '女', college: '计算机学院', major: '计算机科学与技术', className: '计科2301', contactPhone: '13500007890', emergencyContact: '陈城', emergencyPhone: '13911110004', academicStatus: '在校', housingStatus: '在住' },
-  { studentId: '2023010105', name: '王凯', gender: '男', college: '计算机学院', major: '软件工程', className: '软工2301', contactPhone: '13300002223', emergencyContact: '王大山', emergencyPhone: '13911110005', academicStatus: '在校', housingStatus: '在住' },
-  { studentId: '2023020101', name: '刘少军', gender: '男', college: '机械工程学院', major: '机械设计制造及其自动化', className: '机设2301', contactPhone: '13600003456', emergencyContact: '刘军', emergencyPhone: '13911110006', academicStatus: '在校', housingStatus: '未住' },
-  { studentId: '2023020102', name: '李娜', gender: '女', college: '机械工程学院', major: '机械设计制造及其自动化', className: '机设2301', contactPhone: '13200003334', emergencyContact: '李平', emergencyPhone: '13911110007', academicStatus: '在校', housingStatus: '未住' },
-  { studentId: '2023010401', name: '周杰', gender: '男', college: '机械工程学院', major: '机械设计制造及其自动化', className: '机设2301', contactPhone: '13100004445', emergencyContact: '周涛', emergencyPhone: '13911110008', academicStatus: '在校', housingStatus: '在住' },
-  { studentId: '2022010101', name: '赵敏', gender: '女', college: '外国语学院', major: '英语', className: '英语2201', contactPhone: '13400001112', emergencyContact: '赵梦', emergencyPhone: '13911110009', academicStatus: '毕业', housingStatus: '已退宿' },
-  { studentId: '2022010203', name: '孙悦', gender: '女', college: '外国语学院', major: '英语', className: '英语2201', contactPhone: '13000005556', emergencyContact: '孙红', emergencyPhone: '13911110010', academicStatus: '毕业', housingStatus: '已退宿' }
+  { studentId: '2023010101', name: '王小明', gender: '男', college: '计算机学院', major: '软件工程', classId: 1, className: '软工2301', contactPhone: '13800001234', emergencyContact: '王建国', emergencyPhone: '13911110001', academicStatus: '在校', housingStatus: '在住' },
+  { studentId: '2023010102', name: '李小红', gender: '女', college: '计算机学院', major: '软件工程', classId: 1, className: '软工2301', contactPhone: '13900005678', emergencyContact: '李国强', emergencyPhone: '13911110002', academicStatus: '在校', housingStatus: '在住' },
+  { studentId: '2023010201', name: '张小飞', gender: '男', college: '计算机学院', major: '软件工程', classId: 2, className: '软工2302', contactPhone: '13700009012', emergencyContact: '张贵', emergencyPhone: '13911110003', academicStatus: '在校', housingStatus: '在住' },
+  { studentId: '2023010301', name: '陈雨萱', gender: '女', college: '计算机学院', major: '计算机科学与技术', classId: 3, className: '计科2301', contactPhone: '13500007890', emergencyContact: '陈城', emergencyPhone: '13911110004', academicStatus: '在校', housingStatus: '在住' },
+  { studentId: '2023010105', name: '王凯', gender: '男', college: '计算机学院', major: '软件工程', classId: 1, className: '软工2301', contactPhone: '13300002223', emergencyContact: '王大山', emergencyPhone: '13911110005', academicStatus: '在校', housingStatus: '在住' },
+  { studentId: '2023020101', name: '刘少军', gender: '男', college: '机械工程学院', major: '机械设计制造及其自动化', classId: 4, className: '机设2301', contactPhone: '13600003456', emergencyContact: '刘军', emergencyPhone: '13911110006', academicStatus: '在校', housingStatus: '未住' },
+  { studentId: '2023020102', name: '李娜', gender: '女', college: '机械工程学院', major: '机械设计制造及其自动化', classId: 4, className: '机设2301', contactPhone: '13200003334', emergencyContact: '李平', emergencyPhone: '13911110007', academicStatus: '在校', housingStatus: '未住' },
+  { studentId: '2023010401', name: '周杰', gender: '男', college: '机械工程学院', major: '机械设计制造及其自动化', classId: 4, className: '机设2301', contactPhone: '13100004445', emergencyContact: '周涛', emergencyPhone: '13911110008', academicStatus: '在校', housingStatus: '在住' },
+  { studentId: '2022010101', name: '赵敏', gender: '女', college: '外国语学院', major: '英语', classId: 5, className: '英语2201', contactPhone: '13400001112', emergencyContact: '赵梦', emergencyPhone: '13911110009', academicStatus: '毕业', housingStatus: '已退宿' },
+  { studentId: '2022010203', name: '孙悦', gender: '女', college: '外国语学院', major: '英语', classId: 5, className: '英语2201', contactPhone: '13000005556', emergencyContact: '孙红', emergencyPhone: '13911110010', academicStatus: '毕业', housingStatus: '已退宿' }
 ]
 
 // ---- 楼栋 ----
@@ -42,19 +46,20 @@ const buildings = [
   { id: 6, buildingName: '6号楼', floorCount: 6, roomCount: 120, manager: '赵磊' }
 ]
 
-const ROOM_TYPES = ['4人间', '6人间']
+const ROOM_TYPES = ['四人间', '六人间'] // 对齐 init.sql 种子与数据库设计说明 3.5
+const roomTypeOf = (capacity) => (Number(capacity) >= 6 ? '六人间' : '四人间')
 
 // ---- 房间 ----
 const rooms = [
-  { id: 1, buildingId: 1, roomNo: '101', capacity: 4, roomType: '4人间', status: '部分入住', occupiedCount: 2 },
-  { id: 2, buildingId: 1, roomNo: '102', capacity: 4, roomType: '4人间', status: '部分入住', occupiedCount: 3 },
-  { id: 3, buildingId: 1, roomNo: '103', capacity: 4, roomType: '4人间', status: '已满', occupiedCount: 4 },
-  { id: 4, buildingId: 1, roomNo: '104', capacity: 6, roomType: '6人间', status: '空闲', occupiedCount: 0 },
-  { id: 5, buildingId: 2, roomNo: '201', capacity: 4, roomType: '4人间', status: '已满', occupiedCount: 4 },
-  { id: 6, buildingId: 2, roomNo: '202', capacity: 6, roomType: '6人间', status: '部分入住', occupiedCount: 2 },
-  { id: 7, buildingId: 2, roomNo: '203', capacity: 6, roomType: '6人间', status: '已满', occupiedCount: 6 },
-  { id: 8, buildingId: 3, roomNo: '301', capacity: 4, roomType: '4人间', status: '部分入住', occupiedCount: 1 },
-  { id: 9, buildingId: 3, roomNo: '302', capacity: 6, roomType: '6人间', status: '部分入住', occupiedCount: 3 }
+  { id: 1, buildingId: 1, floor: 1, roomNo: '101', capacity: 4, roomType: '四人间', status: '部分入住', occupiedCount: 2 },
+  { id: 2, buildingId: 1, floor: 1, roomNo: '102', capacity: 4, roomType: '四人间', status: '部分入住', occupiedCount: 3 },
+  { id: 3, buildingId: 1, floor: 1, roomNo: '103', capacity: 4, roomType: '四人间', status: '已满', occupiedCount: 4 },
+  { id: 4, buildingId: 1, floor: 1, roomNo: '104', capacity: 6, roomType: '六人间', status: '空闲', occupiedCount: 0 },
+  { id: 5, buildingId: 2, floor: 2, roomNo: '201', capacity: 4, roomType: '四人间', status: '已满', occupiedCount: 4 },
+  { id: 6, buildingId: 2, floor: 2, roomNo: '202', capacity: 6, roomType: '六人间', status: '部分入住', occupiedCount: 2 },
+  { id: 7, buildingId: 2, floor: 2, roomNo: '203', capacity: 6, roomType: '六人间', status: '已满', occupiedCount: 6 },
+  { id: 8, buildingId: 3, floor: 3, roomNo: '301', capacity: 4, roomType: '四人间', status: '部分入住', occupiedCount: 1 },
+  { id: 9, buildingId: 3, floor: 3, roomNo: '302', capacity: 6, roomType: '六人间', status: '部分入住', occupiedCount: 3 }
 ]
 
 const roomStatusOf = (occupied, capacity) => {
@@ -90,13 +95,13 @@ export function getStudents(params = {}) {
 }
 export function createStudent(d) {
   if (students.some((s) => s.studentId === d.studentId)) return { code: 1, msg: '学号已存在' }
-  students.unshift({ ...d })
+  students.unshift({ ...d, classId: classIdOf(d.className) })
   return ok(null)
 }
 export function updateStudent(id, d) {
   const i = students.findIndex((s) => s.studentId === id)
   if (i === -1) return { code: 1, msg: '学生不存在' }
-  students[i] = { ...students[i], ...d, studentId: id }
+  students[i] = { ...students[i], ...d, studentId: id, classId: (d.className != null ? classIdOf(d.className) : null) || students[i].classId }
   return ok(null)
 }
 export function deleteStudent(id) {
@@ -221,15 +226,17 @@ export function getRooms(params = {}) {
   })
   return ok(page(list, params))
 }
+const roomFloorOf = (roomNo) => Number(String(roomNo || '').charAt(0)) || 1 // 由房号首位推导楼层，如 102→1
 export function createRoom(d) {
   const b = buildings.find((x) => x.id === Number(d.buildingId))
   if (rooms.some((r) => r.buildingId === Number(d.buildingId) && r.roomNo === d.roomNo)) return { code: 1, msg: '该楼栋房间号已存在' }
   rooms.push({
     id: Date.now(),
     buildingId: Number(d.buildingId),
+    floor: Number(d.floor || roomFloorOf(d.roomNo)),
     roomNo: d.roomNo,
     capacity: Number(d.capacity),
-    roomType: ROOM_TYPES.find((t) => t.includes(String(d.capacity))) || '4人间',
+    roomType: roomTypeOf(d.capacity),
     status: '空闲',
     occupiedCount: 0,
     buildingName: b ? b.buildingName : ''
@@ -242,9 +249,10 @@ export function updateRoom(id, d) {
   rooms[i] = {
     ...rooms[i],
     buildingId: Number(d.buildingId),
+    floor: Number(d.floor || roomFloorOf(d.roomNo)),
     roomNo: d.roomNo,
     capacity: Number(d.capacity),
-    roomType: ROOM_TYPES.find((t) => t.includes(String(d.capacity))) || '4人间',
+    roomType: roomTypeOf(d.capacity),
     status: roomStatusOf(rooms[i].occupiedCount, Number(d.capacity))
   }
   return ok(null)

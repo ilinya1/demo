@@ -33,6 +33,7 @@
       </div>
       <el-table :data="list" v-loading="loading" stripe>
         <el-table-column prop="buildingName" label="楼栋" width="110" />
+        <el-table-column prop="floor" label="楼层" width="70" />
         <el-table-column prop="roomNo" label="房间号" width="100" />
         <el-table-column prop="roomType" label="房型" width="100" />
         <el-table-column prop="capacity" label="容纳人数" width="100" />
@@ -72,10 +73,13 @@
         <el-form-item label="房间号" prop="roomNo">
           <el-input v-model="form.roomNo" placeholder="如：101" />
         </el-form-item>
+        <el-form-item label="楼层" prop="floor">
+          <el-input-number v-model="form.floor" :min="1" :max="30" />
+        </el-form-item>
         <el-form-item label="容纳人数" prop="capacity">
           <el-select v-model="form.capacity" placeholder="请选择" style="width: 100%">
-            <el-option :value="4" label="4人间（4 人）" />
-            <el-option :value="6" label="6人间（6 人）" />
+            <el-option :value="4" label="四人间（4 人）" />
+            <el-option :value="6" label="六人间（6 人）" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -127,11 +131,12 @@ const dialogVisible = ref(false)
 const saving = ref(false)
 const formRef = ref(null)
 const editing = ref(null)
-const emptyForm = { buildingId: '', roomNo: '', capacity: 4 }
+const emptyForm = { buildingId: '', floor: 1, roomNo: '', capacity: 4 }
 const form = reactive({ ...emptyForm })
 
 const rules = {
   buildingId: [{ required: true, message: '请选择楼栋', trigger: 'change' }],
+  floor: [{ required: true, message: '请输入楼层', trigger: 'change' }],
   roomNo: [{ required: true, message: '请输入房间号', trigger: 'blur' }],
   capacity: [{ required: true, message: '请选择容纳人数', trigger: 'change' }]
 }
@@ -168,7 +173,7 @@ function openDialog(row) {
   editing.value = null
   if (row) {
     editing.value = row.id
-    Object.assign(form, { buildingId: row.buildingId, roomNo: row.roomNo, capacity: row.capacity })
+    Object.assign(form, { buildingId: row.buildingId, floor: row.floor, roomNo: row.roomNo, capacity: row.capacity })
   }
   dialogVisible.value = true
 }

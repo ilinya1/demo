@@ -3,9 +3,9 @@ import { ok, fail } from './util'
 
 // ---- 登录示例用户（与初始化演示账号一致）----
 const users = [
-  { username: 'admin', password: '123456', role: 'ADMIN', name: '系统管理员' },
-  { username: '2023010101', password: '123456', role: 'STUDENT', name: '王小明' },
-  { username: '2023010102', password: '123456', role: 'STUDENT', name: '李小红' }
+  { username: 'admin', password: '123456', role: 'ADMIN', name: '系统管理员', status: 1 },
+  { username: '2023010101', password: '123456', role: 'STUDENT', name: '王小明', status: 1 },
+  { username: '2023010102', password: '123456', role: 'STUDENT', name: '李小红', status: 1 }
 ]
 
 // 供 settings（个人资料 / 改密）读取并修改当前账号（返回同源数组，改动即持久化到登录数据）
@@ -18,7 +18,7 @@ export const DEFAULT_STUDENT_PASSWORD = '123456'
 export function resetStudentPassword(username, name) {
   let u = users.find((x) => x.username === username)
   if (!u) {
-    users.push({ username, password: DEFAULT_STUDENT_PASSWORD, role: 'STUDENT', name: name || username })
+    users.push({ username, password: DEFAULT_STUDENT_PASSWORD, role: 'STUDENT', name: name || username, status: 1 })
   } else {
     u.password = DEFAULT_STUDENT_PASSWORD
     if (name) u.name = name

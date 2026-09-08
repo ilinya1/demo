@@ -748,3 +748,26 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   - **验证**：`npm run build` 通过；浏览器实测——① 操作列出现「编辑/重置密码/删除」；② 对有账号学生「王小明」重置成功提示含 123456；③ 对无账号学生「陈雨萱」点重置后自动建号，退出管理员再用 `2023010301/123456` 登录**成功进入学生端**（默认密码生效）。均 PASS，无报错。
   - **涉及文件**：frontend/src/mock/authData.js、frontend/src/mock/index.js、frontend/src/api/auth.js、frontend/src/views/admin/StudentList.vue。
 
+- **2026-09-08（操作日志 #46，前端字段 ↔ 数据库设计核对与对齐）** 应要求全面核对前端 mock 字段与数据库基线（`init.sql` + 《数据库设计说明.md》）。逐表比对后输出报告，并按用户选定处理：
+  - **修正 A1 房间类型枚举**：前端 `baseData.js` `ROOM_TYPES` 由 `['4人间','6人间']` 改为 `['四人间','六人间']`（对齐 init.sql 种子与说明 3.5）；`createRoom/updateRoom` 的类型推导由 `ROOM_TYPES.find(t=>t.includes(...))` 改为新增 `roomTypeOf(capacity)`（4/6 学士转换），杜绝改后 `includes('4')` 失效回退错误；`RoomList.vue` 容量下拉文案改为「四人间（4 人）/六人间（6 人）」，卫生检查房间下拉房型随之显示「四人间」。
+  - **修正 A2 房间补「楼层」字段**：库 `dorm_room.floor NOT NULL`；前端房间 mock 全量补 `floor`（101→1/201→2/301→3），`createRoom/updateRoom` 支持 `floor`（未填时按房号首位 `roomFloorOf` 推导）；`RoomList.vue` 列表新增「楼层」列、新增/编辑弹窗新增「楼层」数字输入并纳入 `emptyForm` 与必填校验。
+  - **B 类（记录在案、后端实现时对齐，本轮不改）**：①`student.class_id`(逻辑FK) ↔ mock 用 `className` 字符串；②`check_in` 缺 `building_id/bed_id`(库 NOT NULL)；③`check_in.source` mock 用 `manual`(库枚举仅 apply/direct)；④`sys_user` 缺 `status`。
+  - **C1 种子数据**（mock 10 名学生 vs 库 3 名、102 室在住口径不同）：按用户选择**暂不处理**，仅记录。
+  - **D 类（仅前端有、库无表）**：学院字典（colleges，按决策仅 mock）、系统参数（settings.js，库无 sys_parameter 表，既有缺口）。
+  - **验证**：`npm run build` 通过；浏览器实测——房型列全显「四人间/六人间」、楼层列 1/2/3、新增弹窗含楼层(可改)且容量下拉为中文、新增 2号楼/2层/999/四人间 保存后列表正确、删除后恢复。均 PASS。
+  - **涉及文件**：frontend/src/mock/baseData.js、frontend/src/views/admin/RoomList.vue。
+
+- **2026-09-08（操作日志 #47，B2 处理：mock 入住记录补齐 `building_id`）** 承接 #46 的 B2「check_in 除快照外缺关联 id」。本次补齐 **`buildingId`**（库 `check_in.building_id NOT NULL`，逻辑FK→dorm_building.id）：
+  - `src/mock/checkin.js`：8 条初始 `checkInRecords` 全部补 `buildingId`（1号楼=1/2号楼=2/3号楼=3，与 buildingName 对应）；`submitCheckin` 新建记录写入 `buildingId: room.buildingId`（快照 `buildingName` 之外的必要关联 id）；`currentRoom` 的 dorm 载荷补 `buildingId`。
+  - **验证**：`npm run build` 通过；浏览器实测——入住记录列表/状态筛选正常、楼栋列渲染正确；对 `2023020102` 李娜完成一次新入住后在记录页出现该在住记录；全程无报错/undefined。PASS。
+  - **说明**：`bed_id`、`check_in.source`(manual)、`student.class_id`、`sys_user.status` 仍为 B 类待处理项，后续可按需对齐。
+  - **涉及文件**：frontend/src/mock/checkin.js。
+
+- **2026-09-08（操作日志 #48，B 类剩余项补全：`bed_id` / `check_in.source` / `student.class_id` / `sys_user.status`）** 承接 #47，补齐 B 类其余字段对齐：
+  - **`check_in.bedId`**（`src/mock/checkin.js`）：库 `check_in.bed_id NOT NULL`；8 条初始 `checkInRecords` 补 `bedId`（格式 `${roomId}-${bedNo}`，与 buildBeds 的 bedId 一致），`submitCheckin` 写入 `bedId: \`${room.id}-${bedNo}\``。
+  - **`check_in.source` 语义修正**：库枚举仅 `apply/direct`（退宿来源）；原 mock 在新建入住与在住记录上用 `manual/apply` 不符。现按规范——新入住/在住记录的 `source` 置空 `''`（尚未退宿），退宿时由 `auditCheckoutApp`(apply)/`directCheckout`(direct) 写入（`doCheckout` 既有逻辑不变）。
+  - **`student.classId`**（`src/mock/baseData.js`）：库 `student.class_id` 逻辑FK→class.id；10 名学生补 `classId`（软工2301=1/2302=2/计科2301=3/机设2301=4/英语2201=5），新增 `classIdOf(className)`，`createStudent/updateStudent` 由 className 自动推导 classId（班级改名级联不变，classId 恒随 class.id）。
+  - **`sys_user.status`**（`src/mock/authData.js`）：库 `status TINYINT 默认1`；3 个初始账号补 `status:1`，`resetStudentPassword` 自动建号也带 `status:1`。
+  - **验证**：`npm run build` 通过；浏览器实测——学生增删（classId 推导不破坏）、将刘少军 `2023020101` 入住后再直接退宿（source=direct）、入住记录「已退宿」筛选正常，全程 console 无 error/undefined。PASS。（B 类至此全部对齐。）
+  - **涉及文件**：frontend/src/mock/checkin.js、frontend/src/mock/baseData.js、frontend/src/mock/authData.js。
+

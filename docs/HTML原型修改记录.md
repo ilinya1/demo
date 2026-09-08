@@ -860,3 +860,10 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   5. **说明**：学院管理仍走前端本地 mock（库无学院表，属预期）；管理员个人中心电话/邮箱初始为空属数据缺失（可在个人中心补充），非接口字段失配。
   - **涉及文件**：新增 `frontend/.env.development`、`common/config/MybatisPlusConfig.java`、`common/util/BedNoUtil.java`；修改 `pom.xml`、`service/StatsService.java`、`service/impl/StatsServiceImpl.java`、`controller/StatsController.java`、`service/impl/{CheckIn,Checkout,Room}ServiceImpl.java`。
 
+- **2026-09-08（操作日志 #60，补全学院管理功能：前端 mock 升级为真实后端 + 数据库）** 用户要求「把学院管理功能补全」。原学院管理仅前端 mock（库无学院表），本次升级为真实后端与建库，完成端到端可用的学院字典管理。
+  1. **方案（用户确认）**：新建 `t_college` 表 + `class/student` 仍以 `college` **字符串软关联**（不改两张表结构，前端零改动）；数据库文档正式建表并升级为 **13 张表**。
+  2. **数据库**：`docs/sql/init.sql` 新增第 13 张表 `t_college`（`id/name/sort` + 时间戳，`name` 唯一），种子对齐现有 `class.college` 值（计算机学院/机电学院/外国语学院）；备注区补充字符串软关联说明。`docs/数据库设计说明.md` 升级为 13 张表并新增 3.13 节、逻辑外键表与枚举字典补充学院项。live 库 `dorm_manager` 已手工建表 + 插种子。
+  3. **后端**（完整复刻 Clazz/Building 模式）：新增 `entity/TCollege`、`mapper/TCollegeMapper`、`dto/CollegeReq`（`@NotBlank` 学院名）、`service/CollegeService(+impl)`、`controller/CollegeController`（`/colleges`，`GET` 返回数组对齐前端契约）。`CollegeServiceImpl` 实现：重名「该学院已存在」校验、**改名用 `LambdaUpdateWrapper` 级联同步 `class.college`/`student.college`**、**删除前引用拦截**「该学院下仍有班级或学生，无法删除」。
+  4. **验证**：新增 `CollegeControllerTest` 端到端用例（返回数组+种子、新增/重名、改名后 class/student 学院级联、引用拦截、清理）；`mvn test` 全过（**28 项**，含既有 27 无回归）。浏览器联调 `/admin/students`：学院弹窗列出 3 个种子、新增/重名拦截/改名级联下拉/引用删除拦截/删除均通过，无 console 报错，最终库还原为 3 个种子学院。
+  - **涉及文件**：新增 `entity/TCollege.java`、`mapper/TCollegeMapper.java`、`dto/CollegeReq.java`、`service/CollegeService.java`、`service/impl/CollegeServiceImpl.java`、`controller/CollegeController.java`、`test/.../CollegeControllerTest.java`；修改 `docs/sql/init.sql`、`docs/数据库设计说明.md`。
+

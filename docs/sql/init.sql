@@ -254,6 +254,22 @@ CREATE TABLE `sys_parameter` (
     UNIQUE KEY `uk_param_key` (`param_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统参数';
 
+-- ---------------------------------------------------------------------
+-- 13. 学院 t_college
+--    学院字典表。class.college / student.college 以其 name 作字符串软关联（无物理外键），
+--    完整性由后端 CollegeService 校验（改名级联班级/学生、删除前引用拦截）。
+-- ---------------------------------------------------------------------
+DROP TABLE IF EXISTS `t_college`;
+CREATE TABLE `t_college` (
+    `id`         BIGINT      NOT NULL AUTO_INCREMENT COMMENT '学院ID',
+    `name`       VARCHAR(50) NOT NULL COMMENT '学院名称，唯一',
+    `sort`       INT         NOT NULL DEFAULT 0 COMMENT '排序，越小越靠前',
+    `created_at` DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updated_at` DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_college_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='学院';
+
 -- =====================================================================
 -- 示例数据（演示账号 / 基础数据，便于一键演示）
 -- =====================================================================
@@ -275,6 +291,13 @@ INSERT INTO `repair_type` (`id`, `name`, `sort`) VALUES
 (5, '床铺', 5),
 (6, '桌椅', 6),
 (7, '其他', 99);
+
+-- 学院（对齐 class.college / student.college 现有值，保证下拉与现存班级吻合）
+INSERT INTO `t_college` (`name`, `sort`) VALUES
+('计算机学院', 1),
+('机电学院', 2),
+('外国语学院', 3)
+ON DUPLICATE KEY UPDATE `sort` = VALUES(`sort`);
 
 -- 班级
 INSERT INTO `class` (`id`, `class_name`, `college`, `major`, `grade`, `head_teacher`) VALUES
@@ -332,6 +355,7 @@ INSERT INTO `check_in`
 --    checkout_apply.student_id -> student.student_id
 --    hygiene_record.{building_id, room_id}
 --    repair_order.{student_id, building_id, room_id, type_id -> repair_type.id}
+--    t_college.name -> class.college / student.college（字典【字符串】软关联，非 _id 逻辑外键；改名级联、删除拦截由 CollegeService 校验）
 -- 2. 状态枚举统一：
 --    学籍：在校/毕业/退学/休学；住宿：在住/已退宿/未住
 --    房间：空闲/部分入住/已满/维修中；床位：空闲/占用/维修

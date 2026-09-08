@@ -852,3 +852,11 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   - **至此后端全部大模块完成**：登录鉴权、基础数据、住宿业务、日常管理、统计、个人中心/系统设置/改密。均需 JWT。
   - **涉及文件**（子代理实现）：新增 entity/SysParameter、mapper/SysParameterMapper、service/{Profile,Settings,Account}Service(+impl)、controller/{Profile,Settings}Controller、test/.../ProfileSettingsTest；修改 entity/SysUser（+phone/email）、controller/AuthController、docs/sql/init.sql、docs/数据库设计说明.md。
 
+- **2026-09-08（操作日志 #59，前后端联调：mock 切真实接口 + 后端契约修正）** 进入前后端联调，将前端 mock 切换为真实后端接口（`frontend/.env.development` 设 `VITE_USE_MOCK=false`）。前置：已推送后端 27 项测试全绿（提交 cfff674）。
+  1. **统计数组包装修正**：`GET /api/dashboard/building-occupancy` 与 `/api/dashboard/hygiene-trend` 原返回 `{"list":[...]}`，前端 Dashboard 期望顶层数组 `[{building,rate}]` / `[{week,score}]`。调整 `StatsService`/`StatsServiceImpl`/`StatsController` 返回 `List<Map>`，提交 dc42997。
+  2. **分页 total 恒为 0 修复（影响所有列表页）**：定位根因是未注册 MyBatis-Plus 分页拦截器（`selectPage` 的 total 未填充）。新增 `mybatis-plus-jsqlparser` 依赖（`PaginationInnerInterceptor` 依赖 JSqlParser）+ `common/config/MybatisPlusConfig.java` 注册 `PaginationInnerInterceptor(DbType.MYSQL)`。
+  3. **床位号格式偏移修复**：库 `dorm_bed.bed_no` 存 `N号床`，而前端契约处处按纯数字 `N` 消费并自行拼后缀（MyRoom/CheckinRecord/CheckoutAudit/RoomList），导致页面上出现「1号床 床」错乱。新增 `common/util/BedNoUtil.strip()`，在对外 VO 赋值点（`CheckInServiceImpl` 当前宿舍/室友/记录、`CheckoutServiceImpl` 审核当前宿舍、`RoomServiceImpl` 床位分布）统一剥掉「号床」后缀，返回数字 `N`。
+  4. **验证**：浏览器逐模块跑通仪表盘/基础数据/住宿/日常/统计/个人中心·系统设置·改密（管理员+学生账号），无 JS 报错；三处修复经浏览器复验均已生效（楼栋分页「共 2 条」、入住记录床位「1号床」格式正常、我的宿舍「1 床」）。`mvn test` 全过（27 项），提交 af1ab49 已推送 main。
+  5. **说明**：学院管理仍走前端本地 mock（库无学院表，属预期）；管理员个人中心电话/邮箱初始为空属数据缺失（可在个人中心补充），非接口字段失配。
+  - **涉及文件**：新增 `frontend/.env.development`、`common/config/MybatisPlusConfig.java`、`common/util/BedNoUtil.java`；修改 `pom.xml`、`service/StatsService.java`、`service/impl/StatsServiceImpl.java`、`controller/StatsController.java`、`service/impl/{CheckIn,Checkout,Room}ServiceImpl.java`。
+

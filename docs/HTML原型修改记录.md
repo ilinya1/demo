@@ -889,3 +889,9 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   4. **README** 启动章补充「双击 start-dev.cmd 一键启动」说明。
   - **涉及文件**：新增 `start-dev.cmd`；修改 `frontend/vite.config.js`、`README.md`。
 
+- **2026-09-08（操作日志 #64，修复：卫生/报修图片列扩容，上传照片保存失败）** 用户反馈「新增卫生检查显示服务器开小差、不能保存」。定位真实根因并修复。
+  1. **根因**：前端把现场照片经 FileReader 转成 **base64 data URL** 存入 `hygiene_record.photos`；该列原先为 `TEXT`（上限 ~64KB），一张略大的照片 base64 即超限 → MySQL `Data truncation: Data too long for column 'photos'` → 后端 500 → 前端弹「服务器开小差」。同理影响 `repair_order.images`（报修图片）。
+  2. **修复**：`hygiene_record.photos`、`repair_order.images` 由 `TEXT` 改为 **`LONGTEXT`（4GB）**。同步 `docs/sql/init.sql`、live 库 `dorm_manager`、测试库 `dorm_manager_test`（均 ALTER MODIFY）；数据库设计说明.md 字段类型同步为 `LONGTEXT`。
+  3. **验证**：API 以约 200KB base64 大图 POST `/api/daily/hygiene` 返回 200/code0（扩容前会报 Data too long）；浏览器实测完整用户路径（登录→新增卫生→选楼栋/房间、勾扣分项得95分「优秀」、**上传真实图片**→保存）成功，列表出现新记录并渲染 base64 缩略图。验证后已清理测试残留，演示库恢复 9 条种子卫生记录。
+  - **涉及文件**：修改 `docs/sql/init.sql`、`docs/数据库设计说明.md`。
+

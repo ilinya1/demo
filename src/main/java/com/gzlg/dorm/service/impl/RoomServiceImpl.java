@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gzlg.dorm.common.exception.BizException;
 import com.gzlg.dorm.common.result.PageResult;
+import com.gzlg.dorm.common.util.BedNoUtil;
 import com.gzlg.dorm.dto.RoomReq;
 import com.gzlg.dorm.entity.CheckIn;
 import com.gzlg.dorm.entity.DormBed;
@@ -135,8 +136,8 @@ public class RoomServiceImpl implements RoomService {
                 .eq(DormBed::getRoomId, roomId).orderByAsc(DormBed::getBedNo));
         return beds.stream().map(b -> {
             BedVO vo = new BedVO();
-            vo.setBedId(roomId + "-" + b.getBedNo());
-            vo.setBedNo(b.getBedNo());
+            vo.setBedId(roomId + "-" + BedNoUtil.strip(b.getBedNo()));
+            vo.setBedNo(BedNoUtil.strip(b.getBedNo()));
             vo.setStatus(b.getStatus());
             if (OCCUPIED.equals(b.getStatus())) {
                 CheckIn inHouse = checkInMapper.selectOne(Wrappers.<CheckIn>lambdaQuery()

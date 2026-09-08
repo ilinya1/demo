@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gzlg.dorm.common.exception.BizException;
 import com.gzlg.dorm.common.result.PageResult;
+import com.gzlg.dorm.common.util.BedNoUtil;
 import com.gzlg.dorm.dto.AuditRequest;
 import com.gzlg.dorm.dto.CheckoutApplyRequest;
 import com.gzlg.dorm.dto.DirectCheckoutRequest;
@@ -167,7 +168,7 @@ public class CheckoutServiceImpl implements CheckoutService {
         if (latest != null) {
             vo.setBuildingName(latest.getBuildingName());
             vo.setRoomNo(latest.getRoomNo());
-            vo.setBedNo(latest.getBedNo());
+            vo.setBedNo(BedNoUtil.strip(latest.getBedNo()));
             vo.setRoomId(latest.getRoomId());
         }
         vo.setReason(a.getReason());

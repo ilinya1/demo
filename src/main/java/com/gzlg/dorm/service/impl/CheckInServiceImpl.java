@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gzlg.dorm.common.exception.BizException;
 import com.gzlg.dorm.common.result.PageResult;
+import com.gzlg.dorm.common.util.BedNoUtil;
 import com.gzlg.dorm.dto.CheckinRequest;
 import com.gzlg.dorm.entity.CheckIn;
 import com.gzlg.dorm.entity.Clazz;
@@ -198,7 +199,7 @@ public class CheckInServiceImpl implements CheckInService {
         dorm.setBuildingId(record.getBuildingId());
         dorm.setBuildingName(record.getBuildingName());
         dorm.setRoomNo(record.getRoomNo());
-        dorm.setBedNo(record.getBedNo());
+        dorm.setBedNo(BedNoUtil.strip(record.getBedNo()));
         dorm.setRoomId(record.getRoomId());
         dorm.setCheckInTime(record.getCheckInTime());
         vo.setDorm(dorm);
@@ -211,7 +212,7 @@ public class CheckInServiceImpl implements CheckInService {
                     Roommate rm = new Roommate();
                     rm.setStudentId(r.getStudentId());
                     rm.setName(r.getStudentName());
-                    rm.setBedNo(r.getBedNo());
+                    rm.setBedNo(BedNoUtil.strip(r.getBedNo()));
                     return rm;
                 }).toList();
         vo.setRoommates(roommates);
@@ -271,7 +272,7 @@ public class CheckInServiceImpl implements CheckInService {
         vo.setStudentName(r.getStudentName());
         vo.setBuildingName(r.getBuildingName());
         vo.setRoomNo(r.getRoomNo());
-        vo.setBedNo(r.getBedNo());
+        vo.setBedNo(BedNoUtil.strip(r.getBedNo()));
         vo.setCheckInTime(r.getCheckInTime());
         vo.setCheckOutTime(r.getCheckOutTime());
         vo.setSource(r.getSource());

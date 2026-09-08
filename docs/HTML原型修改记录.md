@@ -875,3 +875,10 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   5. **联调验证**：重启后端后 API 只读核验（学生 24、入住记录 20）；浏览器逐页确认仪表盘/学生班级/楼栋房间/入住记录/退宿审核/卫生/报修/三统计页/学生端我的宿舍均正常渲染，console 无报错（如王小明在 1号楼 101 室 1 床，室友李小红/陈强同房）。
   - **涉及文件**：修改 `docs/sql/init.sql`（扩充示例数据段）、`src/test/java/com/gzlg/dorm/AccommodationControllerTest.java`。
 
+- **2026-09-08（操作日志 #62，收尾四项：卫生照片/管理员资料/测试隔离/README）** 用户选择继续处理四类遗留工作，已全部完成。
+  1. **卫生照片资源加载**：后端 `WebMvcConfig` 新增静态资源映射 `/uploads/** → file:uploads/`（并放行免鉴权 `/uploads/**`），生成示例图 `uploads/hygiene/h1~h8.jpg`；前端 `vite.config.js` 新增 `/uploads` 代理并 rewrite 到 `/api` 前缀（因 context-path=/api）。浏览器验证卫生列表缩略图与详情弹窗照片均 200 正常加载，无破图；console 无报错。
+  2. **管理员个人中心电话/邮箱**：`init.sql` 的 `sys_user` 种子补齐 admin 与 3 个演示学生账号的 `phone/email`；演示库 `dorm_manager` 已 UPDATE 同步。浏览器验证个人中心回显联系电话 `0571-88888888`、邮箱 `admin@example.edu.cn`。
+  3. **测试与演示库隔离**：新增 `src/test/resources/application-test.yaml`（测试连 `dorm_manager_test`）；9 个测试类统一加 `@ActiveProfiles("test")`；准备独立测试库并通过 `mysqldump` 从演示库克隆基线；提供 `docs/sql/refresh-test-db.cmd` 一键重建测试库。验证：跑 `mvn test`（28 项）前后演示库 `student` 均 24，不再被污染。
+  4. **项目收尾文档**：新增根 `README.md`（技术栈/环境/建库/启动/演示账号/mock切换/测试说明/目录结构）。
+  - **涉及文件**：新增 `src/test/resources/application-test.yaml`、`docs/sql/refresh-test-db.cmd`、`README.md`、`uploads/hygiene/h1~h8.jpg`；修改 `common/jwt/WebMvcConfig.java`、`frontend/vite.config.js`、`docs/sql/init.sql`（sys_user 种子）、9 个测试类（`@ActiveProfiles`）。
+

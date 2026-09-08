@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -20,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * 日常管理（卫生检查 + 报修 + 报修类型字典）端到端测试（RANDOM_PORT + JWT）。
  * 覆盖类型增删、卫生登记与必插图校验、报修登记与处理；测试数据已清理。
  */
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class DailyManagementControllerTest {
 

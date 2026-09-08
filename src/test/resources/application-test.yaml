@@ -1,0 +1,8 @@
+# 测试专用配置（@ActiveProfiles("test") 生效）
+# 与演示库 dorm_manager 隔离，避免 mvn test 污染演示数据。
+# 测试库需预先用 init.sql 或 refresh 脚本初始化参考 docs/sql/refresh-test-db.cmd
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/dorm_manager_test?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456

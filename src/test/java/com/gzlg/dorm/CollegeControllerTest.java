@@ -1,10 +1,11 @@
-package com.gzlg.dorm;
+﻿package com.gzlg.dorm;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -18,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * 学院管理接口端到端测试（真实 HTTP + JWT）。
  * 覆盖：返回数组、新增 / 重名拦截、改名级联 class/student、删除前引用拦截。
  */
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CollegeControllerTest {
 

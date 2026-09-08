@@ -1,4 +1,4 @@
-package com.gzlg.dorm;
+﻿package com.gzlg.dorm;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * 登录鉴权端到端测试（RANDOM_PORT 真实 HTTP，含 /api context-path 与 JWT 拦截器）。
  * 依赖本机 MySQL 与种子账号 admin/123456。
  */
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AuthControllerTest {
 

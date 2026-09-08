@@ -1,10 +1,11 @@
-package com.gzlg.dorm;
+﻿package com.gzlg.dorm;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -18,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * 住宿业务端到端测试（RANDOM_PORT + JWT）：入住→我的宿舍→记录→申请→撤销→再申请→审核通过→已退宿→清理；
  * 及直接退宿路径。测试数据已清理。
  */
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AccommodationControllerTest {
 

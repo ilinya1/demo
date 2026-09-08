@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -17,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * 统计与仪表盘接口端到端测试（真实 HTTP + JWT）。仅断言 code==0 且 data 非空。
  */
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class StatsControllerTest {
 

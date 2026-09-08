@@ -338,12 +338,12 @@ INSERT INTO `student` (`student_id`, `name`, `gender`, `college`, `major`, `clas
 ('2022010803', '蒋雪',   '女', '外国语学院', '日语', 8, '13800070003', '蒋父', '13911180003', '在校', '在住');
 
 -- 登录账号（演示密码均为 123456，用 {noop} 明文占位；生产请改 BCrypt 密文）
--- 保留 3 个演示学生账号；其余学生无账号，可由管理员「重置密码」自动建号
-INSERT INTO `sys_user` (`username`, `password`, `role`, `student_id`) VALUES
-('admin', '{noop}123456', 'ADMIN', NULL),
-('2023010101', '{noop}123456', 'STUDENT', '2023010101'),
-('2023010102', '{noop}123456', 'STUDENT', '2023010102'),
-('2023010103', '{noop}123456', 'STUDENT', '2023010103');
+-- admin 带默认联系电话/邮箱（个人中心回显）；保留 3 个演示学生账号；其余学生无账号，可由管理员「重置密码」自动建号
+INSERT INTO `sys_user` (`username`, `password`, `role`, `student_id`, `phone`, `email`) VALUES
+('admin', '{noop}123456', 'ADMIN', NULL, '0571-88888888', 'admin@example.edu.cn'),
+('2023010101', '{noop}123456', 'STUDENT', '2023010101', '13800000001', 'wxm@example.com'),
+('2023010102', '{noop}123456', 'STUDENT', '2023010102', '13800000002', 'lixh@example.com'),
+('2023010103', '{noop}123456', 'STUDENT', '2023010103', '13800000003', 'chenq@example.com');
 
 -- 楼栋 / 房间 / 床位（3 栋楼，每栋 2 层 6 间，每间 4 床）
 INSERT INTO `dorm_building` (`id`, `building_name`, `floor_count`, `room_count`, `manager`) VALUES

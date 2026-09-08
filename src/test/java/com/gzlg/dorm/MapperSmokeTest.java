@@ -1,4 +1,4 @@
-package com.gzlg.dorm;
+﻿package com.gzlg.dorm;
 
 import com.gzlg.dorm.mapper.ClazzMapper;
 import com.gzlg.dorm.mapper.RepairTypeMapper;
@@ -6,12 +6,14 @@ import com.gzlg.dorm.mapper.StudentMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Mapper 冒烟测试：验证实体 ↔ 表/列映射正确（依赖本机 MySQL dorm_manager 与种子数据）。
  */
+@ActiveProfiles("test")
 @SpringBootTest
 class MapperSmokeTest {
 

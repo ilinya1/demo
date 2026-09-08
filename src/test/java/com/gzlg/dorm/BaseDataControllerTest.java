@@ -1,4 +1,4 @@
-package com.gzlg.dorm;
+﻿package com.gzlg.dorm;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -20,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * 基础数据 CRUD 端到端测试（真实 HTTP + JWT）。覆盖班级/学生/房间列表与增删、校验拦截；测试数据已清理。
  */
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class BaseDataControllerTest {

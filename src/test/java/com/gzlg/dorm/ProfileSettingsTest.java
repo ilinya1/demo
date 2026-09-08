@@ -1,4 +1,4 @@
-package com.gzlg.dorm;
+﻿package com.gzlg.dorm;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -20,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * 个人中心 + 系统设置 + 改密 端到端测试（真实 HTTP + JWT）。
  */
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ProfileSettingsTest {

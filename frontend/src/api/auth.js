@@ -10,4 +10,9 @@ export function logout() {
   return request({ url: '/auth/logout', method: 'post' })
 }
 
-export default { login, logout }
+/** 管理员重置学生密码为默认值（账号不存在则自动创建）：POST /api/auth/reset-password {username,name} */
+export function resetStudentPassword(data) {
+  return request({ url: '/auth/reset-password', method: 'post', data })
+}
+
+export default { login, logout, resetStudentPassword }

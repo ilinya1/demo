@@ -124,9 +124,10 @@ import { onMounted, reactive, ref, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Plus } from '@element-plus/icons-vue'
 import { getCheckoutApps, auditCheckoutApp, directCheckout, getStudentById, getCheckinRecords } from '@/api/checkin'
+import { getCheckoutReasons } from '@/api/settings'
 
 const statuses = ['待审核', '已通过', '已驳回']
-const reasons = ['毕业离校', '休学', '退学', '调宿', '其他']
+const reasons = ref([]) // 退宿原因下拉从字典加载（与退宿申请页/角色枚举一致）
 
 const loading = ref(false)
 const list = ref([])
@@ -190,6 +191,8 @@ async function onAudit(approve) {
     ElMessage.success(approve ? '已通过，退宿生效' : '已驳回申请')
     auditVisible.value = false
     load()
+  } catch (e) {
+    /* 失败提示已由 request 统一弹出 */
   } finally {
     auditing.value = false
   }
@@ -218,6 +221,8 @@ async function onDirect() {
     ElMessage.success('退宿已直接办理，床铺已空出')
     directVisible.value = false
     load()
+  } catch (e) {
+    /* 失败提示已由 request 统一弹出 */
   } finally {
     directing.value = false
   }
@@ -229,7 +234,11 @@ async function loadInHouse() {
   inHouse.value = res.list
 }
 
-onMounted(() => { load(); loadInHouse() })
+async function loadReasons() {
+  reasons.value = (await getCheckoutReasons()).map((x) => x.name)
+}
+
+onMounted(() => { load(); loadInHouse(); loadReasons() })
 </script>
 
 <style scoped>

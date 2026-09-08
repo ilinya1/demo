@@ -11,6 +11,13 @@ const classes = [
   { id: 5, name: '英语2201', college: '外国语学院', major: '英语', grade: 2022, headTeacher: '赵艳', studentCount: 30, boardingCount: 18 }
 ]
 
+// ---- 学院（字典，支持新增/编辑/删除，供班级与学生弹窗下拉）----
+const colleges = [
+  { id: 1, name: '计算机学院' },
+  { id: 2, name: '机械工程学院' },
+  { id: 3, name: '外国语学院' }
+]
+
 // ---- 学生 ----
 const students = [
   { studentId: '2023010101', name: '王小明', gender: '男', college: '计算机学院', major: '软件工程', className: '软工2301', contactPhone: '13800001234', emergencyContact: '王建国', emergencyPhone: '13911110001', academicStatus: '在校', housingStatus: '在住' },
@@ -137,6 +144,42 @@ export function deleteClass(id) {
   if (i === -1) return { code: 1, msg: '班级不存在' }
   if (students.some((s) => s.className === classes[i].name)) return { code: 1, msg: '该班级下仍有学生，无法删除' }
   classes.splice(i, 1)
+  return ok(null)
+}
+
+// ============ 学院（字典 CRUD，对齐报修类型/退宿原因引用校验约定） ============
+export function getColleges() {
+  return ok(colleges.map((x) => ({ ...x })))
+}
+export function createCollege(d) {
+  const name = (d.name || '').trim()
+  if (!name) return { code: 1, msg: '请输入学院名称' }
+  if (colleges.some((x) => x.name === name)) return { code: 1, msg: '该学院已存在' }
+  colleges.push({ id: Math.max(0, ...colleges.map((x) => x.id)) + 1, name })
+  return ok(null)
+}
+export function updateCollege(id, d) {
+  const t = colleges.find((x) => x.id === Number(id))
+  if (!t) return { code: 1, msg: '学院不存在' }
+  const name = (d.name || '').trim()
+  if (!name) return { code: 1, msg: '请输入学院名称' }
+  if (colleges.some((x) => x.id !== Number(id) && x.name === name)) return { code: 1, msg: '该学院已存在' }
+  // 改名级联更新该学院下的班级与学生（class/student 以 college 字符串为关联键）
+  if (name !== t.name) {
+    classes.forEach((c) => { if (c.college === t.name) c.college = name })
+    students.forEach((s) => { if (s.college === t.name) s.college = name })
+  }
+  t.name = name
+  return ok(null)
+}
+export function deleteCollege(id) {
+  const idx = colleges.findIndex((x) => x.id === Number(id))
+  if (idx === -1) return { code: 1, msg: '学院不存在' }
+  const name = colleges[idx].name
+  if (classes.some((c) => c.college === name) || students.some((s) => s.college === name)) {
+    return { code: 1, msg: '该学院下仍有班级或学生，无法删除' }
+  }
+  colleges.splice(idx, 1)
   return ok(null)
 }
 

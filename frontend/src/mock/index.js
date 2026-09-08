@@ -3,13 +3,14 @@
 // 后端实现后，设置 VITE_USE_MOCK=false 即切换到真实接口。
 
 import { ok, fail } from './util'
-import { handleLogin } from './authData'
+import { handleLogin, resetStudentPassword } from './authData'
 import {
   getStudents, createStudent, updateStudent, deleteStudent,
   getClasses, createClass, updateClass, deleteClass,
   getBuildings, createBuilding, updateBuilding, deleteBuilding,
   getRooms, createRoom, updateRoom, deleteRoom,
-  getBeds, roomOptions
+  getBeds, roomOptions,
+  getColleges, createCollege, updateCollege, deleteCollege
 } from './baseData'
 import { statOccupancy, statHygiene, statRepair } from './stats'
 import { workbench } from './workbench'
@@ -76,6 +77,7 @@ export function mockHandle(method, url, params, data) {
   if (method === 'POST' && p === '/auth/login') return handleLogin(data)
   if (method === 'POST' && p === '/auth/logout') return ok(null)
   if (method === 'POST' && p === '/auth/change-password') return changePassword(data.username, data.oldPassword, data.newPassword)
+  if (method === 'POST' && p === '/auth/reset-password') return resetStudentPassword(data.username, data.name)
 
   // 个人中心 · 个人资料
   if (method === 'GET' && p === '/profile') return getProfile(params.role, params.username)
@@ -120,6 +122,12 @@ export function mockHandle(method, url, params, data) {
   if (method === 'POST' && p === '/classes') return createClass(data)
   if (method === 'PUT' && /^\/classes\/\d+$/.test(p)) return updateClass(p.replace('/classes/', ''), data)
   if (method === 'DELETE' && /^\/classes\/\d+$/.test(p)) return deleteClass(p.replace('/classes/', ''))
+
+  // 基础数据 · 学院字典
+  if (method === 'GET' && p === '/colleges') return getColleges()
+  if (method === 'POST' && p === '/colleges') return createCollege(data)
+  if (method === 'PUT' && /^\/colleges\/\d+$/.test(p)) return updateCollege(p.replace('/colleges/', ''), data)
+  if (method === 'DELETE' && /^\/colleges\/\d+$/.test(p)) return deleteCollege(p.replace('/colleges/', ''))
 
   // 基础数据 · 楼栋
   if (method === 'GET' && p === '/buildings') return getBuildings(params)

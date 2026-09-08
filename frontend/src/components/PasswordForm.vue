@@ -56,6 +56,8 @@ async function submit() {
     await new Promise((resolve) => setTimeout(resolve, 800))
     userStore.logout()
     router.push('/login')
+  } catch (e) {
+    /* 失败提示（如原密码错误）已由 request 统一弹出 */
   } finally {
     changing.value = false
   }

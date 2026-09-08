@@ -6,7 +6,10 @@
         <template #header>
           <div class="class-head">
             <span class="head-title">班级</span>
-            <el-button type="primary" size="small" @click="openClassDialog()"><el-icon><Plus /></el-icon>新增班级</el-button>
+            <div class="head-actions">
+              <el-button size="small" @click="openCollegeDialog()"><el-icon><School /></el-icon>学院</el-button>
+              <el-button type="primary" size="small" @click="openClassDialog()"><el-icon><Plus /></el-icon>新增班级</el-button>
+            </div>
           </div>
         </template>
         <div class="class-filter">
@@ -88,9 +91,10 @@
               <span v-else>—</span>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="140" fixed="right">
+          <el-table-column label="操作" width="210" fixed="right">
             <template #default="{ row }">
               <el-button link type="primary" @click="openStudentDialog(row)">编辑</el-button>
+              <el-button link type="warning" @click="onResetPassword(row)">重置密码</el-button>
               <el-button link type="danger" @click="onDeleteStudent(row)">删除</el-button>
             </template>
           </el-table-column>
@@ -116,7 +120,7 @@
         </el-form-item>
         <el-form-item label="所属学院" prop="college">
           <el-select v-model="classForm.college" placeholder="请选择学院" style="width: 100%">
-            <el-option v-for="c in colleges" :key="c" :label="c" :value="c" />
+            <el-option v-for="c in colleges" :key="c.name" :label="c.name" :value="c.name" />
           </el-select>
         </el-form-item>
         <el-form-item label="专业" prop="major">
@@ -135,11 +139,44 @@
       </template>
     </el-dialog>
 
+    <!-- 学院管理 -->
+    <el-dialog v-model="collegeDialogVisible" title="学院管理" width="480" destroy-on-close>
+      <div class="college-add">
+        <el-input v-model="collegeForm.name" placeholder="输入新学院名称，如：经济管理学院" style="flex: 1" @keyup.enter="onAddCollege" />
+        <el-button type="primary" :disabled="!collegeForm.name.trim()" @click="onAddCollege">新增</el-button>
+      </div>
+      <el-table :data="colleges" v-loading="loadingColleges" stripe class="college-table">
+        <el-table-column prop="name" label="学院名称" min-width="180" />
+        <el-table-column label="操作" width="130">
+          <template #default="{ row }">
+            <el-button link type="primary" @click="onEditCollege(row)">编辑</el-button>
+            <el-button link type="danger" @click="onDeleteCollege(row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <template #footer>
+        <el-button @click="collegeDialogVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 学院编辑弹窗 -->
+    <el-dialog v-model="collegeEditVisible" title="编辑学院" width="420" destroy-on-close>
+      <el-form ref="collegeFormRef" :model="collegeEditForm" :rules="collegeRules" label-width="80px">
+        <el-form-item label="学院名称" prop="name">
+          <el-input v-model="collegeEditForm.name" placeholder="请输入学院名称" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="collegeEditVisible = false">取消</el-button>
+        <el-button type="primary" :loading="savingCollege" @click="onSaveCollege">保存</el-button>
+      </template>
+    </el-dialog>
+
     <!-- 学生新增 / 编辑弹窗 -->
-    <el-dialog v-model="dialogVisible" :title="form.studentId ? '编辑学生' : '新增学生'" width="560" destroy-on-close>
+    <el-dialog v-model="dialogVisible" :title="editing ? '编辑学生' : '新增学生'" width="560" destroy-on-close>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="90px">
         <el-form-item label="学号" prop="studentId">
-          <el-input v-model="form.studentId" :disabled="!!form.studentId" placeholder="请输入学号" />
+          <el-input v-model="form.studentId" :disabled="!!editing" placeholder="请输入学号" />
         </el-form-item>
         <el-form-item label="姓名" prop="name">
           <el-input v-model="form.name" placeholder="请输入姓名" />
@@ -157,7 +194,7 @@
         </el-form-item>
         <el-form-item label="学院" prop="college">
           <el-select v-model="form.college" placeholder="请选择学院" style="width: 100%">
-            <el-option v-for="c in colleges" :key="c" :label="c" :value="c" />
+            <el-option v-for="c in colleges" :key="c.name" :label="c.name" :value="c.name" />
           </el-select>
         </el-form-item>
         <el-form-item label="专业" prop="major">
@@ -184,12 +221,67 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Search, Plus, Download } from '@element-plus/icons-vue'
+import { Search, Plus, Download, School } from '@element-plus/icons-vue'
 import { getStudents, addStudent, updateStudent, deleteStudent } from '@/api/student'
 import { getClasses, addClass, updateClass, deleteClass } from '@/api/class'
+import { getColleges, createCollege, updateCollege, deleteCollege } from '@/api/college'
+import { resetStudentPassword } from '@/api/auth'
 
-const colleges = ['计算机学院', '机械工程学院', '外国语学院']
 const academicStatuses = ['在校', '毕业', '退学']
+
+// ================= 学院（字典 + 学院管理） =================
+const colleges = ref([]) // 供班级/学生弹窗下拉与学院管理列表
+const loadingColleges = ref(false)
+const collegeDialogVisible = ref(false)
+const collegeEditVisible = ref(false)
+const savingCollege = ref(false)
+const collegeFormRef = ref()
+const collegeForm = reactive({ name: '' })
+const collegeEditForm = reactive({ id: null, name: '' })
+const collegeRules = { name: [{ required: true, message: '请输入学院名称', trigger: 'blur' }] }
+
+async function loadColleges() {
+  loadingColleges.value = true
+  try { colleges.value = await getColleges() } finally { loadingColleges.value = false }
+}
+function openCollegeDialog() {
+  collegeDialogVisible.value = true
+  loadColleges()
+}
+async function onAddCollege() {
+  if (!collegeForm.name.trim()) return
+  try {
+    await createCollege({ name: collegeForm.name.trim() })
+    ElMessage.success('学院已新增')
+    collegeForm.name = ''
+    loadColleges()
+  } catch (e) { /* 重复名校验提示已由 request 弹出 */ }
+}
+function onEditCollege(row) {
+  collegeEditForm.id = row.id
+  collegeEditForm.name = row.name
+  collegeEditVisible.value = true
+}
+async function onSaveCollege() {
+  await collegeFormRef.value.validate()
+  savingCollege.value = true
+  try {
+    await updateCollege(collegeEditForm.id, { name: collegeEditForm.name.trim() })
+    ElMessage.success('学院已更新')
+    collegeEditVisible.value = false
+    loadColleges()
+    loadClasses() // 改名级联了班级/学生，刷新左侧班级列表保持显示一致
+  } catch (e) { /* 重名校验提示已由 request 弹出 */ } finally { savingCollege.value = false }
+}
+function onDeleteCollege(row) {
+  ElMessageBox.confirm(`确定删除学院「${row.name}」吗？`, '删除确认', { type: 'warning' })
+    .then(async () => {
+      await deleteCollege(row.id)
+      ElMessage.success('删除成功')
+      loadColleges()
+    })
+    .catch(() => {})
+}
 
 // ================= 班级（左） =================
 const classQuery = reactive({ name: '' })
@@ -264,6 +356,8 @@ async function onSaveClass() {
     ElMessage.success('保存成功')
     classDialogVisible.value = false
     await Promise.all([loadClasses(), loadAllClasses()])
+  } catch (e) {
+    /* 失败提示（如班级名称已存在）已由 request 统一弹出 */
   } finally {
     savingClass.value = false
   }
@@ -350,6 +444,8 @@ async function onSaveStudent() {
     // 若学生被分到当前选中班级则刷新，否则无论在哪都刷新当前班以便感知
     loadStudents()
     loadAllClasses()
+  } catch (e) {
+    /* 失败提示（如学号已存在）已由 request 统一弹出 */
   } finally {
     saving.value = false
   }
@@ -370,12 +466,23 @@ function onDeleteStudent(row) {
   }).catch(() => {})
 }
 
+function onResetPassword(row) {
+  ElMessageBox.confirm(
+    `确定将学生「${row.name}（${row.studentId}）」的登录密码重置为默认密码「123456」吗？\n若该生暂无登录账号将自动创建。`,
+    '重置密码确认',
+    { type: 'warning', confirmButtonText: '重置密码' }
+  ).then(async () => {
+    await resetStudentPassword({ username: row.studentId, name: row.name })
+    ElMessage.success(`已重置：${row.name}（${row.studentId}）密码为 123456`)
+  }).catch(() => {})
+}
+
 function onExport() {
   if (!list.value.length) { ElMessage.info('当前暂无学生可导出'); return }
   ElMessage.info(`导出功能（原型占位，当前 ${list.value.length} 条）`)
 }
 
-onMounted(() => { loadClasses(); loadAllClasses() })
+onMounted(() => { loadClasses(); loadAllClasses(); loadColleges() })
 </script>
 
 <style scoped>
@@ -386,6 +493,9 @@ onMounted(() => { loadClasses(); loadAllClasses() })
 .class-card { border: 1px solid var(--d-border); box-shadow: var(--d-shadow); }
 .class-head { display: flex; align-items: center; justify-content: space-between; }
 .class-head .head-title { font-weight: 800; color: var(--d-ink); }
+.head-actions { display: flex; gap: 4px; }
+.college-add { display: flex; gap: 8px; margin-bottom: 12px; }
+.college-table { width: 100%; }
 .class-filter { margin-bottom: 10px; }
 .class-list {
   max-height: 640px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;

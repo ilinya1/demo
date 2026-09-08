@@ -62,6 +62,8 @@ async function saveInfo() {
     await updateProfile(role, username, { ...infoForm })
     ElMessage.success('资料已保存')
     loadProfile()
+  } catch (e) {
+    /* 失败提示已由 request 统一弹出 */
   } finally {
     savingInfo.value = false
   }

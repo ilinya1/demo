@@ -185,6 +185,8 @@ async function onSave() {
     ElMessage.success('保存成功')
     dialogVisible.value = false
     load()
+  } catch (e) {
+    /* 失败提示（如该楼栋房间号已存在）已由 request 统一弹出 */
   } finally {
     saving.value = false
   }

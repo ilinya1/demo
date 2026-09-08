@@ -125,6 +125,8 @@ async function onSave() {
     ElMessage.success('保存成功')
     dialogVisible.value = false
     load()
+  } catch (e) {
+    /* 失败提示（如楼栋名已存在）已由 request 统一弹出 */
   } finally {
     saving.value = false
   }

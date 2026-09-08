@@ -100,7 +100,7 @@ async function submit() {
     ElMessage.success('报修提交成功，请等待处理')
     router.push('/student/my-repair')
   } catch (e) {
-    if (e && e.msg) ElMessage.error(e.msg)
+    /* 失败提示已由 request 统一弹出 */
   } finally {
     submitting.value = false
   }

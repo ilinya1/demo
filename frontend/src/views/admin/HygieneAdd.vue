@@ -130,11 +130,11 @@ async function submit() {
   }
   submitting.value = true
   try {
-    await addApi({ ...form })
+    await addApi({ ...form, score: score.value })
     ElMessage.success('卫生检查已保存')
     router.push('/admin/hygiene-list')
   } catch (e) {
-    if (e && e.msg) ElMessage.error(e.msg)
+    /* 失败提示已由 request 统一弹出 */
   } finally {
     submitting.value = false
   }

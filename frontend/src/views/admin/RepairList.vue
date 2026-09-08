@@ -157,7 +157,7 @@ async function save() {
     dialog.value = false
     load()
   } catch (e) {
-    if (e && e.msg) ElMessage.error(e.msg)
+    /* 失败提示已由 request 统一弹出 */
   } finally {
     saving.value = false
   }

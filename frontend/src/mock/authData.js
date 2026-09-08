@@ -11,6 +11,21 @@ const users = [
 // 供 settings（个人资料 / 改密）读取并修改当前账号（返回同源数组，改动即持久化到登录数据）
 export function getLoginUsers() { return users }
 
+// 管理员重置学生密码的默认密码
+export const DEFAULT_STUDENT_PASSWORD = '123456'
+
+// 管理员重置某学生密码为默认值；若该生暂无账号则自动创建（保证重置后可用默认密码登录）
+export function resetStudentPassword(username, name) {
+  let u = users.find((x) => x.username === username)
+  if (!u) {
+    users.push({ username, password: DEFAULT_STUDENT_PASSWORD, role: 'STUDENT', name: name || username })
+  } else {
+    u.password = DEFAULT_STUDENT_PASSWORD
+    if (name) u.name = name
+  }
+  return ok(null)
+}
+
 // ---- 普通身份 token（简化，仅 mock 用）----
 let tokenSeq = 0
 

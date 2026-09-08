@@ -662,7 +662,9 @@
 
   **连带说明**：本次复查未发现其他阻断性问题；容量/占用、住宿状态枚举、api↔mock 契约、路由/菜单/守卫、模块环引用（authData 唯一依赖方向）等均一致。
 
-- **2026-09-04（操作日志 #33，交接文档升级至 v5）** 按要求更新 docs/项目交接文档.md，把此前严重滞后（描述为"静态 HTML 原型 + 后端骨架 + DB 未建库"）的状态刷新为当前实况，记录"已做什么 + 后续做什么"。核实前端清单（package.json 与 views/api/mock 盘点）后确认关键事实：Vue ^3.5 / Vite ^6 / Element Plus ^2.14 / Pinia ^3 / Vue Router ^4.5 / Axios ^1.7 / ECharts ^6；MySQL80 已运行 dorm_manager（11 表）；admin 视图 16、student 视图 6。文档 v5 新增「六、v5 —— Vue3 前端开发落地与数据库修订」章节（前端升级、双端模块表、mock 架构、关键设计/修复、DB 10→11 表 epair_type/epair_order.type_id），并将「当前技术状态」「后续开发待办」（后端最高优先 + mybatis-plus-spring-boot4-starter 约束 + 前端联调/上传/统计真实化/部署）「版本修订记录」整体翻新，目录树与技术栈同步校正。涉及文件：docs/项目交接文档.md（v1→v5）。
+- **2026-09-04（操作日志 #33，交接文档升级至 v5）** 按要求更新 docs/项目交接文档.md，把此前严重滞后（描述为"静态 HTML 原型 + 后端骨架 + DB 未建库"）的状态刷新为当前实况，记录"已做什么 + 后续做什么"。核实前端清单（package.json 与 views/api/mock 盘点）后确认关键事实：Vue ^3.5 / Vite ^6 / Element Plus ^2.14 / Pinia ^3 / Vue Router ^4.5 / Axios ^1.7 / ECharts ^6；MySQL80 已运行 dorm_manager（11 表）；admin 视图 16、student 视图 6。文档 v5 新增「六、v5 —— Vue3 前端开发落地与数据库修订」章节（前端升级、双端模块表、mock 架构、关键设计/修复、DB 10→11 表 
+epair_type/
+epair_order.type_id），并将「当前技术状态」「后续开发待办」（后端最高优先 + mybatis-plus-spring-boot4-starter 约束 + 前端联调/上传/统计真实化/部署）「版本修订记录」整体翻新，目录树与技术栈同步校正。涉及文件：docs/项目交接文档.md（v1→v5）。
 
 - **2026-09-07（操作日志 #34，管理端仪表盘升级为运营工作台）** 用户反映仪表盘功能偏少、较单调，经方案对比（A 功能增强 / B 运营工作台 / C 轻量交互）后选定**方案 B**。在保留原「4 张统计卡 + 楼栋入住率条形图 + 卫生均分折线图」基础上扩展：
   - **新增**`src/mock/workbench.js`：`/dashboard/workbench` 聚合端点，复用 daily/checkin 的真实在存数据（listRepair/listHygiene/listCheckoutApps/listCheckinRecords 全量拉取）统计——待办（待审核退宿/待处理报修/在住/已退宿）、报修与退宿积压分布、运营告警（报修超 3 天未处理、卫生不合格、退宿待审核）、最新报修/退宿动态。
@@ -694,3 +696,55 @@
 
 - **2026-09-07（操作日志 #38，交接文档升级 v6）** 将 v6 阶段改动（运营工作台、mock 数据一致性加固、UI 补全、`student.emergency_phone`）写入 `docs/项目交接文档.md`：新增「六之一、v6」章节，更新头部版本、当前技术状态（数据库样例一致性表述、emergency_phone 列）、版本修订记录新增 v6 行。
   - 涉及文件：docs/项目交接文档.md。
+
+- **2026-09-07（操作日志 #39，前端全面复查与 Bug 修复：直接退宿原因改为字典加载）** 用户要求通读全部项目文档后继续修复前端 Bug。本轮通读了 `docs/`（HTML原型修改记录 / 项目交接文档 / 开发设计文档 / 数据库设计说明）并系统性审查了 `frontend/src` 的 mock 层（baseData/checkin/daily/settings/index/workbench/authData/util/stats）与视图层（admin 16 + student 6 页、PasswordForm、router、双端 Layout、store/api 封装）。
+
+  **审查结论**：mock 数据已一致（床位快照 `bedStudentsSeed` 与 `checkInRecords` 在住记录完全对齐 102/103/201，房间占用/状态经 `recomputeRoomOccupancy` 同步）；班级改名级联、删除在住学生联动释放床位、字典删除引用拦截、退宿申请流转、mock 路由分发等均已闭环，未发现新的数据一致性缺陷。
+
+  **修复的 Bug（1 处）**：`frontend/src/views/admin/CheckoutAudit.vue`「直接退宿」弹窗的*退宿原因*下拉原为硬编码数组 `['毕业离校','休学','退学','调宿','其他']`，违反硬约束「退宿原因下拉选项从字典加载」，且与学生端 `CheckoutApply.vue`（#30 已改字典加载）不一致——字典新增/删除的原因无法实时反映，还可能出现下拉选项与字典不符。已改为从 `getCheckoutReasons()` 字典加载（`reasons` 改为 `ref([])`，`onMounted` 新增 `loadReasons()`），与退宿申请页/全局设置字典保持同源。
+
+  **验证**：`npm run build` 通过（`✓ built`，exit 1 仅为沙箱无法写 esbuild 缓存日志 + chunk 体积告警，非代码问题，与既往会话一致）。
+  **涉及文件**：frontend/src/views/admin/CheckoutAudit.vue。
+
+- **2026-09-07（操作日志 #40，Bug 修复：新增学生「学号」输入框自禁用，只能输 1 位）** 用户反馈「新增学生功能中学号只能填一个数字」。经浏览器复现与源码定位，根因是 `StudentList.vue` 学号输入框 `:disabled="!!form.studentId"` 把 disabled 绑定在学号**自身值**上：新增弹窗中学号初始为空可输入，但敲入第 1 个字符后 `studentId` 变为真值 → 输入框立即自禁用，导致学号永远停留在 1 位（且无 maxlength、无报错，属静默 UI 逻辑 Bug）。
+  - **修复**：`:disabled` 与弹窗标题改为基于**编辑态** `editing` 判断（而非学号值）——新增时学号可任意输入、弹窗标题保持「新增学生」；编辑时学号只读、标题「编辑学生」。
+    - 学号输入框：`<el-input :disabled="!!editing" ...>`（原本 `!!form.studentId`）。
+    - 弹窗标题：`:title="editing ? '编辑学生' : '新增学生'"`（原 `form.studentId ? ...`，同根因连带：新增输入学号后标题误变「编辑学生」）。
+  - **验证**：`npm run build` 通过；浏览器实测新增弹窗输入 `2023999999`（多位数）完整接收、输入框不再禁用、标题保持「新增学生」；编辑态学号仍只读。均 PASS。
+  - **涉及文件**：frontend/src/views/admin/StudentList.vue。
+
+- **2026-09-07（操作日志 #41，Bug 修复：新增卫生检查无法保存）** 用户反馈「新增卫生检查保存不了」。定位根因是前后端契约不一致：`HygieneAdd.vue` 的表单 `form` 中**不含 `score` 字段**（分数是 `computed` 由扣分项派生），提交时 `addApi({ ...form })` 未携带 `score`；而 mock `daily.js::addHygiene` 强制校验 `d.score`（缺失即返回「请确定评分（100 分起扣）」），导致保存被静默拦截（弹窗/页面无该提示，属契约缺失 Bug）。
+  - **修复**：`HygieneAdd.vue` 保存时提交计算得分 `await addApi({ ...form, score: score.value })`，与 `daily.js`（按 score 判定优秀/合格/不合格）对齐。
+  - **验证**：`npm run build` 通过；浏览器实测填楼栋/房间/日期/检查人（评 100 分、无违规电器）保存成功后跳转卫生列表，且列表新增该条记录（1号楼101室 100分 优秀 测试）。PASS。
+  - **涉及文件**：frontend/src/views/admin/HygieneAdd.vue。
+
+- **2026-09-07（操作日志 #42，Bug 修复：退宿处理「直接退宿/审核」缺失错误处理）** 浏览器冒烟测试（入住登记、直接退宿、学生端退宿申请、报修处理四条业务流）发现：`CheckoutAudit.vue` 的 `onDirect`（直接退宿）与 `onAudit`（审核）仅有 `try/finally`、**缺 `catch`**，当 `directCheckout` 失败（学生不在住）或 `auditCheckoutApp` 失败时抛未处理 Vue 组件事件错误，控制台 `Unhandled error` 且界面无任何提示（与其他保存流程已有的 catch 模式不一致）。
+  - **修复**：`onDirect`、`onAudit` 均补 `catch (e) { if (e && e.msg) ElMessage.error(e.msg) }`，与 RepairAdd/HygieneAdd/RepairList 的错误反馈模式对齐。
+  - **验证**：浏览器实测「直接退宿」对不在住学生 `2023020102` 弹出「该学生当前不在住」、对不存在学号弹出「学生不存在」，弹窗保持打开、**控制台无 Unhandled error**。PASS。
+  - **说明**：冒烟中「入住登记后经整页刷新/导航，内存 mock 数据被重置、刚入住学生宿舍信息丢失」属项目已文档化特性（`写操作仅落在内存 mock，刷新页面即还原`），非本轮修复范围；SPA 内 `router.push` 客户端跳转不引发重置，仅浏览器整页刷新会重置。
+  - **涉及文件**：frontend/src/views/admin/CheckoutAudit.vue。
+
+- **2026-09-07（操作日志 #43，系统性 Bug 修复：mock 模式业务错误提示缺失 + 保存函数未捕获异常）** 浏览器全模块冒烟（班级/楼栋/房间/报修类型/系统设置/统计/个人中心）发现两类根因：
+  1. **`request.js` mock 分支不弹错误提示**：真实接口（axios）分支响应拦截器会对 `code!==0` 调用 `ElMessage.error` 后 reject，但 mock 分支直接 `reject` 不弹提示 → 所有业务校验失败（班级含学生、楼栋名已存在、报修类型被引用、原密码错误等）在 mock 模式下**静默无反馈**（部分还被组件 `.catch(()=>{})` 吞掉）。
+  2. **部分保存函数缺 `catch` 导致未处理异常**：BuildingList/RoomList/StudentList/RepairType/Settings/PasswordForm/Profile 的 save 仅 `try/finally`，API reject 时抛 `Unhandled error during execution`，如楼栋保存重名时报 `SyntaxError`。
+  - **修复**：
+    - `api/request.js`：mock 分支 `code!==0` 时先 `ElMessage.error(body.msg)` 再 `reject`，与 axios 分支行为一致，错误提示集中化、一处生效全局生效。
+    - 为上述缺 catch 的保存函数批量补 `catch (e) { /* 失败提示已由 request 统一弹出 */ }`（楼栋/房间/班级/学生/报修类型/退宿原因/改密/双端个人资料），消除未处理异常。
+    - 移除 4 处重复的组件级 `catch(e){ if(e.msg) ElMessage.error(e.msg) }`（HygieneAdd/RepairAdd/RepairList/CheckoutAudit onAudit·onDirect），避免与 request 集中提示**双 toast**。
+  - **验证**：`npm run build` 通过；浏览器逐项复测均正确弹出红色错误提示且**控制台无 Unhandled error/SyntaxError**——①新增楼栋重名「楼栋名已存在」弹窗不关；②删「软工2301」「该班级下仍有学生，无法删除」班级保留；③删「灯管」「该类型已被报修单引用，无法删除」保留；④改密原密码错误「原密码错误」不登出不跳转。全部 PASS。
+  - **涉及文件**：frontend/src/api/request.js、views/admin/BuildingList.vue、views/admin/RoomList.vue、views/admin/StudentList.vue、views/admin/RepairType.vue、views/admin/Settings.vue、views/admin/HygieneAdd.vue、views/admin/RepairList.vue、views/admin/CheckoutAudit.vue、views/admin/Profile.vue、views/student/RepairAdd.vue、views/student/Profile.vue、components/PasswordForm.vue。
+
+- **2026-09-07（操作日志 #44，新增功能：学生/班级管理模块「学院管理」）** 用户要求在「学生/班级管理」模块增加「新增学院」功能。经确认采用**完整学院管理**（新增/编辑/删除 + 引用拦截 + 改名级联）且**仅前端 mock**（不建库、不改 init.sql/数据库设计说明）。
+  - **mock 层**（`src/mock/baseData.js`）：新增学院字典 `colleges`（初始 计算机学院/机械工程学院/外国语学院）+ `getColleges/createCollege/updateCollege/deleteCollege`。重名拦截、**改名级联更新该学院下班级与学生的 `college` 字段**、**删除引用拦截**（有班级或学生引用「该学院下仍有班级或学生，无法删除」），与报修类型/退宿原因字典约定对齐。`src/mock/index.js` 注册 `/colleges` 的 GET/POST/PUT/DELETE。
+  - **api**：新增 `src/api/college.js` 封装。
+  - **视图**（`src/views/admin/StudentList.vue`）：原硬编码 `colleges` 数组改为从 `getColleges()` 加载的 ref；左侧「班级」面板标题旁新增「学院」按钮 → 打开「学院管理」弹窗（顶部输入新增 + 列表编辑/删除）。
+  - **验证**：`npm run build` 通过；浏览器实测——新增「经济管理学院」出现在列表且进「新增班级/新增学生」的学院下拉；重复新增拦截「该学院已存在」；改名「经济管理学院」→「经贸学院」后下拉同步显示新名（级联生效）；删被引用的「计算机学院」拦截「该学院下仍有班级或学生，无法删除」；删无引用的「经贸学院」成功。均 PASS。无控制台报错。
+  - **涉及文件**：frontend/src/mock/baseData.js、frontend/src/mock/index.js、frontend/src/api/college.js（新增）、frontend/src/views/admin/StudentList.vue。
+
+- **2026-09-08（操作日志 #45，新增功能：管理员重置学生密码）** 用户要求增加「重置学生密码」功能。经确认采用**学生表格行操作入口 + 重置为默认密码（123456）**，仅前端 mock。
+  - **mock 层**（`src/mock/authData.js`）：新增 `DEFAULT_STUDENT_PASSWORD='123456'` 与 `resetStudentPassword(username,name)`——将账号密码重置为默认值；**若该生暂无登录账号则自动创建**（保证重置后即可用默认密码登录，解决「目标学生需先有账号」的前置问题）。`src/mock/index.js` 注册 `POST /auth/reset-password`。
+  - **api**：`src/api/auth.js` 新增 `resetStudentPassword(data)`。
+  - **视图**（`src/views/admin/StudentList.vue`）：学生表格「操作」列新增「重置密码」按钮 → 确认弹窗（文案含默认密码与自动建号提示）→ 成功后提示已重置为 123456；「操作」列宽 140→210。
+  - **验证**：`npm run build` 通过；浏览器实测——① 操作列出现「编辑/重置密码/删除」；② 对有账号学生「王小明」重置成功提示含 123456；③ 对无账号学生「陈雨萱」点重置后自动建号，退出管理员再用 `2023010301/123456` 登录**成功进入学生端**（默认密码生效）。均 PASS，无报错。
+  - **涉及文件**：frontend/src/mock/authData.js、frontend/src/mock/index.js、frontend/src/api/auth.js、frontend/src/views/admin/StudentList.vue。
+

@@ -130,6 +130,8 @@ async function saveReason() {
     ElMessage.success('保存成功')
     reasonDialog.value = false
     loadReasons()
+  } catch (e) {
+    /* 失败提示（如原因名称已存在）已由 request 统一弹出 */
   } finally {
     savingReason.value = false
   }

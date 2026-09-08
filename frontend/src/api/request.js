@@ -55,6 +55,8 @@ export default function request({ url, method = 'get', data, params }) {
         if (body.code === 0) {
           resolve(body.data)
         } else {
+          // 与 axios 分支保持一致：业务失败统一提示后 reject
+          ElMessage.error(body.msg || '请求失败')
           reject(body)
         }
       }, 200)

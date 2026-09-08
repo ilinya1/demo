@@ -80,7 +80,7 @@ class AccommodationControllerTest {
         String t = token();
         String sid = createStudent(null);
 
-        checkin(sid, 1, 1);
+        checkin(sid, 1, 4);
 
         Resp cur = call("GET", "/student/current-room?studentId=" + sid, null, t);
         assertThat(cur.body().path("data").path("dorm").path("roomId").asLong()).isEqualTo(1);
@@ -124,7 +124,7 @@ class AccommodationControllerTest {
         String t = token();
         String sid = createStudent("D");
 
-        checkin(sid, 1, 2);
+        checkin(sid, 6, 1);
 
         Resp r = call("POST", "/checkout/direct", Map.of(
                 "studentId", sid, "checkoutDate", "2026-09-08", "reason", "休学", "remark", "直接退宿测试"), t);

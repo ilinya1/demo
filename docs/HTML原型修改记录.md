@@ -867,3 +867,11 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   4. **验证**：新增 `CollegeControllerTest` 端到端用例（返回数组+种子、新增/重名、改名后 class/student 学院级联、引用拦截、清理）；`mvn test` 全过（**28 项**，含既有 27 无回归）。浏览器联调 `/admin/students`：学院弹窗列出 3 个种子、新增/重名拦截/改名级联下拉/引用删除拦截/删除均通过，无 console 报错，最终库还原为 3 个种子学院。
   - **涉及文件**：新增 `entity/TCollege.java`、`mapper/TCollegeMapper.java`、`dto/CollegeReq.java`、`service/CollegeService.java`、`service/impl/CollegeServiceImpl.java`、`controller/CollegeController.java`、`test/.../CollegeControllerTest.java`；修改 `docs/sql/init.sql`、`docs/数据库设计说明.md`。
 
+- **2026-09-08（操作日志 #61，扩充演示数据：基础数据 + 业务记录，重建库）** 用户要求「给这个项目增加一些数据」。经确认：扩充**基础数据 + 业务记录**，落地方式为**扩充 init.sql 种子并重建库**（丢弃联调/测试累积的临时数据，得到干净连贯的一键演示数据集）。
+  1. **数据规模**：班级 5→8（覆盖计算机/机电/外国语 学院，2022/2023/2024 级）、学生 3→24（每班 3 人，保留 3 个演示账号 2023010101~0103 可登录，其余学生无账号可由「重置密码」自动建号）、楼栋 2→3、房间 3→18（每栋 2 层 6 间四人间）、床位 12→72；`check_in` 20 条（在住 16 + 已退宿 4）、`checkout_apply` 6（待审核 3/已通过 1/已驳回 1）、`hygiene_record` 9、`repair_order` 12。
+  2. **一致性**：学生 `housing_status` 与 `check_in.status`、`dorm_bed.status=占用`、`dorm_room.status`（空闲/部分入住）四者严格联动；所有逻辑外键（class/student/楼/房/床、报修 type、报修/卫生/退宿引用的学生）均有对应行。SQL 校验全通过（在住 16=在住学生16=占用床位16；退宿4=退宿记录4；引用键 0 失效）。
+  3. **测试修正**：`AccommodationControllerTest` 原硬编码入住 1号楼101 的 1/2 号床，现被种子占用 → 改用空闲床位（101 室 4 号床、203 室 1 号床，注意参数为房内床号 1-4）。`mvn test` 28 项全绿。
+  4. **注意（踩坑）**：`mvn test` 与演示库**共用 dorm_manager 数据源**，跑测试会把临时记录写回库、污染演示数据。因此**测试全部通过后须再执行一次 `source init.sql` 重建库**，得到纯净种子数据（脚本库已是最终状态，无需改）。已重建并核验：学生 24 / 入住 20 / 退宿 6 / 卫生 9 / 报修 12 / 房间 18 / 床位 72。
+  5. **联调验证**：重启后端后 API 只读核验（学生 24、入住记录 20）；浏览器逐页确认仪表盘/学生班级/楼栋房间/入住记录/退宿审核/卫生/报修/三统计页/学生端我的宿舍均正常渲染，console 无报错（如王小明在 1号楼 101 室 1 床，室友李小红/陈强同房）。
+  - **涉及文件**：修改 `docs/sql/init.sql`（扩充示例数据段）、`src/test/java/com/gzlg/dorm/AccommodationControllerTest.java`。
+

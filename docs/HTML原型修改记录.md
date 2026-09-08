@@ -793,3 +793,49 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   - **验证**：`mvn -q compile` 通过；`mvn -q test`（contextLoads）通过（仅 MyBatis mapper 包暂空 WARN、Mockito 动态 agent 提示，均非错误）。
   - **涉及文件**：新增 src/main/java/com/gzlg/dorm/common/result/{Result,ResultCode,PageResult}.java、common/exception/{BizException,GlobalExceptionHandler}.java；修改 docs/开发设计文档.md（第四章）。
 
+- **2026-09-08（操作日志 #52，后端 11 表实体 + Mapper）** 按《数据库设计说明.md》为 11 张表建立实体与 Mapper：
+  - **pom.xml**：新增 Lombok（optional，减少实体样板代码，版本由 Boot 父管理）。
+  - **entity**（`com.gzlg.dorm.entity`）：`Clazz`(class，实体名避 Java 保留字)、`Student`(PK=student_id, INPUT)、`SysUser`、`DormBuilding`、`DormRoom`、`DormBed`、`CheckIn`(含 5 快照 + source)、`CheckoutApply`、`HygieneRecord`(deduct_items/photos 为 JSON 字符串)、`RepairType`、`RepairOrder`。均用 `@Data` + `@TableName` + `@TableId`，下划线↔驼峰由全局 mapUnderscoreToCamelCase 映射。
+  - **mapper**（`com.gzlg.dorm.mapper`）：11 个 `BaseMapper<Entity>` 子接口，由 `@MapperScan("com.gzlg.dorm.mapper")` 扫描。
+  - **验证**：`mvn compile` 通过；`mvn test` 全部通过（`Tests run: 2, Failures: 0`）；新增 `MapperSmokeTest` 实测 class/repair_type/student 可查询、列映射正确（含 emergency_phone）；此前「No MyBatis mapper was found」WARN 已消失。
+  - **涉及文件**：新增 src/main/java/com/gzlg/dorm/entity/*.java（11）、mapper/*Mapper.java（11）、test/java/com/gzlg/dorm/MapperSmokeTest.java；修改 pom.xml。
+
+- **2026-09-08（操作日志 #53，后端登录鉴权模块）** 采用「轻量 JWT + 拦截器」实现登录鉴权（用户确认选型）：
+  - **pom**：新增 `jjwt`(0.12.6)、`spring-security-crypto`（仅 crypto，DelegatingPasswordEncoder）、`jackson-databind`（webmvc starter 未内置，JSON 必需）；测试 starter 换为标准 `spring-boot-starter-test`。
+  - **common/jwt**：`JwtProperties`(secret/expireMinutes)、`JwtUtil`(HS256 生成/解析)、`LoginUser`、`UserContext`(ThreadLocal)、`JwtInterceptor`(校验 Bearer token 写入上下文，失败返回 HTTP 401 + {code:401,msg})、`WebMvcConfig`(注册拦截器，放行 /auth/login)。
+  - **common/config/PasswordEncoderConfig**：`DelegatingPasswordEncoder` 兼容 `{noop}`(演示)/`{bcrypt}`(生产)。
+  - **auth**：`dto/LoginRequest`、`vo/{UserVO,LoginResult}`、`service/AuthService`+impl（校验账号/密码/状态，STUDENT 回填姓名与学生端 studentId，ADMIN 显示名"系统管理员"，签发 token）、`controller/AuthController`(login/logout/me)。
+  - **application.yaml**：`server.servlet.context-path=/api`（对齐前端 baseURL）+ `jwt.*`。
+  - **验证**：`mvn test` 全过（`Tests run: 7`）。`AuthControllerTest` 为 RANDOM_PORT 真实 HTTP（JDK HttpClient），覆盖管理员/学生登录、错误密码(400)、无 token(401)、带 token 访问 /me——同时实证鉴权拦截器与 JSON 序列化正常。Boot 4 中 `AutoConfigureMockMvc`/`TestRestTemplate` 均已迁移，测试改用 HttpClient 绕开。
+  - **涉及文件**：新增 common/jwt/{JwtProperties,JwtUtil,LoginUser,UserContext,JwtInterceptor,WebMvcConfig}、common/config/PasswordEncoderConfig、dto/LoginRequest、vo/{UserVO,LoginResult}、service/AuthService、service/impl/AuthServiceImpl、controller/AuthController、test/.../AuthControllerTest；修改 pom.xml、application.yaml。
+
+- **2026-09-08（操作日志 #54，后端基础数据模块 CRUD + 校验）** 实现学生/班级/楼栋/房间四类基础数据接口（对齐前端 mock 契约，均需 JWT）：
+  - **DTOs**：`ClazzReq`、`StudentReq`(className→classId)、`BuildingReq`、`RoomReq`。
+  - **VOs**：`ClazzVO`(含 studentCount/boardingCount)、`StudentVO`(含 className)、`RoomVO`(含 buildingName/occupiedCount)、`BedVO`。
+  - **Service + Controller**：
+    - 班级：分页(名称/学院/年级)、重命名唯一校验、删除时班内有学生拦截「该班级下仍有学生，无法删除」。
+    - 学生：分页(学号/姓名/学院/学籍/班级)、学号唯一、班级必须存在、**在住学生禁止删除**、查询单条。className 由服务映射为 classId 落库。
+    - 楼栋：楼栋名唯一、删除时该楼栋下有房间拦截。
+    - 房间：`(buildingId,roomNo)` 唯一、新建自动建 capacity 个床位、更新容量时床位增删且「容纳人数不能小于已住人数」、删除时存在占用床位则拦截、`/beds` 回填在住学生、`/options` 返回楼栋下拉+房型。
+  - **验证**：`mvn test` 全过（`Tests run: 10, Failures: 0`）。新增 `BaseDataControllerTest`（真实 HTTP+JWT）：列表(班级/学生含 className)、班级增删/重名拦截/有学生删除拦截、房间增删/重号拦截/建成 4 床位；测试数据已清理。
+  - **说明**：学院(colleges)为前端 mock 字典，库无表，本模块不实现后端接口；删除在住学生/房间占用拦截为后端安全边界，与前端 mock 级联释放逻辑不同（退宿事务联动的完整实现在住宿业务模块）。
+  - **涉及文件**：新增 dto/{Clazz,Student,Building,Room}Req、vo/{Clazz,Student,Room,Bed}VO、service/{Clazz,Student,Building,Room}Service(+impl)、controller/{Clazz,Student,Building,Room}Controller、test/.../BaseDataControllerTest。
+
+- **2026-09-08（操作日志 #55，后端住宿业务模块）** 实现入住/退宿核心事务联动（对齐前端 mock 契约，均需 JWT）：
+  - **DTO/VO**：`CheckinRequest`、`CheckoutApplyRequest`、`AuditRequest`、`DirectCheckoutRequest`；`CheckInVO`、`CheckinRoomVO`、`CheckoutAppVO`、`CurrentRoomVO`(student/dorm/roommates)。
+  - **CheckInService(+impl)**：入住登记（校验未在住+床位空闲 → 写 `check_in` 5 快照 + 床位占用 + 学生住宿在住 + 刷新房间）、共享事务 `checkout()`（置已退宿 + 释放床位 + 学生已退宿 + 刷新房间，供直接退宿/审核通过复用）、`checkinRooms/free-beds`、入住记录分页、学生端 currentRoom(含室友)。
+  - **CheckoutService(+impl)**：退宿申请（在住校验/待审核唯一/applyNo 生成）、审核（通过→走 `checkout(apply)` 退宿，驳回留意见）、撤销（本人待审核可删）、直接退宿（`checkout(direct)`）；申请列表回填学生信息与当前宿舍（复用历史 check_in 快照）。
+  - **接口**：`CheckInController`(/checkin、/checkin/rooms、/checkin/rooms/{id}/free-beds、/checkin-records、/student/current-room)、`CheckoutController`(/checkout-applications 列表·提交·audit·cancel、/checkout/direct)。`BuildingController` 补充 `/buildings/options`（入住/直接退宿下拉）。
+  - **修复**：`StudentServiceImpl.create` 漏 `setStudentId`（插入报 student_id 非空）已补。
+  - **验证**：`mvn test` 全过（`Tests run: 12`）。新增 `AccommodationControllerTest`：创建学生→入住→我的宿舍→记录在住→提交申请→撤销→再申请→审核通过→已退宿(source=apply)→已退宿学生可删；及直接退宿(source=direct)。测试数据已清理。
+  - **涉及文件**：新增 dto/{Checkin,CheckoutApply,Audit,DirectCheckout}Request、vo/{CheckIn,CheckinRoom,CheckoutApp,CurrentRoom}VO、service/{CheckIn,Checkout}Service(+impl)、controller/{CheckIn,Checkout}Controller、test/.../AccommodationControllerTest；修改 service/impl/StudentServiceImpl、service/{BuildingService,BuildingServiceImpl}、controller/BuildingController。
+
+- **2026-09-08（操作日志 #56，后端日常管理模块）** 实现卫生检查、报修、报修类型字典（对齐前端 mock 契约，均需 JWT）：
+  - **DTO/VO**：`HygieneRequest`、`RepairTypeRequest`、`RepairCreateRequest`、`RepairHandleRequest`；`HygieneVO`(deductItems/photos 解析为数组 + buildingName/roomNo)、`RepairVO`(images 数组 + studentName/typeName/buildingName/roomNo 回填)。
+  - **报修类型字典**（`RepairTypeService`）：sort 升序列表、重名拦截「该报修类型已存在」、删除被报修单引用拦截「该类型已被报修单引用，无法删除」。
+  - **卫生检查**（`HygieneService`）：列表按 checkDate/buildingId/roomId/result 过滤；登记按 score 判定 优秀/合格/不合格，`score<60 或含"违规电器"且无照片` 拦截「评分低于 60 或涉及违规电器时，必须上传现场照片」，deductItems/photos 以 JSON 字符串落库。
+  - **报修**（`RepairService`）：列表(orderNo/buildingId/studentId/status)与详情、学生提交（校验学生/房间，取 room.buildingId，orderNo=BX+日期+序号）、处理派单/完成（已完成需说明、handleTime 首次写）。
+  - **接口**：`RepairTypeController`(/daily/repair-types)、`HygieneController`(/daily/hygiene)、`RepairController`(/daily/repairs、/daily/repair/{id})。
+  - **验证**：编译通过；`mvn test` 全过（`Tests run: 15, Failures: 0`）。`DailyManagementControllerTest` 覆盖：类型增删、卫生登记与「必须上传」400 校验、报修提交→查询→完成处理全链路。卫生/报修测试数据见库（未清理）。
+  - **涉及文件**（由子代理实现，需复核）：新增 vo/{Hygiene,Repair}VO、service/{RepairType,Hygiene,Repair}Service(+impl)、controller/{RepairType,Hygiene,Repair}Controller、test/.../DailyManagementControllerTest；加 dto/{Hygiene,RepairType,RepairCreate,RepairHandle}Request（本轮主线程已建）。
+

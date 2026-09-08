@@ -1,0 +1,7 @@
+package com.gzlg.dorm.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.gzlg.dorm.entity.HygieneRecord;
+
+public interface HygieneRecordMapper extends BaseMapper<HygieneRecord> {
+}

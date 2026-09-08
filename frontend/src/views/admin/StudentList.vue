@@ -227,7 +227,7 @@ import { getClasses, addClass, updateClass, deleteClass } from '@/api/class'
 import { getColleges, createCollege, updateCollege, deleteCollege } from '@/api/college'
 import { resetStudentPassword } from '@/api/auth'
 
-const academicStatuses = ['在校', '毕业', '退学']
+const academicStatuses = ['在校', '毕业', '退学', '休学']
 
 // ================= 学院（字典 + 学院管理） =================
 const colleges = ref([]) // 供班级/学生弹窗下拉与学院管理列表

@@ -771,3 +771,7 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   - **验证**：`npm run build` 通过；浏览器实测——学生增删（classId 推导不破坏）、将刘少军 `2023020101` 入住后再直接退宿（source=direct）、入住记录「已退宿」筛选正常，全程 console 无 error/undefined。PASS。（B 类至此全部对齐。）
   - **涉及文件**：frontend/src/mock/checkin.js、frontend/src/mock/baseData.js、frontend/src/mock/authData.js。
 
+- **2026-09-08（操作日志 #49，微型修正：学生学籍筛选补「休学」）** 承接 #46 全面核对中发现的小项：`StudentList.vue` 学籍筛选 `academicStatuses` 由 `['在校','毕业','退学']` 补入 `'休学'`，与库学籍枚举（在校/毕业/退学/休学）对齐。`statusTag` 对其走 `info` 灰色（未单独配色，语义无碍）。
+  - **验证**：`npm run build` 通过（`✓ built`）。
+  - **涉及文件**：frontend/src/views/admin/StudentList.vue。
+

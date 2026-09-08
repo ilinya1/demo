@@ -1,5 +1,6 @@
 package com.gzlg.dorm.service;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,9 +16,9 @@ public interface StatsService {
 
     Map<String, Object> dashboardStats();
 
-    Map<String, Object> buildingOccupancy();
+    List<Map<String, Object>> buildingOccupancy();
 
-    Map<String, Object> hygieneTrend();
+    List<Map<String, Object>> hygieneTrend();
 
     Map<String, Object> workbench();
 }

@@ -259,7 +259,7 @@ public class StatsServiceImpl implements StatsService {
     }
 
     @Override
-    public Map<String, Object> buildingOccupancy() {
+    public List<Map<String, Object>> buildingOccupancy() {
         List<DormRoom> rooms = roomMapper.selectList(null);
         Map<Long, DormRoom> roomById = rooms.stream()
                 .collect(Collectors.toMap(DormRoom::getId, r -> r, (a, b) -> a));
@@ -283,11 +283,11 @@ public class StatsServiceImpl implements StatsService {
             int[] v = agg.getOrDefault(b.getId(), new int[]{0, 0});
             list.add(Map.of("building", b.getBuildingName(), "rate", rate(v[1], v[0])));
         }
-        return Map.of("list", list);
+        return list;
     }
 
     @Override
-    public Map<String, Object> hygieneTrend() {
+    public List<Map<String, Object>> hygieneTrend() {
         List<HygieneRecord> records = hygieneRecordMapper.selectList(null);
         List<Map<String, Object>> list = new ArrayList<>();
         List<Bucket> weeks = lastWeeks(4);
@@ -304,7 +304,7 @@ public class StatsServiceImpl implements StatsService {
                     .average().orElse(0));
             list.add(Map.of("week", "第" + (i + 1) + "周", "score", score));
         }
-        return Map.of("list", list);
+        return list;
     }
 
     @Override

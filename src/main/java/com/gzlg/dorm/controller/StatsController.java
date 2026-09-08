@@ -5,6 +5,7 @@ import com.gzlg.dorm.service.StatsService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,13 +46,13 @@ public class StatsController {
 
     /** 仪表盘：分楼栋占用率 */
     @GetMapping("/dashboard/building-occupancy")
-    public Result<Map<String, Object>> buildingOccupancy() {
+    public Result<List<Map<String, Object>>> buildingOccupancy() {
         return Result.ok(statsService.buildingOccupancy());
     }
 
     /** 仪表盘：近4周卫生趋势 */
     @GetMapping("/dashboard/hygiene-trend")
-    public Result<Map<String, Object>> hygieneTrend() {
+    public Result<List<Map<String, Object>>> hygieneTrend() {
         return Result.ok(statsService.hygieneTrend());
     }
 

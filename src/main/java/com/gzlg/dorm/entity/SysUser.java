@@ -32,5 +32,11 @@ public class SysUser {
     /** 1启用 / 0停用 */
     private Integer status;
 
+    /** 联系电话（个人中心展示/修改） */
+    private String phone;
+
+    /** 联系邮箱（个人中心展示/修改） */
+    private String email;
+
     private LocalDateTime createdAt;
 }

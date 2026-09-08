@@ -64,6 +64,8 @@ CREATE TABLE `sys_user` (
     `role`       VARCHAR(10) NOT NULL COMMENT '角色：ADMIN / STUDENT（预留扩展 TEACHER）',
     `student_id` VARCHAR(20)          COMMENT '逻辑外键 -> student.student_id；管理员为 NULL',
     `status`     TINYINT     NOT NULL DEFAULT 1 COMMENT '状态：1启用 / 0停用',
+    `phone`      VARCHAR(20)          COMMENT '联系电话（个人中心展示/修改）',
+    `email`      VARCHAR(50)          COMMENT '联系邮箱（个人中心展示/修改）',
     `created_at` DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_username` (`username`),
@@ -237,9 +239,32 @@ CREATE TABLE `repair_order` (
     KEY `idx_ro_type` (`type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='报修';
 
+-- ---------------------------------------------------------------------
+-- 12. 系统参数 sys_parameter
+--    个人中心页面上的系统设置：系统名称/登录欢迎语/联系电话/联系邮箱。
+-- ---------------------------------------------------------------------
+DROP TABLE IF EXISTS `sys_parameter`;
+CREATE TABLE `sys_parameter` (
+    `id`          BIGINT      NOT NULL AUTO_INCREMENT COMMENT '参数ID',
+    `param_key`   VARCHAR(50) NOT NULL COMMENT '参数键，业务唯一',
+    `param_name`  VARCHAR(100)         COMMENT '参数名称',
+    `param_value` VARCHAR(255)         COMMENT '参数值',
+    `updated_at`  DATETIME             COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_param_key` (`param_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统参数';
+
 -- =====================================================================
 -- 示例数据（演示账号 / 基础数据，便于一键演示）
 -- =====================================================================
+
+-- 系统参数（内置默认值，与原型一致）
+INSERT INTO `sys_parameter` (`param_key`, `param_name`, `param_value`) VALUES
+('systemName', '系统名称', '学生宿舍管理系统'),
+('welcomeMessage', '登录欢迎语', '欢迎使用学生宿舍管理系统'),
+('contactPhone', '联系电话', '0571-88888888'),
+('contactEmail', '联系邮箱', 'dorm@example.edu.cn')
+ON DUPLICATE KEY UPDATE `param_name` = VALUES(`param_name`);
 
 -- 报修类型字典（对应原型 repair-add 下拉：灯管/水龙头/空调/门锁/床铺/桌椅/其他）
 INSERT INTO `repair_type` (`id`, `name`, `sort`) VALUES

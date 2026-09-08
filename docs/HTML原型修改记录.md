@@ -839,3 +839,16 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   - **验证**：编译通过；`mvn test` 全过（`Tests run: 15, Failures: 0`）。`DailyManagementControllerTest` 覆盖：类型增删、卫生登记与「必须上传」400 校验、报修提交→查询→完成处理全链路。卫生/报修测试数据见库（未清理）。
   - **涉及文件**（由子代理实现，需复核）：新增 vo/{Hygiene,Repair}VO、service/{RepairType,Hygiene,Repair}Service(+impl)、controller/{RepairType,Hygiene,Repair}Controller、test/.../DailyManagementControllerTest；加 dto/{Hygiene,RepairType,RepairCreate,RepairHandle}Request（本轮主线程已建）。
 
+- **2026-09-08（操作日志 #57，后端统计与仪表盘聚合）** 实现三张统计报表 + 仪表盘聚合，全部从库实时计算（不写死）：
+  - **StatsService(+impl)/StatsController**：`/stats/{occupancy,hygiene,repair}`、`/dashboard/{stats,building-occupancy,hygiene-trend,workbench}` 共 7 个接口，返回 `Result<Map<...>>`。口径含占用率、各楼栋入住率、近6月入住/退宿与报修趋势、近4周卫生均分、退宿/报修积压、运营告警、最新报修/退宿动态。
+  - **验证**：编译通过；`mvn test` 全过（`Tests run: 22, Failures: 0`）。`StatsControllerTest` 7 用例全绿，既有 15 用例无回归。
+  - **联调提醒（待做）**：`/dashboard/building-occupancy` 与 `/dashboard/hygiene-trend` 按前端 mock 应为**顶层数组**，子代理实现为 `{list:[...]}` 包装；前端未接真实接口时无碍，联调切换时需对齐（去掉外层 list 包装，返回数组）。
+  - **涉及文件**（子代理实现）：新增 service/StatsService(+impl)、controller/StatsController、test/.../StatsControllerTest。
+
+- **2026-09-08（操作日志 #58，后端个人中心 / 系统设置 / 改密）** 补齐后端最后一个大模块，含两块数据库支撑：
+  - **DB（已执行 + init.sql/说明同步）**：新建 `sys_parameter` 表（系统参数持久化，默认4条：系统名称/欢迎语/联系电话/邮箱）+ 种子；`sys_user` 补 `phone`/`email` 两列（管理员资料可持久化）。数据库设计说明升级为「12 张表」并补 3.12 节。
+  - **Service/Controller**：`ProfileService`（管理员/学生资料查改，学生含紧急联系人）、`SettingsService`（系统参数查改/恢复默认；退宿原因字典内存 CRUD + 被申请引用删除拦截）、`AccountService`（改密：原密码校验+6-20位、用 DelegatingPasswordEncoder 重编码；重置学生密码：无号自动建 STUDENT 账号、默认 123456）；`AuthController` 追加 `/auth/change-password`、`/auth/reset-password`。
+  - **验证**：编译通过；`mvn test` 全过（`Tests run: 27, Failures: 0`）。`ProfileSettingsTest` 5 用例：系统参数存/改/恢复、双端资料查询、改密后新密码可登录（已还原为 123456，存储前缀变 bcrypt，兼容登录）。既有 22 用例无回归。
+  - **至此后端全部大模块完成**：登录鉴权、基础数据、住宿业务、日常管理、统计、个人中心/系统设置/改密。均需 JWT。
+  - **涉及文件**（子代理实现）：新增 entity/SysParameter、mapper/SysParameterMapper、service/{Profile,Settings,Account}Service(+impl)、controller/{Profile,Settings}Controller、test/.../ProfileSettingsTest；修改 entity/SysUser（+phone/email）、controller/AuthController、docs/sql/init.sql、docs/数据库设计说明.md。
+

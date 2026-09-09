@@ -940,3 +940,6 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   3. **验证**：`AuthControllerTest.studentCannotAccessAdminApi` 增设断言——学生撤销他人待审核申请（seed id=1，周涛）返回非 0；`AccommodationControllerTest` 中管理员代撤临时申请仍成功。`mvn test` 全量 **29 项全绿**（测试库重建基准）。
   - **涉及文件**：修改 `service/CheckoutService.java`、`service/impl/CheckoutServiceImpl.java`（+`UserContext` 导入）、`controller/CheckoutController.java`（cancel 移除 body/Map import）、`src/test/.../AuthControllerTest.java`。
 
+- **2026-09-09（操作日志 #72，前端撤销调用去冗余）** 承接 #71：后端撤销退宿已改由服务端登录态判断归属，前端无需再传 `studentId`。清理 `frontend/src/api/checkin.js` 的 `cancelCheckoutApp(id, studentId)` → `cancelCheckoutApp(id)`（移除请求体 `{studentId}`），并更新 `views/student/CheckoutApply.vue` 撤销按钮调用为 `cancelCheckoutApp(row.id)`（`studentId` 变量仍被其它逻辑使用，保留）。前端生产 `npm run build` 成功。
+  - **涉及文件**：修改 `frontend/src/api/checkin.js`、`frontend/src/views/student/CheckoutApply.vue`。
+

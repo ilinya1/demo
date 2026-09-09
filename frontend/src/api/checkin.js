@@ -47,9 +47,9 @@ export function getCurrentRoom(studentId) {
 export function submitCheckoutApply(data) {
   return request({ url: '/checkout-applications', method: 'post', data })
 }
-/** 撤销待审核退宿申请：POST /api/checkout-applications/{id}/cancel {studentId} */
-export function cancelCheckoutApp(id, studentId) {
-  return request({ url: `/checkout-applications/${id}/cancel`, method: 'post', data: { studentId } })
+/** 撤销待审核退宿申请：POST /api/checkout-applications/{id}/cancel（归属以后端登录态为准，无需传 studentId） */
+export function cancelCheckoutApp(id) {
+  return request({ url: `/checkout-applications/${id}/cancel`, method: 'post' })
 }
 
 export default {

@@ -132,7 +132,7 @@ async function submit() {
 function cancel(row) {
   ElMessageBox.confirm('确定撤销该退宿申请吗？', '撤销确认', { type: 'warning' })
     .then(async () => {
-      await cancelCheckoutApp(row.id, studentId)
+      await cancelCheckoutApp(row.id)
       ElMessage.success('已撤销申请')
       await loadRecords()
     })

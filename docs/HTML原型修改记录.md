@@ -949,3 +949,9 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   3. **验证**：`mvn test` 全量 **29 项全绿**（测试库重建基准）。
   - **涉及文件**：修改 `service/impl/CheckoutServiceImpl.java`、`service/impl/RepairServiceImpl.java`（+`ThreadLocalRandom` 导入）。
 
+- **2026-09-09（操作日志 #74，处理剩余两个低风险项）** 承接 #70/#73：
+  1. **`capacity` 拆箱 NPE 防御**：`CheckInServiceImpl.checkinRooms` 的 filter 补 `r.getCapacity() != null`（避免 null 拆箱 NPE，map 中 freeBeds 因 filter 已过故安全）；`RoomServiceImpl.roomTypeOf(Integer)` 对 `null` 返回「四人间」，避免 `capacity >= 6` 拆箱 NPE。
+  2. **默认口令可覆盖**：`application.yaml` 数据源密码由硬编码 `123456` 改为 **`${DB_PASSWORD:123456}`**（与 `jwt.secret` 的 `${JWT_SECRET:...}` 同样外部化；生产可用 `DB_PASSWORD` 或 `SPRING_DATASOURCE_PASSWORD`（compose 已注入）覆盖）。演示种子 `{noop}123456` 保留（演示必需，部署文档已要求生产改强）。
+  3. **验证**：`mvn test` 全量 **29 项全绿**（测试库重建基准）。
+  - **涉及文件**：修改 `service/impl/CheckInServiceImpl.java`、`service/impl/RoomServiceImpl.java`、`src/main/resources/application.yaml`。
+

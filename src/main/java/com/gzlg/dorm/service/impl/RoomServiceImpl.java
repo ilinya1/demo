@@ -178,6 +178,9 @@ public class RoomServiceImpl implements RoomService {
     }
 
     private String roomTypeOf(Integer capacity) {
+        if (capacity == null) {
+            return "四人间";
+        }
         return capacity >= 6 ? "六人间" : "四人间";
     }
 

@@ -64,7 +64,7 @@ public class CheckInServiceImpl implements CheckInService {
                         .eq(buildingId != null, DormRoom::getBuildingId, buildingId)
                         .orderByAsc(DormRoom::getRoomNo))
                 .stream()
-                .filter(r -> occupiedCount(r.getId()) < r.getCapacity())
+                .filter(r -> r.getCapacity() != null && occupiedCount(r.getId()) < r.getCapacity())
                 .map(r -> {
                     CheckinRoomVO vo = new CheckinRoomVO();
                     vo.setId(r.getId());

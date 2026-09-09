@@ -915,3 +915,6 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   2. **`docs/后端文档.md`**：依据当前后端代码编写。含技术栈版本（Spring Boot 4.1.1/starter-webmvc、JDK17+、MyBatis-Plus 3.5.17 boot4+jsqlparser、MySQL8、jjwt、DelegatingPasswordEncoder）、`com.gzlg.dorm` 工程结构、启动与配置、JWT 鉴权、统一返回/异常、**按模块的完整接口清单**（鉴权/基础数据/住宿/日常/统计/个人中心/系统设置）、关键设计点（分页拦截器、退宿双路径 apply/direct、学院软关联、BedNoUtil、LONGTEXT 图片、实时统计、学生删除联动）、测试（9 类 30 @Test、独立测试库）、生产部署。
   - **涉及文件**：新增 `docs/前端文档.md`、`docs/后端文档.md`。
 
+- **2026-09-09（操作日志 #68，README 补文档索引 + 版本对齐）** 用户要求把文档索引加到根 README。在 `README.md` 新增「文档」索引表（前端/后端/功能模块/数据库设计/项目交接/开发设计/部署/变更记录/init.sql 共 9 项），并顺带把技术栈前端版本从旧的 `Vite ^8` 对齐为实际 `Vue ^3.5.0 / Vite ^6.0.0 / Element Plus ^2.14.0 / Pinia ^3.0.0 / Router ^4.5.0 / Axios ^1.7.0 / ECharts ^6.1.0`（与《开发设计文档》v1.2 一致）。
+  - **涉及文件**：修改 `README.md`。
+

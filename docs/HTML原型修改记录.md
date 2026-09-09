@@ -910,9 +910,8 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   5. **文档与验证**：新增 `docs/部署文档.md`（前置、`docker compose build && up -d`、验证、运维、配置项、安全建议、非 Docker 备选）。本机验证：前端 `npm run build` 成功、后端 `mvn -DskipTests package` 出 jar（31.1MB）；因本机无 Docker，compose 真实起服需在服务器 `docker compose up -d` 验证。
   - **涉及文件**：新增 `frontend/.env.production`、`frontend/nginx/default.conf`、`docker/backend.Dockerfile`、`docker/frontend.Dockerfile`、`docker-compose.yml`、`.env.example`、`docs/部署文档.md`；修改 `src/main/resources/application.yaml`、`.gitignore`。
 
-- **2026-09-09（操作日志 #67，K8s 部署：Ingress 对外 + 阿里云 ACR 镜像）** 用户要部署到 Kubernetes 并对外公网访问，选定 **Ingress + 域名** 与 **阿里云 ACR**。新增成套 K8s 清单与说明：
-  1. **清单**（`k8s/`）：`namespace.yaml`、`mysql.yaml`（PVC+Deployment+Service，init.sql 经 ConfigMap 挂到 `/docker-entrypoint-initdb.d/` 首次建库种子）、`backend.yaml`（2 副本+Service，`SPRING_DATASOURCE_*`/`JWT_SECRET` 环境变量注入，连 Service `mysql`）、`frontend.yaml`（2 副本+Service，复用内置 nginx 反代 `backend:8080`）、`ingress.yaml`（ingressClassName nginx，host 占位，`proxy-body-size 50m`，HTTPS 注释）。
-  2. **ACR 流程**（`k8s/deploy.md`）：docker login ACR → 分别 build/push `dorm-backend`（根目录）与 `dorm-frontend`（frontend 目录）→ 建 namespace/`dorm-secret`(MYSQL_ROOT_PASSWORD/JWT_SECRET)/`dorm-init-sql` ConfigMap/私有仓库 `regcred` → 按 mysql→backend→frontend→ingress 顺序 apply → **域名 A 记录解析到 Ingress(ACK SLB 公网IP)** → 验证登录 → 启用 HTTPS（证书+`dorm-tls`+`ssl-redirect`）。
-  3. 清单中镜像地址用 `registry.cn-hangzhou.aliyuncs.com/<命名空间>/dorm-*:latest` 占位，文档说明替换；私有 ACR 需启用 `imagePullSecrets`。
-  - **涉及文件**：新增 `k8s/namespace.yaml`、`k8s/mysql.yaml`、`k8s/backend.yaml`、`k8s/frontend.yaml`、`k8s/ingress.yaml`、`k8s/deploy.md`。
+- **2026-09-09（操作日志 #67，新增前端文档 / 后端文档）** 用户要求「根据现在的项目给前端和后端各写一个文档」。
+  1. **`docs/前端文档.md`**：依据当前前端代码编写。含技术栈版本（Vue3.5/Vite6/ElementPlus2.14/Pinia3/Router4.5/Axios1.7/ECharts6.1）、`src/` 目录结构、请求封装 `request.js`（mock↔axios 切换、拦截器、Result 解包、401 登出）、路由清单（admin 16 + student 6 + login/preview）、`store/user`、页面职责、对后端契约（照片 base64、bedNo 数字、学院下拉、退宿原因下拉、分页 `{list,total}`）、运行与构建、联调注意。
+  2. **`docs/后端文档.md`**：依据当前后端代码编写。含技术栈版本（Spring Boot 4.1.1/starter-webmvc、JDK17+、MyBatis-Plus 3.5.17 boot4+jsqlparser、MySQL8、jjwt、DelegatingPasswordEncoder）、`com.gzlg.dorm` 工程结构、启动与配置、JWT 鉴权、统一返回/异常、**按模块的完整接口清单**（鉴权/基础数据/住宿/日常/统计/个人中心/系统设置）、关键设计点（分页拦截器、退宿双路径 apply/direct、学院软关联、BedNoUtil、LONGTEXT 图片、实时统计、学生删除联动）、测试（9 类 30 @Test、独立测试库）、生产部署。
+  - **涉及文件**：新增 `docs/前端文档.md`、`docs/后端文档.md`。
 

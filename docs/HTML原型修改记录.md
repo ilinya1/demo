@@ -926,3 +926,11 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   5. **验证**：`mvn test` 全绿（Auth 6、Accommodation 2 等，共 29 项含新增越权用例；测试库已重建基准）。
   - **涉及文件**：修改 `common/jwt/JwtInterceptor.java`、`service/impl/CheckoutServiceImpl.java`、`src/test/.../AuthControllerTest.java`、`src/test/.../AccommodationControllerTest.java`；删除（提交）`k8s/backend.yaml`、`k8s/frontend.yaml`、`k8s/mysql.yaml`、`k8s/ingress.yaml`、`k8s/namespace.yaml`、`k8s/deploy.md`。
 
+- **2026-09-09（操作日志 #70，再全面复查）** 应要求再复查一次全项目（承接 #69 修复后回归）。
+  1. **构建/测试**：`mvn test` 全量 **29 项全绿**（含 #69 新增越权用例）；前端生产 `npm run build` 成功。
+  2. **角色门禁回归（关键）**：逐一核对学生端 6 页（我的宿舍/我的卫生/退宿申请/提交报修/报修进度/个人中心）实际调用的接口，**全部落在 `JwtInterceptor.studentAllowed` 白名单内，无被 403 误伤**。同步澄清：复查方对「`/daily/repair-types` 非 GET 被放行」的担忧系**误判**——`studentAllowed` 中字典分支（repair-types/checkout-reasons 仅 GET 放行、非 GET 提前返回拒绝）先于 `/daily/repair` 分支执行，`repair-types` 不会被后者兜底放行，故无越权。
+  3. **git 状态**：工作区干净（仅 `.trae/` 内部文档未跟踪），无残留/大文件问题。
+  4. **遗留（上轮已知、未修，供后续决策）**：撤销退宿时 `studentId` 由客户端自报未校验本人（`CheckoutServiceImpl.cancel` 通过 UserContext 可根治）；报修/退宿单号用 `selectCount+1` 非原子生成、并发撞号；`CheckInServiceImpl.checkinRooms` 与 `RoomServiceImpl.roomTypeOf` 的 `capacity` 直接拆箱 Integer 潜在 NPE（库默认 4 实际安全）；默认 JWT 密钥/演示口令（已有部署文档覆盖需改）。
+  5. **本次未改动代码**，仅记录复查结论。
+  - **涉及文件**：无代码改动（仅本文档记录）。
+

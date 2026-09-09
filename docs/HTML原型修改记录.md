@@ -902,3 +902,11 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   4. **`README.md`**：复核已为最新（13 表、端口、mock 切换、测试隔离），无需改动。
   - **涉及文件**：重写/修改 `docs/功能模块说明.md`、`docs/项目交接文档.md`、`docs/开发设计文档.md`。
 
+- **2026-09-09（操作日志 #66，生产部署：Docker Compose 全容器部署产物）** 用户要部署到服务器，选定 **Docker Compose 全容器 + 自带 MySQL** 方案。本机暂无 Docker，故交付"一整套可复制部署产物 + 说明"，到有 Docker 的服务器执行即可。
+  1. **关键补口**：新增 `frontend/.env.production`（`VITE_USE_MOCK=false`）——否则生产 `npm run build` 时 `VITE_USE_MOCK` 未定义会让前端走本地 mock、连不上后端。
+  2. **后端可配置化**：`application.yaml` 的 `jwt.secret` / `jwt.expire-minutes` 改为 `${JWT_SECRET:...}` / `${JWT_EXPIRE_MINUTES:...}` 占位，生产经环境变量注入强密钥。
+  3. **容器产物**：`docker/backend.Dockerfile`（maven 多阶段打 jar → jre 运行，含 `uploads/` 样例静态图）、`docker/frontend.Dockerfile`（node 构建 dist → nginx 托管）、`frontend/nginx/default.conf`（托管 SPA + 反代 `/api`→backend:8080/api、`/uploads`→backend:8080/api/uploads，`client_max_body_size 50m` 容纳 base64 大图）、`docker-compose.yml`（mysql:8.0 卷持久化 + 首次自动执行 init.sql 建库种子；backend 经 `SPRING_DATASOURCE_*` 连接：8080；frontend：$APP_PORT 默认 80）、`.env.example`（MYSQL_ROOT_PASSWORD/JWT_SECRET/APP_PORT）。
+  4. **安全**：`.gitignore` 追加忽略 `.env` / `frontend/.env`（钥匙不入库，`.env.example` 保留）。
+  5. **文档与验证**：新增 `docs/部署文档.md`（前置、`docker compose build && up -d`、验证、运维、配置项、安全建议、非 Docker 备选）。本机验证：前端 `npm run build` 成功、后端 `mvn -DskipTests package` 出 jar（31.1MB）；因本机无 Docker，compose 真实起服需在服务器 `docker compose up -d` 验证。
+  - **涉及文件**：新增 `frontend/.env.production`、`frontend/nginx/default.conf`、`docker/backend.Dockerfile`、`docker/frontend.Dockerfile`、`docker-compose.yml`、`.env.example`、`docs/部署文档.md`；修改 `src/main/resources/application.yaml`、`.gitignore`。
+

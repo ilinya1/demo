@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### 部署密钥/环境变量（.env.example 保留入库，本地 .env 忽略） ###
+.env
+frontend/.env

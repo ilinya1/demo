@@ -1,0 +1,73 @@
+# 学生宿舍管理系统 —— 生产部署编排（Docker Compose）
+# 一键启动：docker compose up -d
+#   - mysql   : MySQL8，首次启动自动执行 docs/sql/init.sql 建库+种子（数据卷持久化）
+#   - backend : Spring Boot jar（:8080，context-path /api）
+#   - frontend: nginx 托管前端静态资源并反代 /api 与 /uploads 到 backend
+# 访问：http://服务器IP/   （前端）；http://服务器IP:8080/api 为后端（不建议直接对外）
+# 建议：先 cp .env.example .env 并按需修改其中的密钥/数据库密码/端口。
+name: dorm-manager
+
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    container_name: dorm-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-DormRoot123456!}
+      MYSQL_DATABASE: dorm_manager
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+    # 首次初始化时执行建库脚本（含种子数据）；已建卷则不再重跑
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docs/sql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-DormRoot123456!}"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks: [dorm]
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    image: dorm-backend:latest
+    restart: unless-stopped
+    container_name: dorm-backend
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      # Spring 环境变量覆盖 application.yaml；指向 compose 内 mysql 服务名
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dorm_manager?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-DormRoot123456!}
+      # 生产请务必通过 .env 覆盖为强随机密钥
+      JWT_SECRET: ${JWT_SECRET:-change-me-to-a-strong-jwt-secret}
+      JWT_EXPIRE_MINUTES: ${JWT_EXPIRE_MINUTES:-720}
+    ports:
+      - "8080:8080"
+    networks: [dorm]
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/frontend.Dockerfile
+    image: dorm-frontend:latest
+    restart: unless-stopped
+    container_name: dorm-frontend
+    depends_on:
+      - backend
+    ports:
+      - "${APP_PORT:-80}:80"
+    networks: [dorm]
+
+volumes:
+  mysql_data:
+
+networks:
+  dorm:
+    driver: bridge

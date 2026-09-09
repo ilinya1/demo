@@ -46,6 +46,11 @@ public class JwtInterceptor implements HandlerInterceptor {
                 String username = claims.getSubject();
                 String role = claims.get("role", String.class);
                 UserContext.set(new LoginUser(username, role));
+                String path = request.getRequestURI().substring(request.getContextPath().length());
+                if (!hasPermission(role, path, request.getMethod())) {
+                    UserContext.clear();
+                    return forbidden(response);
+                }
                 return true;
             } catch (JwtException | IllegalArgumentException e) {
                 log.debug("鉴权失败: {}", e.getMessage());
@@ -65,6 +70,52 @@ public class JwtInterceptor implements HandlerInterceptor {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.getWriter().write(objectMapper.writeValueAsString(Result.fail(ResultCode.UNAUTHORIZED)));
+        return false;
+    }
+
+    private boolean forbidden(HttpServletResponse response) throws Exception {
+        // HTTP 200 + 业务码 403，使前端 request 拦截器按 code!=0 弹提示（不触发登出）
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        response.getWriter().write(objectMapper.writeValueAsString(Result.fail(ResultCode.FORBIDDEN)));
+        return false;
+    }
+
+    /**
+     * 角色门禁：管理员放行一切；学生仅能访问学生端/通用端点，管理端接口返回 403。
+     */
+    private boolean hasPermission(String role, String path, String method) {
+        if ("ADMIN".equals(role)) {
+            return true;
+        }
+        if (role == null) {
+            return false;
+        }
+        return studentAllowed(path, method);
+    }
+
+    private boolean studentAllowed(String path, String method) {
+        // 通用 / 学生端端点：登录即可
+        if (path.startsWith("/auth/")) return true;
+        if (path.startsWith("/student/")) return true;
+        if (path.equals("/profile")) return true;
+        // 字典：只读放开给学生（供学生选择类型/原因），增删改限管理员
+        if (path.startsWith("/daily/repair-types") || path.startsWith("/daily/checkout-reasons")) {
+            return "GET".equals(method);
+        }
+        // 报修：学生可提交(POST)/查看列表与详情(GET)、不可处理(PUT 处理限管理员)
+        if (path.startsWith("/daily/repair")) {
+            return !"PUT".equals(method);
+        }
+        // 退宿申请：学生可提交/查询本人/撤销；审核(/{id}/audit)限管理员
+        if (path.startsWith("/checkout-applications")) {
+            return !(path.contains("/audit") && "POST".equals(method));
+        }
+        // 直接退宿 / 卫生登记：限管理员；卫生 GET 学生可读
+        if (path.startsWith("/checkout/direct")) return false;
+        if (path.startsWith("/daily/hygiene")) return "GET".equals(method);
+        // 其余（学生/班级/学院/楼栋/房间/入住记录/统计/仪表盘/系统设置等）仅管理员
         return false;
     }
 }

@@ -918,3 +918,11 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
 - **2026-09-09（操作日志 #68，README 补文档索引 + 版本对齐）** 用户要求把文档索引加到根 README。在 `README.md` 新增「文档」索引表（前端/后端/功能模块/数据库设计/项目交接/开发设计/部署/变更记录/init.sql 共 9 项），并顺带把技术栈前端版本从旧的 `Vite ^8` 对齐为实际 `Vue ^3.5.0 / Vite ^6.0.0 / Element Plus ^2.14.0 / Pinia ^3.0.0 / Router ^4.5.0 / Axios ^1.7.0 / ECharts ^6.1.0`（与《开发设计文档》v1.2 一致）。
   - **涉及文件**：修改 `README.md`。
 
+- **2026-09-09（操作日志 #69，全面检查 + 修复两高优 + 提交 k8s 删除）** 对全项目做体检并修复高优先级问题。
+  1. **检查结论**：`mvn test` 全绿、前端 build 成功；接口/表/文档一致；部署产物一致。发现并核实：① 退宿审核通过后申请状态未置「已通过」（`CheckoutServiceImpl.audit` approve 分支缺 `setStatus`，导致统计 passedCheckout 恒 0、可重复审核）；② 后端无角色鉴权（`JwtInterceptor` 只验 token，学生可越权调用管理接口）；③ 默认 JWT 密钥/演示口令入库（生产需覆盖，属部署配置）。
+  2. **修复①**：`CheckoutServiceImpl.audit()` approve 分支补 `app.setStatus("已通过")`；新增回归断言（审核后状态=已通过）到 `AccommodationControllerTest`。
+  3. **修复②**：`JwtInterceptor` 增加角色门禁（`hasPermission`/`studentAllowed`）：ADMIN 放行一切；学生仅可访问通用/学生端端点（`/auth/*`、`/student/*`、`/profile`、字典 GET、报修 GET/POST、退宿申请提交/查询/撤销、卫生 GET），管理端接口（学生/班级/学院/楼栋/房间/入住记录/统计/仪表盘/系统设置、`/checkout/direct`、`/checkout-applications/{id}/audit`、`/daily/hygiene` POST 等）对学生返回 403；新增 `AuthControllerTest.studentCannotAccessAdminApi`（学生访问 `/students`、审核退宿得 403，访问本人申请得 0）。
+  4. **提交 k8s 删除**：工作区中 `k8s/`（backend/frontend/mysql/ingress/namespace.yaml 及 deploy.md）处于已删除未提交，按用户要求一并提交删除。
+  5. **验证**：`mvn test` 全绿（Auth 6、Accommodation 2 等，共 29 项含新增越权用例；测试库已重建基准）。
+  - **涉及文件**：修改 `common/jwt/JwtInterceptor.java`、`service/impl/CheckoutServiceImpl.java`、`src/test/.../AuthControllerTest.java`、`src/test/.../AccommodationControllerTest.java`；删除（提交）`k8s/backend.yaml`、`k8s/frontend.yaml`、`k8s/mysql.yaml`、`k8s/ingress.yaml`、`k8s/namespace.yaml`、`k8s/deploy.md`。
+

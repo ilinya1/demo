@@ -117,6 +117,7 @@ public class CheckoutServiceImpl implements CheckoutService {
         boolean approve = Boolean.TRUE.equals(req.getApprove());
         if (approve) {
             checkInService.checkout(app.getStudentId(), LocalDateTime.now(), "apply", "");
+            app.setStatus("已通过");
         } else {
             app.setRejectReason(req.getRejectReason());
             app.setStatus("已驳回");

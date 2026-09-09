@@ -96,4 +96,20 @@ class AuthControllerTest {
         assertThat(r.body().path("code").asInt()).isEqualTo(0);
         assertThat(r.body().path("data").path("username").asText()).isEqualTo("admin");
     }
+
+    @Test
+    void studentCannotAccessAdminApi() throws Exception {
+        Resp login = call("POST", "/auth/login", null, Map.of("username", "2023010101", "password", "123456"));
+        String st = login.body().path("data").path("token").asText();
+
+        // 学生不能访问管理端接口（学生管理 / 退宿审核）
+        Resp list = call("GET", "/students", st, null);
+        assertThat(list.body().path("code").asInt()).isEqualTo(403);
+        Resp audit = call("POST", "/checkout-applications/1/audit", st, Map.of("approve", true));
+        assertThat(audit.body().path("code").asInt()).isEqualTo(403);
+
+        // 学生仍可访问自己的退宿申请（提交/撤销）与卫生只读
+        Resp own = call("GET", "/checkout-applications?studentId=2023010101", st, null);
+        assertThat(own.body().path("code").asInt()).isEqualTo(0);
+    }
 }

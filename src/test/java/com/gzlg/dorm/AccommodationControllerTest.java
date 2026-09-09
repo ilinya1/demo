@@ -112,6 +112,17 @@ class AccommodationControllerTest {
         Resp audit = call("POST", "/checkout-applications/" + appId2 + "/audit", Map.of("approve", true), t);
         assertThat(audit.body().path("code").asInt()).isEqualTo(0);
 
+        // 审核通过后，申请状态应变为「已通过」
+        Resp apps = call("GET", "/checkout-applications?studentId=" + sid, null, t);
+        JsonNode audited = null;
+        for (JsonNode a : apps.body().path("data").path("list")) {
+            if (a.path("id").asLong() == appId2) {
+                audited = a;
+            }
+        }
+        assertThat(audited).isNotNull();
+        assertThat(audited.path("status").asText()).isEqualTo("已通过");
+
         // 校验已退宿
         Resp after = call("GET", "/checkin-records?studentId=" + sid, null, t);
         assertThat(after.body().path("data").path("list").get(0).path("status").asText()).isEqualTo("已退宿");

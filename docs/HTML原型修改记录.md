@@ -910,3 +910,9 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   5. **文档与验证**：新增 `docs/部署文档.md`（前置、`docker compose build && up -d`、验证、运维、配置项、安全建议、非 Docker 备选）。本机验证：前端 `npm run build` 成功、后端 `mvn -DskipTests package` 出 jar（31.1MB）；因本机无 Docker，compose 真实起服需在服务器 `docker compose up -d` 验证。
   - **涉及文件**：新增 `frontend/.env.production`、`frontend/nginx/default.conf`、`docker/backend.Dockerfile`、`docker/frontend.Dockerfile`、`docker-compose.yml`、`.env.example`、`docs/部署文档.md`；修改 `src/main/resources/application.yaml`、`.gitignore`。
 
+- **2026-09-09（操作日志 #67，K8s 部署：Ingress 对外 + 阿里云 ACR 镜像）** 用户要部署到 Kubernetes 并对外公网访问，选定 **Ingress + 域名** 与 **阿里云 ACR**。新增成套 K8s 清单与说明：
+  1. **清单**（`k8s/`）：`namespace.yaml`、`mysql.yaml`（PVC+Deployment+Service，init.sql 经 ConfigMap 挂到 `/docker-entrypoint-initdb.d/` 首次建库种子）、`backend.yaml`（2 副本+Service，`SPRING_DATASOURCE_*`/`JWT_SECRET` 环境变量注入，连 Service `mysql`）、`frontend.yaml`（2 副本+Service，复用内置 nginx 反代 `backend:8080`）、`ingress.yaml`（ingressClassName nginx，host 占位，`proxy-body-size 50m`，HTTPS 注释）。
+  2. **ACR 流程**（`k8s/deploy.md`）：docker login ACR → 分别 build/push `dorm-backend`（根目录）与 `dorm-frontend`（frontend 目录）→ 建 namespace/`dorm-secret`(MYSQL_ROOT_PASSWORD/JWT_SECRET)/`dorm-init-sql` ConfigMap/私有仓库 `regcred` → 按 mysql→backend→frontend→ingress 顺序 apply → **域名 A 记录解析到 Ingress(ACK SLB 公网IP)** → 验证登录 → 启用 HTTPS（证书+`dorm-tls`+`ssl-redirect`）。
+  3. 清单中镜像地址用 `registry.cn-hangzhou.aliyuncs.com/<命名空间>/dorm-*:latest` 占位，文档说明替换；私有 ACR 需启用 `imagePullSecrets`。
+  - **涉及文件**：新增 `k8s/namespace.yaml`、`k8s/mysql.yaml`、`k8s/backend.yaml`、`k8s/frontend.yaml`、`k8s/ingress.yaml`、`k8s/deploy.md`。
+

@@ -1,0 +1,53 @@
+# 后端：Deployment + ClusterIP Service
+# 镜像推送到阿里云 ACR 后替换 image 的 your-ns 与 region；私有仓库需配下述 imagePullSecrets（可选）。
+# 数据库连接指向同命名空间 Service `mysql`。
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: dorm
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: backend }
+  template:
+    metadata:
+      labels: { app: backend }
+    spec:
+      # 若 ACR 为私有仓库，需先建 imagePullSecret（见 deploy.md）并启用下面一行
+      # imagePullSecrets:
+      #   - name: regcred
+      containers:
+        - name: backend
+          image: registry.cn-hangzhou.aliyuncs.com/your-ns/dorm-backend:latest
+          ports: [{ containerPort: 8080 }]
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql:3306/dorm_manager?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: root
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: dorm-secret, key: MYSQL_ROOT_PASSWORD }
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef: { name: dorm-secret, key: JWT_SECRET }
+            - name: JWT_EXPIRE_MINUTES
+              value: "720"
+          # 前端 nginx 的 /api、/uploads 反代依赖本服务健康
+          readinessProbe:
+            httpGet: { path: /api/auth/login, port: 8080 }
+            initialDelaySeconds: 15
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: dorm
+spec:
+  selector: { app: backend }
+  ports:
+    - port: 8080
+      targetPort: 8080

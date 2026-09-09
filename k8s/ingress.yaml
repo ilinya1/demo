@@ -1,0 +1,31 @@
+# Ingress：唯一对外入口，把域名请求路由到 frontend Service。
+# 前置：
+#   1) 集群已装 Ingress Controller。阿里云 ACK 自带 nginx-ingress（ingressClassName: nginx）；自建集群需先装 ingress-nginx。
+#   2) 将你的域名 A 记录解析到 Ingress Controller 的对外 IP（ACK 为绑定的 SLB 公网 IP）。
+#   host 占位：把 dorm.example.com 换成你的真实域名。
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dorm
+  namespace: dorm
+  annotations:
+    # HTTPS 时启用（需先申请证书，见 deploy.md）：中国nginx 注释示例已给出
+    # kubernetes.io/tls-acme: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"   # 容纳 base64 大图 JSON
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: dorm.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
+  #   启用 HTTPS（有证书时）：
+  # tls:
+  #   - hosts: [dorm.example.com]
+  #     secretName: dorm-tls

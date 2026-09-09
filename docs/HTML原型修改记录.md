@@ -943,3 +943,9 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
 - **2026-09-09（操作日志 #72，前端撤销调用去冗余）** 承接 #71：后端撤销退宿已改由服务端登录态判断归属，前端无需再传 `studentId`。清理 `frontend/src/api/checkin.js` 的 `cancelCheckoutApp(id, studentId)` → `cancelCheckoutApp(id)`（移除请求体 `{studentId}`），并更新 `views/student/CheckoutApply.vue` 撤销按钮调用为 `cancelCheckoutApp(row.id)`（`studentId` 变量仍被其它逻辑使用，保留）。前端生产 `npm run build` 成功。
   - **涉及文件**：修改 `frontend/src/api/checkin.js`、`frontend/src/views/student/CheckoutApply.vue`。
 
+- **2026-09-09（操作日志 #73，修复：报修/退宿单号并发生成）** 承接 #70 遗留项——单号用 `selectCount+1` 生成、并发撞号。
+  1. **根因**：`CheckoutServiceImpl.submitApply`、`RepairServiceImpl.create` 用 `selectCount(null)+1` 拼「前缀+日期+`%03d`」，并发下 count 相同即撞号、触发唯一键冲突。
+  2. **修复**（用户选「毫秒时间戳+随机号」）：单号改为 **`前缀(BX/TS) + yyyyMMddHHmmssSSS(17位) + 4位随机`**，约 23 字符（表列 VARCHAR(30) 满足），消除并发生成碰撞；表上 `uk_apply_no` / `uk_order_no` 仍作唯一键兜底。
+  3. **验证**：`mvn test` 全量 **29 项全绿**（测试库重建基准）。
+  - **涉及文件**：修改 `service/impl/CheckoutServiceImpl.java`、`service/impl/RepairServiceImpl.java`（+`ThreadLocalRandom` 导入）。
+

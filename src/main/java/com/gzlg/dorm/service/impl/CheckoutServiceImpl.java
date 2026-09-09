@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -91,9 +92,9 @@ public class CheckoutServiceImpl implements CheckoutService {
             throw new BizException("您有未审核的退宿申请，请等待审核");
         }
         // 锁定同一学生并发提交
-        long seq = applyMapper.selectCount(null) + 1;
-        String applyNo = "TS" + LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE)
-                + String.format("%03d", seq);
+        // 单号：前缀+毫秒时间戳+4位随机，避免并发撞号（唯一键兜底）
+        String applyNo = "TS" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"))
+                + String.format("%04d", ThreadLocalRandom.current().nextInt(10000));
         CheckoutApply app = new CheckoutApply();
         app.setApplyNo(applyNo);
         app.setStudentId(req.getStudentId());

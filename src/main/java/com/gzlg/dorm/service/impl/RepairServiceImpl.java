@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,9 +92,9 @@ public class RepairServiceImpl implements RepairService {
             throw new BizException("宿舍信息不存在");
         }
 
-        long seq = repairOrderMapper.selectCount(null) + 1;
-        String orderNo = "BX" + LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE)
-                + String.format("%03d", seq);
+        // 单号：前缀+毫秒时间戳+4位随机，避免并发撞号（唯一键兜底）
+        String orderNo = "BX" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"))
+                + String.format("%04d", ThreadLocalRandom.current().nextInt(10000));
 
         RepairOrder order = new RepairOrder();
         order.setOrderNo(orderNo);

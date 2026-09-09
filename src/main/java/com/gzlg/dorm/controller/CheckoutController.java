@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
 /**
  * 退宿业务接口（申请列表/提交/审核/撤销/直接退宿）。
  */
@@ -53,10 +51,10 @@ public class CheckoutController {
         return Result.ok();
     }
 
-    /** 学生撤销待审核申请（studentId 在请求体） */
+    /** 撤销待审核申请：归属身份以服务端登录态为准（学生仅能撤自己的，管理员可代撤） */
     @PostMapping("/checkout-applications/{id}/cancel")
-    public Result<Void> cancel(@PathVariable Long id, @RequestBody Map<String, String> body) {
-        checkoutService.cancel(id, body == null ? null : body.get("studentId"));
+    public Result<Void> cancel(@PathVariable Long id) {
+        checkoutService.cancel(id);
         return Result.ok();
     }
 

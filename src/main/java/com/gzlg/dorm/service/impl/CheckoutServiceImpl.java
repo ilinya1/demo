@@ -3,6 +3,7 @@ package com.gzlg.dorm.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gzlg.dorm.common.exception.BizException;
+import com.gzlg.dorm.common.jwt.UserContext;
 import com.gzlg.dorm.common.result.PageResult;
 import com.gzlg.dorm.common.util.BedNoUtil;
 import com.gzlg.dorm.dto.AuditRequest;
@@ -128,16 +129,19 @@ public class CheckoutServiceImpl implements CheckoutService {
 
     @Override
     @Transactional
-    public void cancel(Long id, String studentId) {
+    public void cancel(Long id) {
         CheckoutApply app = applyMapper.selectById(id);
         if (app == null) {
             throw new BizException("申请不存在");
         }
-        if (!app.getStudentId().equals(studentId)) {
-            throw new BizException("无权操作该申请");
-        }
         if (!PENDING.equals(app.getStatus())) {
             throw new BizException("仅待审核状态的申请可撤销");
+        }
+        // 归属校验以服务端登录态为准（不再信任客户端自报 studentId）：
+        // 管理员可代撤；学生仅能撤销自己的申请
+        String username = UserContext.getUsername();
+        if (!"ADMIN".equals(UserContext.getRole()) && !app.getStudentId().equals(username)) {
+            throw new BizException("无权操作该申请");
         }
         applyMapper.deleteById(id);
     }

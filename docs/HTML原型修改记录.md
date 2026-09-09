@@ -934,3 +934,9 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   5. **本次未改动代码**，仅记录复查结论。
   - **涉及文件**：无代码改动（仅本文档记录）。
 
+- **2026-09-09（操作日志 #71，修复：撤销退宿越权）** 承接 #70 复查遗留项之一——撤销退宿申请时 `studentId` 由客户端自报、未校验本人。
+  1. **根因**：`CheckoutController.cancel` 从请求体读 `studentId` 传给 `CheckoutServiceImpl.cancel`，仅与 `app.studentId` 比对，学生可撤销任意待审核申请。
+  2. **修复**：撤销身份改为**服务端登录态**（`UserContext`）。`cancel(id)` 仅按 `@PathVariable id` 处理，不再接收/信任 body 中的 `studentId`；归属校验 `!ADMIN && !app.studentId.equals(username)` → 抛「无权操作该申请」。即：管理员可代撤，学生仅能撤销自己的申请。
+  3. **验证**：`AuthControllerTest.studentCannotAccessAdminApi` 增设断言——学生撤销他人待审核申请（seed id=1，周涛）返回非 0；`AccommodationControllerTest` 中管理员代撤临时申请仍成功。`mvn test` 全量 **29 项全绿**（测试库重建基准）。
+  - **涉及文件**：修改 `service/CheckoutService.java`、`service/impl/CheckoutServiceImpl.java`（+`UserContext` 导入）、`controller/CheckoutController.java`（cancel 移除 body/Map import）、`src/test/.../AuthControllerTest.java`。
+

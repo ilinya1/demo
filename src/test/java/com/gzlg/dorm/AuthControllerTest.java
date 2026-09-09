@@ -108,6 +108,10 @@ class AuthControllerTest {
         Resp audit = call("POST", "/checkout-applications/1/audit", st, Map.of("approve", true));
         assertThat(audit.body().path("code").asInt()).isEqualTo(403);
 
+        // 学生不能撤销他人的待审核申请（归属以服务端登录态为准）
+        Resp notOwn = call("POST", "/checkout-applications/1/cancel", st, null);
+        assertThat(notOwn.body().path("code").asInt()).isNotEqualTo(0);
+
         // 学生仍可访问自己的退宿申请（提交/撤销）与卫生只读
         Resp own = call("GET", "/checkout-applications?studentId=2023010101", st, null);
         assertThat(own.body().path("code").asInt()).isEqualTo(0);

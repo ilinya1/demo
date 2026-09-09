@@ -17,7 +17,7 @@ public interface CheckoutService {
 
     void audit(Long id, AuditRequest req);
 
-    void cancel(Long id, String studentId);
+    void cancel(Long id);
 
     void direct(DirectCheckoutRequest req);
 }

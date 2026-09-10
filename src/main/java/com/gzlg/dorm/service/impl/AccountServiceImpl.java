@@ -2,6 +2,7 @@ package com.gzlg.dorm.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.gzlg.dorm.common.exception.BizException;
+import com.gzlg.dorm.common.jwt.UserContext;
 import com.gzlg.dorm.common.result.ResultCode;
 import com.gzlg.dorm.entity.SysUser;
 import com.gzlg.dorm.mapper.SysUserMapper;
@@ -49,6 +50,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public void resetStudentPassword(String username, String name) {
+        // 仅管理员可重置密码（拦截器在前端已拦，此处服务层兜底）
+        if (!"ADMIN".equals(UserContext.getRole())) {
+            throw new BizException("仅管理员可重置密码");
+        }
         SysUser account = sysUserMapper.selectOne(
                 Wrappers.<SysUser>lambdaQuery().eq(SysUser::getUsername, username));
         if (account == null) {

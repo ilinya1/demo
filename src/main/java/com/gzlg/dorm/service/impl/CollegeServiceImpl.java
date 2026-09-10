@@ -12,6 +12,7 @@ import com.gzlg.dorm.mapper.StudentMapper;
 import com.gzlg.dorm.mapper.TCollegeMapper;
 import com.gzlg.dorm.service.CollegeService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -50,6 +51,7 @@ public class CollegeServiceImpl implements CollegeService {
     }
 
     @Override
+    @Transactional
     public void update(Long id, CollegeReq req) {
         TCollege exist = collegeMapper.selectById(id);
         if (exist == null) {

@@ -112,6 +112,15 @@ class AuthControllerTest {
         Resp notOwn = call("POST", "/checkout-applications/1/cancel", st, null);
         assertThat(notOwn.body().path("code").asInt()).isNotEqualTo(0);
 
+        // 学生不能重置他人/管理员密码（重置属管理功能）
+        Resp resetPwd = call("POST", "/auth/reset-password", st,
+                Map.of("username", "admin", "name", "系统管理员"));
+        assertThat(resetPwd.body().path("code").asInt()).isNotEqualTo(0);
+
+        // 学生不能越权查看他人的宿舍信息（IDOR）
+        Resp otherRoom = call("GET", "/student/current-room?studentId=999999", st, null);
+        assertThat(otherRoom.body().path("code").asInt()).isNotEqualTo(0);
+
         // 学生仍可访问自己的退宿申请（提交/撤销）与卫生只读
         Resp own = call("GET", "/checkout-applications?studentId=2023010101", st, null);
         assertThat(own.body().path("code").asInt()).isEqualTo(0);

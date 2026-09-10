@@ -97,6 +97,8 @@ public class JwtInterceptor implements HandlerInterceptor {
 
     private boolean studentAllowed(String path, String method) {
         // 通用 / 学生端端点：登录即可
+        // 重置密码属管理功能，仅管理员可访问（学生仍可用 /auth/change-password 改自己密码）
+        if (path.startsWith("/auth/reset-password")) return false;
         if (path.startsWith("/auth/")) return true;
         if (path.startsWith("/student/")) return true;
         if (path.equals("/profile")) return true;

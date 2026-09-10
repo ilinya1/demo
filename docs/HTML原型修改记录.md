@@ -955,3 +955,12 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   3. **验证**：`mvn test` 全量 **29 项全绿**（测试库重建基准）。
   - **涉及文件**：修改 `service/impl/CheckInServiceImpl.java`、`service/impl/RoomServiceImpl.java`、`src/main/resources/application.yaml`。
 
+- **2026-09-10（操作日志 #75，修复 4 处越权/事务问题）** 承接全面体检（公网部署安全加固）：
+  1. **高[重置密码越权]**：`JwtInterceptor` 对 `/auth/**` 全放行，学生可调 `/auth/reset-password`，且 `resetStudentPassword` 无旧密码/角色校验可直接把 `admin` 重置为 `123456`（可接管管理员）。修复：拦截器对 `/auth/reset-password` 拒绝学生访问（学生仍可用 `/auth/change-password` 改自己密码）+ `AccountServiceImpl.resetStudentPassword` 服务层加 `ADMIN` 校验兜底。
+  2. **高[越权查看他人宿舍 IDOR]**：`/student/current-room` 直接用请求参数 `studentId` 查询、不校验归属。修复：`CheckInServiceImpl.currentRoom` 加归属校验——学生只能查自己，管理员可代查。
+  3. **中[代他人发起退宿]**：`submitApply` 用请求体 `req.getStudentId()` 未比对登录态。修复：`CheckoutServiceImpl.submitApply` 加归属校验（学生仅能为自己办理，管理员可代办）。
+  4. **中[学院改名缺事务]**：`CollegeServiceImpl.update` 级联改写 `class`/`student` 三表，补 `@Transactional`，避免中途失败部分提交。
+  - 新增 `AuthControllerTest` 断言：学生重置密码被拒、越权查他人宿舍被拒。`mvn test` 全量 **29 项全绿**（测试库重建基准）。
+  - **涉及文件**：修改 `common/jwt/JwtInterceptor.java`、`service/impl/AccountServiceImpl.java`、`service/impl/CheckInServiceImpl.java`、`service/impl/CheckoutServiceImpl.java`、`service/impl/CollegeServiceImpl.java`、`src/test/.../AuthControllerTest.java`。
+  - 备注：低危项（N+1 查询、token 明文存 localStorage、死参数 `name`、RepairType 手工主键并发）本轮未处理，记录待议。
+

@@ -79,6 +79,11 @@ public class CheckoutServiceImpl implements CheckoutService {
     @Override
     @Transactional
     public void submitApply(CheckoutApplyRequest req) {
+        // 归属校验：学生仅能为自己发起退宿申请（管理员可代办）
+        String username = UserContext.getUsername();
+        if (!"ADMIN".equals(UserContext.getRole()) && !req.getStudentId().equals(username)) {
+            throw new BizException("无权代他人办理退宿申请");
+        }
         Student student = studentMapper.selectById(req.getStudentId());
         if (student == null) {
             throw new BizException("学生不存在");

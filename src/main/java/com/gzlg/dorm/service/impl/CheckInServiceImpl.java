@@ -3,6 +3,7 @@ package com.gzlg.dorm.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gzlg.dorm.common.exception.BizException;
+import com.gzlg.dorm.common.jwt.UserContext;
 import com.gzlg.dorm.common.result.PageResult;
 import com.gzlg.dorm.common.util.BedNoUtil;
 import com.gzlg.dorm.dto.CheckinRequest;
@@ -175,6 +176,11 @@ public class CheckInServiceImpl implements CheckInService {
 
     @Override
     public CurrentRoomVO currentRoom(String studentId) {
+        // 归属校验：学生只能查自己，管理员可代查
+        String username = UserContext.getUsername();
+        if (!"ADMIN".equals(UserContext.getRole()) && !studentId.equals(username)) {
+            throw new BizException("无权查看该同学宿舍信息");
+        }
         Student student = studentMapper.selectById(studentId);
         if (student == null) {
             throw new BizException("学生不存在");

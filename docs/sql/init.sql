@@ -278,7 +278,7 @@ CREATE TABLE `t_college` (
 INSERT INTO `sys_parameter` (`param_key`, `param_name`, `param_value`) VALUES
 ('systemName', '系统名称', '学生宿舍管理系统'),
 ('welcomeMessage', '登录欢迎语', '欢迎使用学生宿舍管理系统'),
-('contactPhone', '联系电话', '0571-88888888'),
+('contactPhone', '联系电话', '13800001111'),
 ('contactEmail', '联系邮箱', 'dorm@example.edu.cn')
 ON DUPLICATE KEY UPDATE `param_name` = VALUES(`param_name`);
 
@@ -340,7 +340,7 @@ INSERT INTO `student` (`student_id`, `name`, `gender`, `college`, `major`, `clas
 -- 登录账号（演示密码均为 123456，用 {noop} 明文占位；生产请改 BCrypt 密文）
 -- admin 带默认联系电话/邮箱（个人中心回显）；保留 3 个演示学生账号；其余学生无账号，可由管理员「重置密码」自动建号
 INSERT INTO `sys_user` (`username`, `password`, `role`, `student_id`, `phone`, `email`) VALUES
-('admin', '{noop}123456', 'ADMIN', NULL, '0571-88888888', 'admin@example.edu.cn'),
+('admin', '{noop}123456', 'ADMIN', NULL, '13800000000', 'admin@example.edu.cn'),
 ('2023010101', '{noop}123456', 'STUDENT', '2023010101', '13800000001', 'wxm@example.com'),
 ('2023010102', '{noop}123456', 'STUDENT', '2023010102', '13800000002', 'lixh@example.com'),
 ('2023010103', '{noop}123456', 'STUDENT', '2023010103', '13800000003', 'chenq@example.com');

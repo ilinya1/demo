@@ -2,6 +2,7 @@ package com.gzlg.dorm.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.gzlg.dorm.common.exception.BizException;
+import com.gzlg.dorm.common.util.PhoneUtils;
 import com.gzlg.dorm.entity.CheckoutApply;
 import com.gzlg.dorm.entity.SysParameter;
 import com.gzlg.dorm.mapper.CheckoutApplyMapper;
@@ -29,7 +30,7 @@ public class SettingsServiceImpl implements SettingsService {
     static {
         DEFAULT_PARAMS.put("systemName", "学生宿舍管理系统");
         DEFAULT_PARAMS.put("welcomeMessage", "欢迎使用学生宿舍管理系统");
-        DEFAULT_PARAMS.put("contactPhone", "0571-88888888");
+        DEFAULT_PARAMS.put("contactPhone", "13800001111");
         DEFAULT_PARAMS.put("contactEmail", "dorm@example.edu.cn");
     }
     private static final Map<String, String> DEFAULT_PARAM_NAMES = new LinkedHashMap<>();
@@ -93,6 +94,9 @@ public class SettingsServiceImpl implements SettingsService {
             String key = asString(item.get("key"));
             if (key == null || key.isBlank()) {
                 continue;
+            }
+            if ("contactPhone".equals(key)) {
+                PhoneUtils.requireMobile(asString(item.get("value")), "联系电话");
             }
             SysParameter param = sysParameterMapper.selectOne(
                     Wrappers.<SysParameter>lambdaQuery().eq(SysParameter::getParamKey, key));

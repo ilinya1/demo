@@ -10,7 +10,7 @@ import { checkoutReasonInUse } from './checkin'
 const defaultSysParams = [
   { key: 'systemName', name: '系统名称', value: '学生宿舍管理系统' },
   { key: 'welcomeMessage', name: '登录欢迎语', value: '欢迎使用学生宿舍管理系统' },
-  { key: 'contactPhone', name: '联系电话', value: '0571-88888888' },
+  { key: 'contactPhone', name: '联系电话', value: '13800001111' },
   { key: 'contactEmail', name: '联系邮箱', value: 'dorm@example.edu.cn' }
 ]
 const sysParams = defaultSysParams.map((x) => ({ ...x }))

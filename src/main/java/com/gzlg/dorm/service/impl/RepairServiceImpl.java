@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gzlg.dorm.common.exception.BizException;
 import com.gzlg.dorm.common.result.PageResult;
+import com.gzlg.dorm.common.util.PhoneUtils;
 import com.gzlg.dorm.dto.RepairCreateRequest;
 import com.gzlg.dorm.dto.RepairHandleRequest;
 import com.gzlg.dorm.entity.DormBuilding;
@@ -30,6 +31,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 报修实现。
@@ -68,7 +70,7 @@ public class RepairServiceImpl implements RepairService {
         if (p.getRecords().isEmpty()) {
             return PageResult.of(List.of(), p.getTotal());
         }
-        return PageResult.of(p.getRecords().stream().map(this::toVO).toList(), p.getTotal());
+        return PageResult.of(toVOList(p.getRecords()), p.getTotal());
     }
 
     @Override
@@ -77,7 +79,7 @@ public class RepairServiceImpl implements RepairService {
         if (order == null) {
             throw new BizException("报修单不存在");
         }
-        return toVO(order);
+        return toVOList(List.of(order)).get(0);
     }
 
     @Override
@@ -103,7 +105,7 @@ public class RepairServiceImpl implements RepairService {
         order.setRoomId(req.getRoomId());
         order.setTypeId(req.getTypeId());
         order.setDescription(req.getDescription());
-        order.setContactPhone(req.getContactPhone());
+        order.setContactPhone(PhoneUtils.requireMobile(req.getContactPhone(), "联系电话"));
         order.setImages(toJson(req.getImages()));
         order.setStatus("待处理");
         order.setCreateTime(LocalDateTime.now());
@@ -124,7 +126,7 @@ public class RepairServiceImpl implements RepairService {
         }
         order.setStatus(status);
         order.setHandlerName(req.getHandlerName());
-        order.setHandlerPhone(req.getHandlerPhone());
+        order.setHandlerPhone(PhoneUtils.requireMobile(req.getHandlerPhone(), "处理人电话"));
         order.setHandleDesc(req.getHandleDesc());
         if (order.getHandleTime() == null) {
             order.setHandleTime(LocalDateTime.now());
@@ -132,27 +134,52 @@ public class RepairServiceImpl implements RepairService {
         repairOrderMapper.updateById(order);
     }
 
-    private RepairVO toVO(RepairOrder o) {
+    /** 批量转 VO：一次性加载学生/楼栋/房间/报修类型字典，避免逐条 N+1 查询 */
+    private List<RepairVO> toVOList(List<RepairOrder> orders) {
+        List<String> studentIds = orders.stream().map(RepairOrder::getStudentId).distinct().toList();
+        List<Long> buildingIds = orders.stream().map(RepairOrder::getBuildingId).distinct().toList();
+        List<Long> roomIds = orders.stream().map(RepairOrder::getRoomId).distinct().toList();
+        List<Long> typeIds = orders.stream().map(RepairOrder::getTypeId).distinct().toList();
+
+        Map<String, Student> studentMap = studentIds.isEmpty() ? Map.of()
+                : studentMapper.selectBatchIds(studentIds).stream()
+                        .collect(Collectors.toMap(Student::getStudentId, s -> s, (a, b) -> a));
+        Map<Long, DormBuilding> buildingMap = buildingIds.isEmpty() ? Map.of()
+                : buildingMapper.selectBatchIds(buildingIds).stream()
+                        .collect(Collectors.toMap(DormBuilding::getId, b -> b, (a, b) -> a));
+        Map<Long, DormRoom> roomMap = roomIds.isEmpty() ? Map.of()
+                : roomMapper.selectBatchIds(roomIds).stream()
+                        .collect(Collectors.toMap(DormRoom::getId, r -> r, (a, b) -> a));
+        Map<Long, RepairType> typeMap = typeIds.isEmpty() ? Map.of()
+                : repairTypeMapper.selectBatchIds(typeIds).stream()
+                        .collect(Collectors.toMap(RepairType::getId, t -> t, (a, b) -> a));
+
+        return orders.stream().map(o -> toVO(o, studentMap, buildingMap, roomMap, typeMap)).toList();
+    }
+
+    private RepairVO toVO(RepairOrder o, Map<String, Student> studentMap,
+                          Map<Long, DormBuilding> buildingMap, Map<Long, DormRoom> roomMap,
+                          Map<Long, RepairType> typeMap) {
         RepairVO vo = new RepairVO();
         vo.setId(o.getId());
         vo.setOrderNo(o.getOrderNo());
         vo.setStudentId(o.getStudentId());
-        Student student = studentMapper.selectById(o.getStudentId());
+        Student student = studentMap.get(o.getStudentId());
         if (student != null) {
             vo.setStudentName(student.getName());
         }
         vo.setBuildingId(o.getBuildingId());
         vo.setRoomId(o.getRoomId());
-        DormBuilding building = buildingMapper.selectById(o.getBuildingId());
+        DormBuilding building = buildingMap.get(o.getBuildingId());
         if (building != null) {
             vo.setBuildingName(building.getBuildingName());
         }
-        DormRoom room = roomMapper.selectById(o.getRoomId());
+        DormRoom room = roomMap.get(o.getRoomId());
         if (room != null) {
             vo.setRoomNo(room.getRoomNo());
         }
         vo.setTypeId(o.getTypeId());
-        RepairType type = repairTypeMapper.selectById(o.getTypeId());
+        RepairType type = typeMap.get(o.getTypeId());
         if (type != null) {
             vo.setTypeName(type.getName());
         }

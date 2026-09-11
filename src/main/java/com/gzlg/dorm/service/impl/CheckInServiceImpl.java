@@ -31,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 入住业务实现：入住事务写 check_in 快照并联动床位/房间/学生住宿状态。
@@ -61,16 +63,26 @@ public class CheckInServiceImpl implements CheckInService {
 
     @Override
     public List<CheckinRoomVO> checkinRooms(Long buildingId) {
-        return roomMapper.selectList(Wrappers.<DormRoom>lambdaQuery()
-                        .eq(buildingId != null, DormRoom::getBuildingId, buildingId)
-                        .orderByAsc(DormRoom::getRoomNo))
-                .stream()
-                .filter(r -> r.getCapacity() != null && occupiedCount(r.getId()) < r.getCapacity())
+        List<DormRoom> rooms = roomMapper.selectList(Wrappers.<DormRoom>lambdaQuery()
+                .eq(buildingId != null, DormRoom::getBuildingId, buildingId)
+                .orderByAsc(DormRoom::getRoomNo));
+        if (rooms.isEmpty()) {
+            return List.of();
+        }
+        List<Long> roomIds = rooms.stream().map(DormRoom::getId).toList();
+        // 一次性按房间统计占用床位，避免逐房间查询（N+1）
+        Map<Long, Long> occupied = bedMapper.selectList(Wrappers.<DormBed>lambdaQuery()
+                        .in(DormBed::getRoomId, roomIds).eq(DormBed::getStatus, OCCUPIED))
+                .stream().collect(Collectors.groupingBy(DormBed::getRoomId, Collectors.counting()));
+        return rooms.stream()
+                .filter(r -> r.getCapacity() != null
+                        && occupied.getOrDefault(r.getId(), 0L).intValue() < r.getCapacity())
                 .map(r -> {
                     CheckinRoomVO vo = new CheckinRoomVO();
                     vo.setId(r.getId());
                     vo.setRoomNo(r.getRoomNo());
-                    vo.setFreeBeds(r.getCapacity() - occupiedCount(r.getId()));
+                    int occ = occupied.getOrDefault(r.getId(), 0L).intValue();
+                    vo.setFreeBeds(r.getCapacity() - occ);
                     return vo;
                 })
                 .toList();

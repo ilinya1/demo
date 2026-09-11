@@ -2,6 +2,7 @@ package com.gzlg.dorm.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.gzlg.dorm.common.exception.BizException;
+import com.gzlg.dorm.common.util.PhoneUtils;
 import com.gzlg.dorm.entity.Clazz;
 import com.gzlg.dorm.entity.Student;
 import com.gzlg.dorm.entity.SysUser;
@@ -78,7 +79,7 @@ public class ProfileServiceImpl implements ProfileService {
                 throw new BizException("账号不存在");
             }
             if (data.containsKey("phone")) {
-                account.setPhone(asString(data.get("phone")));
+                account.setPhone(PhoneUtils.requireMobile(asString(data.get("phone")), "联系电话"));
             }
             if (data.containsKey("email")) {
                 account.setEmail(asString(data.get("email")));
@@ -91,7 +92,7 @@ public class ProfileServiceImpl implements ProfileService {
             throw new BizException("学生不存在");
         }
         if (data.containsKey("phone")) {
-            student.setContactPhone(asString(data.get("phone")));
+            student.setContactPhone(PhoneUtils.requireMobile(asString(data.get("phone")), "联系电话"));
         }
         if (data.containsKey("emergency")) {
             student.setEmergencyContact(asString(data.get("emergency")));

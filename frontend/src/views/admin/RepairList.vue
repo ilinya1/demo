@@ -100,6 +100,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getRepairList, handleRepair } from '@/api/daily'
 import { getBuildings } from '@/api/building'
+import { mobileRequired } from '@/utils/phone'
 
 const query = reactive({ orderNo: '', buildingId: '', status: '', page: 1, pageSize: 10 })
 const rows = ref([])
@@ -115,7 +116,7 @@ const editable = computed(() => current.value.status !== '已完成')
 
 const rules = {
   handlerName: [{ required: true, message: '请输入处理人', trigger: 'blur' }],
-  handlerPhone: [{ required: true, message: '请输入联系电话', trigger: 'blur' }]
+  handlerPhone: [mobileRequired('联系电话')]
 }
 
 function statusTag(s) {

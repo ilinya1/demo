@@ -33,6 +33,7 @@ import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/store/user'
 import PasswordForm from '@/components/PasswordForm.vue'
 import { getProfile, updateProfile } from '@/api/settings'
+import { mobileRequired } from '@/utils/phone'
 
 const userStore = useUserStore()
 const role = 'STUDENT'
@@ -43,7 +44,7 @@ const infoFormRef = ref()
 const infoForm = reactive({ phone: '', emergency: '' })
 const savingInfo = ref(false)
 const infoRules = {
-  phone: [{ pattern: /^[\d-]{6,20}$/, message: '联系电话格式不正确', trigger: 'blur' }]
+  phone: [mobileRequired('联系电话')]
 }
 
 async function loadProfile() {

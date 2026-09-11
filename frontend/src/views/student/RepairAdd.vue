@@ -14,8 +14,8 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="联系电话">
-            <el-input v-model="form.contactPhone" placeholder="留空则使用备案号码" maxlength="20" />
+          <el-form-item label="联系电话" prop="contactPhone">
+            <el-input v-model="form.contactPhone" placeholder="请输入11位手机号" maxlength="20" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -53,6 +53,7 @@ import { Plus } from '@element-plus/icons-vue'
 import { useUserStore } from '@/store/user'
 import { getCurrentRoom } from '@/api/checkin'
 import { getRepairTypes, addRepair } from '@/api/daily'
+import { mobileRequired } from '@/utils/phone'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -64,7 +65,8 @@ const form = reactive({ typeId: '', description: '', contactPhone: '', images: [
 
 const rules = {
   typeId: [{ required: true, message: '请选择报修物品', trigger: 'change' }],
-  description: [{ required: true, message: '请描述问题情况', trigger: 'blur' }]
+  description: [{ required: true, message: '请描述问题情况', trigger: 'blur' }],
+  contactPhone: [mobileRequired('联系电话')]
 }
 
 function onFileChange(file) {

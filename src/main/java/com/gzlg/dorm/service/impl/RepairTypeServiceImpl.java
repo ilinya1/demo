@@ -42,13 +42,7 @@ public class RepairTypeServiceImpl implements RepairTypeService {
         RepairType type = new RepairType();
         type.setName(name);
         type.setSort(req.getSort());
-        long maxId = 0;
-        RepairType max = repairTypeMapper.selectOne(Wrappers.<RepairType>lambdaQuery()
-                .orderByDesc(RepairType::getId).last("limit 1"));
-        if (max != null) {
-            maxId = max.getId();
-        }
-        type.setId(maxId + 1);
+        // 主键用 AUTO_INCREMENT，由数据库生成，避免手工 maxId+1 并发撞号/复用旧 id
         type.setCreatedAt(LocalDateTime.now());
         repairTypeMapper.insert(type);
     }

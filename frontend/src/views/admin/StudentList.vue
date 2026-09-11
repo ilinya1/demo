@@ -226,6 +226,7 @@ import { getStudents, addStudent, updateStudent, deleteStudent } from '@/api/stu
 import { getClasses, addClass, updateClass, deleteClass } from '@/api/class'
 import { getColleges, createCollege, updateCollege, deleteCollege } from '@/api/college'
 import { resetStudentPassword } from '@/api/auth'
+import { mobileRequired } from '@/utils/phone'
 
 const academicStatuses = ['在校', '毕业', '退学', '休学']
 
@@ -392,7 +393,8 @@ const rules = {
   className: [{ required: true, message: '请选择班级', trigger: 'change' }],
   college: [{ required: true, message: '请选择学院', trigger: 'change' }],
   major: [{ required: true, message: '请输入专业', trigger: 'blur' }],
-  contactPhone: [{ required: true, message: '请输入联系方式', trigger: 'blur' }]
+  contactPhone: [mobileRequired('联系电话')],
+  emergencyPhone: [mobileRequired('紧急联系人电话')]
 }
 
 async function loadStudents() {

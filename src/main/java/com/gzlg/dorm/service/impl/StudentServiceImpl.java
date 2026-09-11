@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gzlg.dorm.common.exception.BizException;
 import com.gzlg.dorm.common.result.PageResult;
+import com.gzlg.dorm.common.util.PhoneUtils;
 import com.gzlg.dorm.dto.StudentReq;
 import com.gzlg.dorm.entity.Clazz;
 import com.gzlg.dorm.entity.Student;
@@ -111,9 +112,9 @@ public class StudentServiceImpl implements StudentService {
         s.setCollege(req.getCollege());
         s.setMajor(req.getMajor());
         s.setClassId(classId);
-        s.setContactPhone(req.getContactPhone());
+        s.setContactPhone(PhoneUtils.requireMobile(req.getContactPhone(), "联系电话"));
         s.setEmergencyContact(req.getEmergencyContact());
-        s.setEmergencyPhone(req.getEmergencyPhone());
+        s.setEmergencyPhone(PhoneUtils.requireMobile(req.getEmergencyPhone(), "紧急联系人电话"));
         s.setAcademicStatus(req.getAcademicStatus());
         s.setHousingStatus(req.getHousingStatus());
     }

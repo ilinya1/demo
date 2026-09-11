@@ -59,7 +59,7 @@ public class AuthController {
     /** 重置学生密码为默认 123456 */
     @PostMapping("/reset-password")
     public Result<Void> resetPassword(@RequestBody Map<String, Object> body) {
-        accountService.resetStudentPassword(asString(body.get("username")), asString(body.get("name")));
+        accountService.resetStudentPassword(asString(body.get("username")));
         return Result.ok();
     }
 

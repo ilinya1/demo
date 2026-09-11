@@ -963,4 +963,21 @@ epair_order.type_id），并将「当前技术状态」「后续开发待办」�
   - 新增 `AuthControllerTest` 断言：学生重置密码被拒、越权查他人宿舍被拒。`mvn test` 全量 **29 项全绿**（测试库重建基准）。
   - **涉及文件**：修改 `common/jwt/JwtInterceptor.java`、`service/impl/AccountServiceImpl.java`、`service/impl/CheckInServiceImpl.java`、`service/impl/CheckoutServiceImpl.java`、`service/impl/CollegeServiceImpl.java`、`src/test/.../AuthControllerTest.java`。
   - 备注：低危项（N+1 查询、token 明文存 localStorage、死参数 `name`、RepairType 手工主键并发）本轮未处理，记录待议。
+- **2026-09-11（操作日志 #76，低危项收尾）** 承接 #75 备注中的低危项逐项处理：
+  1. **死参数清理**：`AccountServiceImpl.resetStudentPassword(username, name)` 移除无用参数 `name`（Controller/接口/实现三处同步）。
+  2. **checkinRooms 重复查询/N+1**：`CheckInServiceImpl.checkinRooms` 原每房间调 2 次 `occupiedCount`（filter+map）且逐房间查库；改为一次 `IN(roomIds)` 聚合占用床位到 `Map`。
+  3. **RepairServiceImpl N+1**：分页 `toVO` 原每单执行 4 次字典查询（学生/楼栋/房间/报修类型）；新增 `toVOList` 用 `selectBatchIds` 批量加载四类映射后由 `toVO(map...)` 共享。
+  4. **token 明文存 localStorage**：经与用户确认**维持现状**（JWT+localStorage 为常见做法，本轮不引入 HttpOnly Cookie/CSRF 复杂度）。
+  - `StudentServiceImpl` 经核查其 `toVOList` 已批量加载班级映射、单条 `toVO` 仅一查，无 N+1，故未改。
+- **2026-09-11（操作日志 #77，电话号码规范化：全局必填手机号）** 用户要求规范化各模块电话字段。经确认方案：**仅 11 位手机号、全局必填、入库规范化**（覆盖旧的"个人中心空值允许"约束）：
+  1. 新增 `common/util/PhoneUtils.java`：`normalize`（去空格/横线/括号/加号→纯数字）+ `requireMobile(phone, name)`（空值或非手机号抛 `BizException`，返回规范化号）。
+  2. 后端统一接入（校验→规范化后入库）：`ProfileServiceImpl`（管理员/学生"联系电话"）、`StudentServiceImpl.apply`（contactPhone/emergencyPhone）、`RepairServiceImpl.create`（联系电话）与 `handle`（处理人电话）、`SettingsServiceImpl.updateParams`（contactPhone 参数）。
+  3. 系统电话默认固话 `0571-88888888` → 手机号 `13800001111`，并同步 `docs/sql/init.sql`（`sys_parameter` 与 `sys_user.admin` 电话）与 `frontend/src/mock/settings.js`。
+  4. 前端新建 `src/utils/phone.js`（`isMobilePhone`/`normalizePhone`/`mobileRequired`），在 `admin/Settings.vue`、`admin/Profile.vue`、`student/Profile.vue`、`admin/StudentList.vue`、`admin/RepairList.vue`、`student/RepairAdd.vue` 接入同一正则即时校验（RepairAdd 联系电话由"留空用备案"改为必填，并补 `prop`）。
+  - 验证：`mvn -q -DskipTests compile` 编译通过。
+- **2026-09-11（操作日志 #78，存量数据空电话修缮脚本）** 用户要求补全存量库中的空电话字段，使"全局必填手机号"新校验在存量数据上可读通过：
+  - 新增 `docs/sql/fix_phone_fill.sql`：幂等修缮脚本，按主键派生唯一手机号——`student.contact_phone`(138+学号后8位)、`student.emergency_phone`(139+学号后8位)、`sys_user.phone`(137+自增id)、`repair_order.contact_phone`(136+id)、`repair_order.handler_phone`(135+id，处理人电话也补)、`sys_parameter.contactPhone`(固定补 13800001111)。学号非纯数字/过短则回退默认号。
+  - 含末尾校验 SELECT，执行后应返回 0 行剩余空/非法电话。
+  - 说明：`student` 主键为学号（无自增 id），故用学号派生；其余表用自增 id 派生。
+  - **执行与补强（2026-09-11）**：在本机 `dorm_manager` 库（root/123456）执行脚本，空值补全后校验仍现 2 行**非空但非法**存量值——`admin` 电话为旧固话 `0571-88888888`、报修单1处理人电话为残缺 `12323455`。据此为脚本追加「兜底纠正」段（对去间隔符后非法非空号按主键重新派生覆盖，不影响合法值），重跑后五字段校验全部归 0。脚本升级为「空值补全 + 非法值纠正」两段式，仍幂等。
 

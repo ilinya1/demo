@@ -49,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public void resetStudentPassword(String username, String name) {
+    public void resetStudentPassword(String username) {
         // 仅管理员可重置密码（拦截器在前端已拦，此处服务层兜底）
         if (!"ADMIN".equals(UserContext.getRole())) {
             throw new BizException("仅管理员可重置密码");

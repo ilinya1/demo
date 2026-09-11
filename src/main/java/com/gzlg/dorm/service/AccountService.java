@@ -7,5 +7,5 @@ public interface AccountService {
 
     void changePassword(String username, String oldPassword, String newPassword);
 
-    void resetStudentPassword(String username, String name);
+    void resetStudentPassword(String username);
 }

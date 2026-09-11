@@ -61,6 +61,7 @@ import {
   getSystemParams, updateSystemParams, resetSystemParams,
   getCheckoutReasons, createCheckoutReason, updateCheckoutReason, deleteCheckoutReason
 } from '@/api/settings'
+import { isMobilePhone } from '@/utils/phone'
 
 const active = ref('params')
 
@@ -71,6 +72,11 @@ async function loadParams() {
   params.value = await getSystemParams()
 }
 async function saveParams() {
+  const phoneParam = params.value.find((p) => p.key === 'contactPhone')
+  if (phoneParam && !isMobilePhone(phoneParam.value)) {
+    ElMessage.error('联系电话必须是 11 位手机号')
+    return
+  }
   savingParams.value = true
   try {
     await updateSystemParams(params.value)
